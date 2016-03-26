@@ -41,6 +41,7 @@
     "ember-addon"
   ],
   "dependencies": {
+    "body-parser": "^1.15.0",
     "ember-cli-babel": "^5.1.5"
   },
   "ember-addon": {
