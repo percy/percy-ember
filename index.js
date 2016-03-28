@@ -14,13 +14,16 @@ module.exports = {
     buildDir = results.directory;
   },
   testemMiddleware: function(app) {
-    // By default the express request.body is empty, unless middleware is specifically added to
-    // parse it.
+    // Add middleware to add request.body because it is not populated in express by default.
     app.use(bodyParser.json());
 
     app.use('/_percy/snapshot', function(request, response, next) {
       var data = request.body;
-      fs.mkdirSync(buildDir + '/_percy_snapshots');
+      var snapshotsDir = buildDir + '/_percy_snapshots';
+      if (!fs.existsSync(snapshotsDir)){
+        fs.mkdirSync(snapshotsDir);
+      }
+
       fs.writeFile(buildDir + '/_percy_snapshots/' + data.name + '.html', data.content, function(err) {
         if (err) {
           return console.log(err);
@@ -34,6 +37,10 @@ module.exports = {
 
     app.use('/_percy/finalize_build', function(request, response, next) {
       subprocess.spawnSync('percy', ['snapshot', buildDir], {stdio: [0, 1, 2]});
+
+      response.status(201);
+      response.contentType('application/json');
+      response.send(JSON.stringify({success: true}));
     });
   },
 };
