@@ -12,6 +12,8 @@ function getDoctype() {
 }
 
 export default function(name) {
+  console.log('[percy] Snapshotting:', name);
+
   // Create a full-page DOM snapshot from the current testing page.
   // TODO(fotinakis): more memory-efficient way to do this?
   let domCopy = Ember.$('html').clone();
