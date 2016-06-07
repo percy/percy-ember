@@ -2,6 +2,9 @@ import Ember from 'ember';
 
 function getDoctype() {
   let doctypeNode = document.doctype;
+  if (!doctypeNode || !doctypeNode.name) {
+    return '<!DOCTYPE html>'
+  }
   let doctype = "<!DOCTYPE "
     + doctypeNode.name
     + (doctypeNode.publicId ? ' PUBLIC "' + doctypeNode.publicId + '"' : '')
@@ -12,12 +15,6 @@ function getDoctype() {
 }
 
 export default function(name) {
-  // Mocha-specific handling to auto-generate nice snapshot name from test descriptions.
-  if (!name && this.currentTest) {
-    name = this.test.fullTitle();
-  }
-  console.log('[percy] Snapshotting:', name);
-
   // Create a full-page DOM snapshot from the current testing page.
   // TODO(fotinakis): more memory-efficient way to do this?
   let domCopy = Ember.$('html').clone();
