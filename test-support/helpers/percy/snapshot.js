@@ -12,6 +12,10 @@ function getDoctype() {
 }
 
 export default function(name) {
+  // Mocha-specific handling to auto-generate nice snapshot name from test descriptions.
+  if (!name && this.currentTest) {
+    name = this.test.fullTitle();
+  }
   console.log('[percy] Snapshotting:', name);
 
   // Create a full-page DOM snapshot from the current testing page.

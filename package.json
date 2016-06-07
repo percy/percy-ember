@@ -42,6 +42,7 @@
   ],
   "dependencies": {
     "body-parser": "^1.15.0",
+    "percy-client": "^0.1.1",
     "ember-cli-babel": "^5.1.5"
   },
   "ember-addon": {
