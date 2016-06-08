@@ -11,6 +11,12 @@ var walk = require('walk');
 // Set by the postBuild hook.
 var buildDir;
 
+// Some build assets we never want to upload.
+var SKIPPED_ASSETS = [
+  '/assets/tests.js',
+  '/assets/tests.map'
+];
+
 function gatherBuildResources(percyClient, buildDir) {
   var hashToResource = {};
   var walkOptions = {
@@ -21,6 +27,10 @@ function gatherBuildResources(percyClient, buildDir) {
       file: function (root, fileStats, next) {
         var absolutePath = path.join(root, fileStats.name);
         var resourceUrl = absolutePath.replace(buildDir, '');
+
+        if (SKIPPED_ASSETS.indexOf(resourceUrl) > -1) {
+          next();
+        }
 
         // TODO(fotinakis): this is synchronous and potentially memory intensive, but we don't
         // keep a reference to the content around so this should be garbage collected. Re-evaluate?
