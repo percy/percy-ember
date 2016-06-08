@@ -186,7 +186,12 @@ module.exports = {
       // finalize the build.
       Promise.all(buildResourceUploadPromises).then(function() {
         Promise.all(snapshotFinalizePromises).then(function() {
-          percyClient.finalizeBuild(percyBuildId);
+          percyClient.finalizeBuild(percyBuildId).then(function() {
+            // Avoid trying to add snapshots to an already-finalized build. This might happen when
+            // running tests locally and the browser gets refreshed after the end of a test run.
+            // Generally, this is not a problem because tests only run in CI and only once.
+            isEnabled = false;
+          });
         });
       });
     });

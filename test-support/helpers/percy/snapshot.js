@@ -24,13 +24,6 @@ function finalizeBuildOnce() {
 }
 
 export default function(name) {
-  // Avoid trying to add snapshots to an already-finalized build. This might happen when running
-  // tests locally and refreshing the browser after the end of a test run. Generally, this is not
-  // a problem because tests only run in CI and only once.
-  if (hasFinalizedBuild) {
-    return;
-  }
-
   if (window.Testem.afterTests) {
     // Testem >= v1.6.0
     window.Testem.afterTests(finalizeBuildOnce)
