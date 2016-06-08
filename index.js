@@ -78,6 +78,7 @@ module.exports = {
     var percyBuildPromise;
     var percyBuildId;
     var buildResourceUploadPromises = [];
+    var snapshotFinalizePromises = [];
 
     // Add middleware to add request.body because it is not populated in express by default.
     app.use(bodyParser.json());
@@ -130,9 +131,8 @@ module.exports = {
 
     // Snapshot middleware, this is the endpoint that the percySnapshot() test helper hits.
     app.use('/_percy/snapshot', function(request, response, next) {
-      if (!isEnabled) {
-        return;
-      }
+      // Still install the middleware to avoid HTTP errors but stop everything else if disabled.
+      if (!isEnabled) { return; }
 
       // Construct the root resource and create the snapshot.
       var data = request.body;
@@ -161,15 +161,16 @@ module.exports = {
             percyClient.uploadResource(percyBuildId, rootResource.content).then(function() {
               // After all build resources are uploaded, finalize the snapshot.
               Promise.all(buildResourceUploadPromises).then(function() {
-                percyClient.finalizeSnapshot(snapshotId);
+                snapshotFinalizePromises.push(percyClient.finalizeSnapshot(snapshotId));
               });
             });
           });
         } else {
           // No missing resources, we can immediately finalize the snapshot after build resources.
           Promise.all(buildResourceUploadPromises).then(function() {
-            percyClient.finalizeSnapshot(snapshotId);
+            snapshotFinalizePromises.push(percyClient.finalizeSnapshot(snapshotId));
           });
+
         }
       });
 
@@ -177,12 +178,17 @@ module.exports = {
       response.contentType('application/json');
       response.send(JSON.stringify({success: true}));
     });
+    app.use('/_percy/finalize_build', function(request, response, next) {
+      // Still install the middleware to avoid HTTP errors but stop everything else if disabled.
+      if (!isEnabled) { return; }
 
-    // Finalize build handler.
-    if (isEnabled) {
-      process.on('beforeExit', function() {
-        percyClient.finalizeBuild(percyBuildId);
+      // After all build resources are uploaded, then after all snapshots are finalized,
+      // finalize the build.
+      Promise.all(buildResourceUploadPromises).then(function() {
+        Promise.all(snapshotFinalizePromises).then(function() {
+          percyClient.finalizeBuild(percyBuildId);
+        });
       });
-    }
+    });
   },
 };
