@@ -66,7 +66,6 @@ function parseMissingResources(response) {
 var percyClient;
 var percyBuildId;
 var buildResourceUploadPromises = [];
-var snapshotResourceUploadStartedPromises = [];
 var snapshotResourceUploadPromises = [];
 var isEnabled = true;
 
@@ -135,15 +134,18 @@ module.exports = {
       // Still install the middleware to avoid HTTP errors but stop everything else if disabled.
       if (!isEnabled) { return; }
 
+      // Add a new promise to the list of resource uploads so that finalize_build can wait on
+      // resource uploads. We MUST do this immediately here with a custom promise, not wait for
+      // the nested `uploadResource()` promise below, to avoid creating a race condition where the
+      // uploads array may be missing some possible upload promises.
+      //
       // Nasty way to get a reference to the `resolve` method so that we can manually resolve this
-      // promise below, after finalize has been started. http://stackoverflow.com/a/26150465/128597
+      // promise below. http://stackoverflow.com/a/26150465/128597
       var resolveAfterResourceUploaded;
-      var uploadStartedPromise = new Promise(function(resolve) {
+      var resourceUploadedPromise = new Promise(function(resolve) {
         resolveAfterResourceUploaded = resolve;
       });
-      // An array of promises so that we can know when all possible uploads have started.
-      // See note below in the finalize_build middleware.
-      snapshotResourceUploadStartedPromises.push(uploadStartedPromise);
+      snapshotResourceUploadPromises.push(resourceUploadedPromise);
 
       // Construct the root resource and create the snapshot.
       var data = request.body;
@@ -163,9 +165,6 @@ module.exports = {
       // Upload missing resources (just the root resource HTML in this case).
       snapshotPromise.then(function(response) {
         var snapshotId = response.body.data.id;
-
-        console.log('--- ', snapshotId)
-
         var missingResources = parseMissingResources(response);
         if (missingResources.length > 0) {
           // We assume there is only one missing resource here and it is the root resource.
@@ -198,18 +197,10 @@ module.exports = {
       // Still install the middleware to avoid HTTP errors but stop everything else if disabled.
       if (!isEnabled) { return; }
 
-      // We need to wait until all build resources are uploaded.
-      var blockingPromises = buildResourceUploadPromises;
-
-      // We also need to wait until all snapshot resources are uploaded. We do NOT need to wait
-      // until the snapshot itself is finalized, just until resources are uploaded. However, there
-      // is a race condition here: we cannot reference the `snapshotResourceUploadPromises` array
-      // until we are sure that all promises have beed actually added to it. To workaround this, we
-      // have another array of promises to know when all possible uploads have at least been queued.
-      blockingPromises = blockingPromises.concat(snapshotResourceUploadStartedPromises);
-
-      Promise.all(blockingPromises).then(function() {
-        // Now that we are sure that all possible uploads have started, wait for them:
+      // We need to wait until all build resources are uploaded before finalizing the build.
+      Promise.all(buildResourceUploadPromises).then(function() {
+        // We also need to wait until all snapshot resources have been uploaded. We do NOT need to
+        // wait until the snapshot itself has been finalized, just until resources are uploaded.
         Promise.all(snapshotResourceUploadPromises).then(function() {
           // Finalize the build.
           percyClient.finalizeBuild(percyBuildId).then(function() {
