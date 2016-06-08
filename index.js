@@ -14,7 +14,9 @@ var buildDir;
 // Some build assets we never want to upload.
 var SKIPPED_ASSETS = [
   '/assets/tests.js',
-  '/assets/tests.map'
+  '/assets/tests.jsp',
+  '/assets/tests.map',
+  '/tests/index.html'
 ];
 
 function gatherBuildResources(percyClient, buildDir) {
@@ -30,6 +32,7 @@ function gatherBuildResources(percyClient, buildDir) {
 
         if (SKIPPED_ASSETS.indexOf(resourceUrl) > -1) {
           next();
+          return;
         }
 
         // TODO(fotinakis): this is synchronous and potentially memory intensive, but we don't
