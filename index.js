@@ -64,7 +64,7 @@ function parseMissingResources(response) {
 }
 
 var percyClient;
-var percyBuildId;
+var percyBuildData;
 var buildResourceUploadPromises = [];
 var snapshotResourceUploadPromises = [];
 var isEnabled = true;
@@ -76,8 +76,9 @@ module.exports = {
   postBuild: function(results) {
     var token = process.env.PERCY_TOKEN;
     var repoSlug = process.env.PERCY_REPO_SLUG;  // TODO: pull this from CI environment.
+    var apiUrl = process.env.PERCY_API; // Optional.
     if (token && repoSlug) {
-      percyClient = new PercyClient({token: token});
+      percyClient = new PercyClient({token: token, apiUrl: apiUrl});
     } else {
       // TODO: only show this warning in CI environments.
       if (!token) {
@@ -99,11 +100,8 @@ module.exports = {
     // Initialize the percy client and a new build.
     var percyBuildPromise = percyClient.createBuild(repoSlug, {resources: resources});
 
-    // This assumes that this promise will resolve before the percyBuildId is used below.
-    // TODO(fotinakis): re-evaluate this assumption.
     percyBuildPromise.then(function(response) {
-      percyBuildId = response.body.data.id;
-      console.log('[percy] Starting build ' + percyBuildId);
+      percyBuildData = response.body.data;
     });
 
     // Upload all missing build resources.
@@ -116,7 +114,7 @@ module.exports = {
 
           // Start the build resource upload and add it to a collection we can block on later
           // because build resources must be fully uploaded before snapshots are finalized.
-          var promise = percyClient.uploadResource(percyBuildId, content);
+          var promise = percyClient.uploadResource(percyBuildData.id, content);
           promise.then(function(response) {
             console.log('[percy] Uploaded new build resource: ' + resource.resourceUrl);
           });
@@ -155,9 +153,8 @@ module.exports = {
         isRoot: true,
         mimetype: 'text/html',
       });
-      console.log('[percy] Snapshot:', data.name);
       var snapshotPromise = percyClient.createSnapshot(
-        percyBuildId,
+        percyBuildData.id,
         [rootResource],
         {name: data.name}
       );
@@ -170,7 +167,7 @@ module.exports = {
           // We assume there is only one missing resource here and it is the root resource.
           // All other resources should be build resources.
           var missingResource = missingResources[0];
-          percyClient.uploadResource(percyBuildId, rootResource.content).then(function() {
+          percyClient.uploadResource(percyBuildData.id, rootResource.content).then(function() {
             resolveAfterResourceUploaded();
 
             // After we're sure all build resources are uploaded, finalize the snapshot.
@@ -203,11 +200,14 @@ module.exports = {
         // wait until the snapshot itself has been finalized, just until resources are uploaded.
         Promise.all(snapshotResourceUploadPromises).then(function() {
           // Finalize the build.
-          percyClient.finalizeBuild(percyBuildId).then(function() {
+          percyClient.finalizeBuild(percyBuildData.id).then(function() {
             // Avoid trying to add snapshots to an already-finalized build. This might happen when
             // running tests locally and the browser gets refreshed after the end of a test run.
             // Generally, this is not a problem because tests only run in CI and only once.
             isEnabled = false;
+
+            var url = percyBuildData.attributes['web-url'];
+            console.log('[percy] Visual diffs are processing: ', url);
 
             // This is important, the ajax call to finalize_build is "async: false" and prevents
             // testem from shutting down the browser until this response.
