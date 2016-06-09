@@ -192,7 +192,7 @@ module.exports = {
   },
   testemMiddleware: function(app) {
     // Add middleware to add request.body because it is not populated in express by default.
-    app.use(bodyParser.json());
+    app.use(bodyParser.json({limit: '50mb'}));
 
     // Snapshot middleware, this is the endpoint that the percySnapshot() test helper hits.
     app.use('/_percy/snapshot', function(request, response, next) {
