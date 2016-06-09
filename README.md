@@ -7,6 +7,10 @@ Percy addon for Ember apps.
 ## Installation
 
 * `ember install ember-percy`
+* Set up the `PERCY_TOKEN` and `PERCY_REPO_SLUG` environment variables in your CI settings.
+* Add `import '../helpers/percy/register-helpers';` to your `module-for-acceptance.js` to register helpers.
+* Use the `percySnapshot('homepage')` async helper in acceptance tests.
+  * With mocha, you can do `percySnapshot(this.test.fullTitle());` to autogenerate the name arg.
 
 ## Contributing
 
