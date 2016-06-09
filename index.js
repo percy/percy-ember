@@ -71,16 +71,27 @@ function parseMissingResources(response) {
     response.body.data.relationships['missing-resources'].data || [];
 }
 
+function handlePercyFailure(error) {
+  isPercyEnabled = false;
+  console.warn('[percy] ERROR: Failed to create build, skipping.')
+  if (error) {
+    console.warn(error.toString());  // Stringify to prevent full response output.
+  }
+}
+
 var percyClient;
 var percyBuildPromise;
 var buildResourceUploadPromises = [];
 var snapshotResourceUploadPromises = [];
-var isEnabled = true;
-
+var isPercyEnabled = true;
 
 module.exports = {
   name: 'ember-percy',
 
+  isEnabled: function() {
+    // Only allow the addon to be incorporated in tests.
+    return (process.env.EMBER_ENV == 'test');
+  },
   outputReady: function(result) {
     var token = process.env.PERCY_TOKEN;
     var repoSlug = process.env.PERCY_REPO_SLUG;  // TODO: pull this from CI environment.
@@ -90,14 +101,16 @@ module.exports = {
     } else {
       // TODO: only show this warning in CI environments.
       if (!token) {
-        console.warn('[percy] Warning: Percy is disabled, no PERCY_TOKEN environment variable found.')
+        console.warn(
+          '[percy] Warning: Percy is disabled, no PERCY_TOKEN environment variable found.')
       }
       if (!repoSlug) {
-        console.warn('[percy] Warning: Percy is disabled, no PERCY_REPO_SLUG environment variable found.')
+        console.warn(
+          '[percy] Warning: Percy is disabled, no PERCY_REPO_SLUG environment variable found.')
       }
-      isEnabled = false;
+      isPercyEnabled = false;
     }
-    if (!isEnabled) { return; }
+    if (!isPercyEnabled) { return; }
 
     var hashToResource = gatherBuildResources(percyClient, result.directory);
     var resources = [];
@@ -111,31 +124,44 @@ module.exports = {
     // Return a promise and only resolve when all build resources are uploaded, which
     // ensures that the output build dir is still available to be read from before deleted.
     return new Promise(function(resolve) {
-      percyBuildPromise.then(function(buildResponse) {
-        var percyBuildData = buildResponse.body.data;
+      percyBuildPromise.then(
+        function(buildResponse) {
+          var percyBuildData = buildResponse.body.data;
 
-        // Upload all missing build resources.
-        var missingResources = parseMissingResources(buildResponse);
-        if (missingResources && missingResources.length > 0) {
-          missingResources.forEach(function(missingResource) {
-            var resource = hashToResource[missingResource.id];
-            var content = fs.readFileSync(resource.localPath);
+          // Upload all missing build resources.
+          var missingResources = parseMissingResources(buildResponse);
+          if (missingResources && missingResources.length > 0) {
+            missingResources.forEach(function(missingResource) {
+              var resource = hashToResource[missingResource.id];
+              var content = fs.readFileSync(resource.localPath);
 
-            // Start the build resource upload and add it to a collection we can block on later
-            // because build resources must be fully uploaded before snapshots are finalized.
-            var promise = percyClient.uploadResource(percyBuildData.id, content);
-            promise.then(function(response) {
-              console.log('\n[percy] Uploaded new build resource: ' + resource.resourceUrl);
+              // Start the build resource upload and add it to a collection we can block on later
+              // because build resources must be fully uploaded before snapshots are finalized.
+              var promise = percyClient.uploadResource(percyBuildData.id, content);
+              promise.then(
+                function(response) {
+                  console.log('\n[percy] Uploaded new build resource: ' + resource.resourceUrl);
+                },
+                function(error) {
+                  handlePercyFailure(error);
+                }
+              );
+              buildResourceUploadPromises.push(promise);
             });
-            buildResourceUploadPromises.push(promise);
-          });
-        }
+          }
 
-        // Wait for all build resource uploads before we allow the addon build step to complete.
-        Promise.all(buildResourceUploadPromises).then(function() {
+          // Wait for all build resource uploads before we allow the addon build step to complete.
+          // If an upload failed, resolve anyway to unblock the building process. The real upload
+          // failure is handled above.
+          Promise.all(buildResourceUploadPromises).then(resolve, resolve);
+        },
+        function(error) {
+          handlePercyFailure(error);
+
+          // If Percy build creation fails, resolve anyway to unblock the building process.
           resolve();
-        });
-      });
+        }
+      );
     });
   },
   testemMiddleware: function(app) {
@@ -145,7 +171,7 @@ module.exports = {
     // Snapshot middleware, this is the endpoint that the percySnapshot() test helper hits.
     app.use('/_percy/snapshot', function(request, response, next) {
       // Still install the middleware to avoid HTTP errors but stop everything else if disabled.
-      if (!isEnabled) { return; }
+      if (!isPercyEnabled) { return; }
 
       // Add a new promise to the list of resource uploads so that finalize_build can wait on
       // resource uploads. We MUST do this immediately here with a custom promise, not wait for
@@ -212,8 +238,15 @@ module.exports = {
     });
     app.use('/_percy/finalize_build', function(request, response, next) {
       // Still install the middleware to avoid HTTP errors but stop everything else if disabled.
-      if (!isEnabled) { return; }
+      if (!isPercyEnabled) {
+        // Response must be sent to unblock "async: false" Ajax call when percy is disabled.
+        response.status(200);
+        response.contentType('application/json');
+        response.send(JSON.stringify({}));
+        return;
+      }
 
+      console.log('[percy] Finalizing build...', url);
       percyBuildPromise.then(function(buildResponse) {
         var percyBuildData = buildResponse.body.data;
 
@@ -227,7 +260,7 @@ module.exports = {
               // Avoid trying to add snapshots to an already-finalized build. This might happen when
               // running tests locally and the browser gets refreshed after the end of a test run.
               // Generally, this is not a problem because tests only run in CI and only once.
-              isEnabled = false;
+              isPercyEnabled = false;
 
               var url = percyBuildData.attributes['web-url'];
               console.log('[percy] Visual diffs are now processing:', url);
