@@ -230,7 +230,7 @@ module.exports = {
               isEnabled = false;
 
               var url = percyBuildData.attributes['web-url'];
-              console.log('[percy] Visual diffs are processing:', url);
+              console.log('[percy] Visual diffs are now processing:', url);
 
               // This is important, the ajax call to finalize_build is "async: false" and prevents
               // testem from shutting down the browser until this response.
