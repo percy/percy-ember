@@ -218,7 +218,7 @@ module.exports = {
         var percyBuildData = buildResponse.body.data;
 
         // We need to wait until all build resources are uploaded before finalizing the build.
-        Promise.all([percyBuildPromise].concat(buildResourceUploadPromises)).then(function() {
+        Promise.all(buildResourceUploadPromises).then(function() {
           // We also need to wait until all snapshot resources have been uploaded. We do NOT need to
           // wait until the snapshot itself has been finalized, just until resources are uploaded.
           Promise.all(snapshotResourceUploadPromises).then(function() {
