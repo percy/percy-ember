@@ -43,6 +43,7 @@
   "dependencies": {
     "body-parser": "^1.15.0",
     "ember-cli-babel": "^5.1.5",
+    "es6-promise-pool": "^2.4.1",
     "percy-client": "^0.1.1",
     "walk": "^2.3.9"
   },

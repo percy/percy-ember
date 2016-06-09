@@ -1,12 +1,15 @@
 /* jshint node: true */
 'use strict';
 
-var bodyParser = require('body-parser');
+var crypto = require('crypto');
 var fs = require('fs');
 var path = require('path');
-var crypto = require('crypto');
+
+var bodyParser = require('body-parser');
 var PercyClient = require('percy-client');
+var PromisePool = require('es6-promise-pool');
 var walk = require('walk');
+
 
 // Some build assets we never want to upload.
 var SKIPPED_ASSETS = [
@@ -132,29 +135,50 @@ module.exports = {
           // Upload all missing build resources.
           var missingResources = parseMissingResources(buildResponse);
           if (missingResources && missingResources.length > 0) {
-            missingResources.forEach(function(missingResource) {
-              var resource = hashToResource[missingResource.id];
-              var content = fs.readFileSync(resource.localPath);
 
-              // Start the build resource upload and add it to a collection we can block on later
-              // because build resources must be fully uploaded before snapshots are finalized.
-              var promise = percyClient.uploadResource(percyBuildData.id, content);
-              promise.then(
-                function(response) {
-                  console.log('\n[percy] Uploaded new build resource: ' + resource.resourceUrl);
-                },
-                function(error) {
-                  handlePercyFailure(error);
-                }
-              );
-              buildResourceUploadPromises.push(promise);
-            });
+            var missingResourcesIndex = 0;
+            var promiseGenerator = function() {
+              var missingResource = missingResources[missingResourcesIndex];
+              if (missingResource) {
+                var resource = hashToResource[missingResource.id];
+                var content = fs.readFileSync(resource.localPath);
+
+                missingResourcesIndex++;
+
+                // Start the build resource upload and add it to a collection we can block on later
+                // because build resources must be fully uploaded before snapshots are finalized.
+                var promise = percyClient.uploadResource(percyBuildData.id, content);
+                promise.then(
+                  function(response) {
+                    console.log('\n[percy] Uploaded new build resource: ' + resource.resourceUrl);
+                  },
+                  function(error) {
+                    handlePercyFailure(error);
+                  }
+                );
+                buildResourceUploadPromises.push(promise);
+                return promise;
+              } else {
+                // Trigger the pool to end.
+                return null;
+              }
+            }
+
+            // We do this in a promise pool for two reasons: 1) to limit the number of files that
+            // are held in memory concurrently, and 2) without a pool, all upload promises are
+            // created at the same time and request-promise timeout settings begin immediately,
+            // which timeboxes ALL uploads to finish within one timeout period. With a pool, we
+            // defer creation of the upload promises, which makes timeouts apply more individually.
+            var concurrency = 2;
+            var pool = new PromisePool(promiseGenerator, concurrency);
+
+            // Wait for all build resource uploads before we allow the addon build step to complete.
+            // If an upload failed, resolve anyway to unblock the building process.
+            pool.start().then(resolve, resolve);
+          } else {
+            // No missing resources.
+            resolve();
           }
-
-          // Wait for all build resource uploads before we allow the addon build step to complete.
-          // If an upload failed, resolve anyway to unblock the building process. The real upload
-          // failure is handled above.
-          Promise.all(buildResourceUploadPromises).then(resolve, resolve);
         },
         function(error) {
           handlePercyFailure(error);
