@@ -8,6 +8,8 @@ Percy addon for Ember apps.
 
 ## Installation
 
+Requires `ember-cli` >= 1.13.13, preferably >= 2.4.0.
+
 * `ember install ember-percy`
 * Set up the `PERCY_TOKEN` and `PERCY_REPO_SLUG` environment variables in your CI settings.
 * Add `import '../helpers/percy/register-helpers';` to your `module-for-acceptance.js` to register helpers.

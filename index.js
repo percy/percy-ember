@@ -196,8 +196,13 @@ module.exports = {
 
     // Snapshot middleware, this is the endpoint that the percySnapshot() test helper hits.
     app.use('/_percy/snapshot', function(request, response, next) {
-      // Still install the middleware to avoid HTTP errors but stop everything else if disabled.
-      if (!isPercyEnabled) { return; }
+      if (!isPercyEnabled) {
+        // Percy is disabled, send response now to unblock the ajax call.
+        response.status(200);
+        response.contentType('application/json');
+        response.send(JSON.stringify({}));
+        return;
+      }
 
       // Add a new promise to the list of resource uploads so that finalize_build can wait on
       // resource uploads. We MUST do this immediately here with a custom promise, not wait for
@@ -263,9 +268,8 @@ module.exports = {
       response.send(JSON.stringify({success: true}));
     });
     app.use('/_percy/finalize_build', function(request, response, next) {
-      // Still install the middleware to avoid HTTP errors but stop everything else if disabled.
       if (!isPercyEnabled) {
-        // Response must be sent to unblock "async: false" Ajax call when percy is disabled.
+        // Percy is disabled, send response now to unblock the ajax call.
         response.status(200);
         response.contentType('application/json');
         response.send(JSON.stringify({}));
