@@ -82,6 +82,7 @@ function handlePercyFailure(error) {
   }
 }
 
+// TODO: refactor to break down into a more modular design with less global state.
 var percyClient;
 var percyBuildPromise;
 var buildResourceUploadPromises = [];
@@ -139,11 +140,11 @@ module.exports = {
             var missingResourcesIndex = 0;
             var promiseGenerator = function() {
               var missingResource = missingResources[missingResourcesIndex];
+              missingResourcesIndex++;
+
               if (missingResource) {
                 var resource = hashToResource[missingResource.id];
                 var content = fs.readFileSync(resource.localPath);
-
-                missingResourcesIndex++;
 
                 // Start the build resource upload and add it to a collection we can block on later
                 // because build resources must be fully uploaded before snapshots are finalized.
