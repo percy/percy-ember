@@ -1,5 +1,7 @@
 # ember-percy
 
+[![Package Status](https://img.shields.io/npm/v/ember-percy.svg)](https://www.npmjs.com/package/ember-percy)
+
 (work in progress)
 
 Percy addon for Ember apps.
