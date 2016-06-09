@@ -85,6 +85,7 @@ var buildResourceUploadPromises = [];
 var snapshotResourceUploadPromises = [];
 var isPercyEnabled = true;
 
+
 module.exports = {
   name: 'ember-percy',
 
@@ -246,7 +247,7 @@ module.exports = {
         return;
       }
 
-      console.log('[percy] Finalizing build...', url);
+      console.log('[percy] Finalizing build...');
       percyBuildPromise.then(function(buildResponse) {
         var percyBuildData = buildResponse.body.data;
 
