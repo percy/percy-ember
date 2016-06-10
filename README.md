@@ -22,6 +22,11 @@ Requires `ember-cli` >= 1.13.13, preferably >= 2.4.0.
 * Use the `percySnapshot('homepage')` async helper in acceptance tests.
   * With mocha, you can do `percySnapshot(this.test.fullTitle());` to autogenerate the name arg.
 
+## Troubleshooting
+
+* If you use `ember-cli-mirage`, you may need to add `this.passthrough('/_percy/**');` to your
+  routes to whitelist Percy's internal requests that are made in tests.
+
 ## Contributing
 
 1. Fork it ( https://github.com/percy/ember-percy/fork )
