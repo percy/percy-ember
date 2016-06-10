@@ -15,7 +15,7 @@ function getDoctype() {
 }
 
 let hasFinalizedBuild = false;
-function finalizeBuildOnce(config, data, callback) {
+function finalizeBuildOnce() {
   // The Testem after tests hook fires many times, so we flag and only do it once.
   if (!hasFinalizedBuild) {
     hasFinalizedBuild = true;
@@ -24,16 +24,12 @@ function finalizeBuildOnce(config, data, callback) {
     // our middleware has finished uploading resources and resolving promises.
     Ember.$.ajax('/_percy/finalize_build', {method: 'POST', async: false, timeout: 30000});
   }
-  // For Testem >= v1.6.0, we must call the callback or else the tests will never finish.
-  if (callback) {
-    callback();
-  }
 }
 
 export default function(name) {
   if (window.Testem.afterTests) {
-    // Testem >= v1.6.0
-    window.Testem.afterTests(finalizeBuildOnce)
+    // Testem >= v1.6.0. Technically we should just use afterTests, but it is such broken much wow.
+    window.Testem.on('after-tests-complete', finalizeBuildOnce);
   } else {
     // Testem < v1.6.0.
     window.Testem.on('all-test-results', finalizeBuildOnce);
