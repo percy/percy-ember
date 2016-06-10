@@ -15,14 +15,18 @@ function getDoctype() {
 }
 
 let hasFinalizedBuild = false;
-function finalizeBuildOnce() {
+function finalizeBuildOnce(config, data, callback) {
   // The Testem after tests hook fires many times, so we flag and only do it once.
   if (!hasFinalizedBuild) {
+    hasFinalizedBuild = true;
     // Use "async: false" to block the browser from shutting down until the finalize_build call
     // has fully returned. This prevents testem from shutting down the express server until
     // our middleware has finished uploading resources and resolving promises.
     Ember.$.ajax('/_percy/finalize_build', {method: 'POST', async: false, timeout: 30000});
-    hasFinalizedBuild = true;
+  }
+  // For Testem >= v1.6.0, we must call the callback or else the tests will never finish.
+  if (callback) {
+    callback();
   }
 }
 
