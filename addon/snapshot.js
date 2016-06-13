@@ -3,14 +3,14 @@ import Ember from 'ember';
 function getDoctype() {
   let doctypeNode = document.doctype;
   if (!doctypeNode || !doctypeNode.name) {
-    return '<!DOCTYPE html>'
+    return '<!DOCTYPE html>';
   }
-  let doctype = "<!DOCTYPE "
-    + doctypeNode.name
-    + (doctypeNode.publicId ? ' PUBLIC "' + doctypeNode.publicId + '"' : '')
-    + (!doctypeNode.publicId && doctypeNode.systemId ? ' SYSTEM' : '')
-    + (doctypeNode.systemId ? ' "' + doctypeNode.systemId + '"' : '')
-    + '>';
+  let doctype = "<!DOCTYPE " +
+    doctypeNode.name +
+    (doctypeNode.publicId ? ' PUBLIC "' + doctypeNode.publicId + '"' : '') +
+    (!doctypeNode.publicId && doctypeNode.systemId ? ' SYSTEM' : '') +
+    (doctypeNode.systemId ? ' "' + doctypeNode.systemId + '"' : '') +
+    '>';
   return doctype;
 }
 
@@ -26,7 +26,7 @@ function finalizeBuildOnce() {
   }
 }
 
-export default function(name) {
+export function percySnapshot(name) {
   if (window.Testem.afterTests) {
     // Testem >= v1.6.0. Technically we should just use afterTests, but it is such broken much wow.
     window.Testem.on('after-tests-complete', finalizeBuildOnce);

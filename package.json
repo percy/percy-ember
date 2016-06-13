@@ -7,8 +7,9 @@
     "test": "tests"
   },
   "scripts": {
-    "build": "ember build",
+    "build": "ember build --environment test",
     "start": "ember server",
+    "pretest": "bower cache clean && bower install",
     "test": "ember try:testall"
   },
   "repository": "https://github.com/percy/ember-percy",
