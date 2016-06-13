@@ -45,7 +45,7 @@ percySnapshot(this.test.fullTitle());
 Using Mocha's `this.test.fullTitle()` will return a name that includes all nesting of the current
 test, for example: `Acceptance: Marketing pages can visit /about`.
 
-### Acceptance tests
+### Acceptance test example
 
 Make sure you have completed the [Installation](#installation) steps above.
 
@@ -58,7 +58,7 @@ describe('Acceptance: Marketing pages', function() {
 });
 ```
 
-### Component integration tests
+### Component integration test example
 
 ```javascript
 import { percySnapshot } from 'ember-percy';
