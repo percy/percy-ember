@@ -45,7 +45,7 @@ export function percySnapshot(name, options) {
   let testingContainer = domCopy.find('#ember-testing-container');
 
   if (scope) {
-    snaphotHtml = testingContainer.find(scope).html();
+    snaphotHtml = Ember.$('#ember-testing-container').find(scope).html();
   } else {
     snaphotHtml = testingContainer.html();
   }
