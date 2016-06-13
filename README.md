@@ -10,7 +10,7 @@ Requires `ember-cli` >= 1.13.13, preferably >= 2.4.0.
 
 * `ember install ember-percy`
 * Set up the `PERCY_TOKEN` and `PERCY_REPO_SLUG` environment variables in your CI settings.
-* Register the percy test helpers.
+* Register the percy test helpers for acceptance tests.
   * For apps, add `import '../helpers/percy/register-helpers';` to `module-for-acceptance.js`.
   * For addons, add `import 'dummy/tests/helpers/percy/register-helpers';` in `module-for-acceptance.js`.
 * Add `percySnapshot` to `tests/.jshintrc` in the `predef` section to avoid "percySnapshot is not defined" errors.
