@@ -1,7 +1,7 @@
 {
   "name": "ember-percy",
   "version": "0.2.5",
-  "description": "Percy addon for Ember apps.",
+  "description": "Ember addon for visual regression testing with Percy (https://percy.io).",
   "directories": {
     "doc": "doc",
     "test": "tests"

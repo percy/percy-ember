@@ -2,7 +2,7 @@
 
 [![Package Status](https://img.shields.io/npm/v/ember-percy.svg)](https://www.npmjs.com/package/ember-percy)
 
-Percy addon for Ember apps.
+Ember addon for visual regression testing with [Percy](https://percy.io).
 
 ## Installation
 
