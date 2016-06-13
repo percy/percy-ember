@@ -43,7 +43,7 @@ percySnapshot(this.test.fullTitle());
 ```
 
 Using Mocha's `this.test.fullTitle()` will return a name that includes all nesting of the current
-test, for example: 'Acceptance: Marketing pages can visit /about'.
+test, for example: `Acceptance: Marketing pages can visit /about`.
 
 ### Acceptance tests
 
