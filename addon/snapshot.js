@@ -26,7 +26,11 @@ function finalizeBuildOnce() {
   }
 }
 
-export function percySnapshot(name) {
+export function percySnapshot(name, options) {
+  let snaphotHtml;
+  options = options || {};
+  let scope = options.scope;
+
   if (window.Testem.afterTests) {
     // Testem >= v1.6.0. Technically we should just use afterTests, but it is such broken much wow.
     window.Testem.on('after-tests-complete', finalizeBuildOnce);
@@ -34,13 +38,21 @@ export function percySnapshot(name) {
     // Testem < v1.6.0.
     window.Testem.on('all-test-results', finalizeBuildOnce);
   }
+
   // Create a full-page DOM snapshot from the current testing page.
   // TODO(fotinakis): more memory-efficient way to do this?
   let domCopy = Ember.$('html').clone();
-  // TODO(fotinakis): this is Mocha specific, need to support other testing frameworks.
-  let html = domCopy.find('#ember-testing-container').html();
+  let testingContainer = domCopy.find('#ember-testing-container');
+
+  if (scope) {
+    snaphotHtml = testingContainer.find(scope).html();
+  } else {
+    snaphotHtml = testingContainer.html();
+  }
+
   // Hoist the testing container contents up to the body.
-  domCopy.find('body').html(html);
+  // We need to use the original DOM to keep the head stylesheet around.
+  domCopy.find('body').html(snaphotHtml);
 
   Ember.$.ajax('/_percy/snapshot', {
     method: 'POST',

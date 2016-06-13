@@ -11,14 +11,79 @@ Requires `ember-cli` >= 1.13.13, preferably >= 2.4.0.
 * `ember install ember-percy`
 * Set up the `PERCY_TOKEN` and `PERCY_REPO_SLUG` environment variables in your CI settings.
 * Register the percy test helpers.
-  * For normal apps, add `import '../helpers/percy/register-helpers';` to `module-for-acceptance.js`.
+  * For apps, add `import '../helpers/percy/register-helpers';` to `module-for-acceptance.js`.
   * For addons, add `import 'dummy/tests/helpers/percy/register-helpers';` in `module-for-acceptance.js`.
 * Add `percySnapshot` to `tests/.jshintrc` in the `predef` section to avoid "percySnapshot is not defined" errors.
 
 ## Usage
 
-* Use the `percySnapshot('homepage')` async helper in acceptance tests.
-  * With mocha, you can do `percySnapshot(this.test.fullTitle());` to autogenerate the name arg.
+```javascript
+percySnapshot(name)
+percySnapshot(name, [options])
+```
+
+`options` is an optional hash that can include:
+
+* `scope`: A CSS selector or element to snapshot. Defaults to the full page.
+
+Examples:
+
+```javascript
+percySnapshot('homepage')
+```
+
+```javascript
+percySnapshot('homepage', {scope: '#header'})
+```
+
+With Mocha tests, you can use `this.test.fullTitle()` to autogenerate the name arg, for example:
+
+```javascript
+percySnapshot(this.test.fullTitle());
+```
+
+Using Mocha's `this.test.fullTitle()` will return a name that includes all nesting of the current
+test, for example: 'Acceptance: Marketing pages can visit /about'.
+
+### Acceptance tests
+
+Make sure you have completed the [Installation](#installation) steps above.
+
+```javascript
+describe('Acceptance: Marketing pages', function() {
+  it('can visit /about', function() {
+    visit('/about');
+    percySnapshot('about page');
+  });
+});
+```
+
+### Component integration tests
+
+```javascript
+import { percySnapshot } from 'ember-percy';
+
+describeComponent(
+  'meter-bar',
+  'Integration: MeterBarComponent',
+  {
+    integration: true
+  },
+  function() {
+    it('renders', function() {
+      this.set('count', 0);
+      this.render(hbs`{{meter-bar count=count total=100}}`);
+      percySnapshot('meter bar zero');
+
+      this.set('count', 50);
+      percySnapshot('meter bar half');
+
+      this.set('count', 100);
+      percySnapshot('meter bar full');
+    });
+  }
+);
+```
 
 ## Troubleshooting
 
