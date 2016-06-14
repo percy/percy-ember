@@ -7,6 +7,7 @@ var path = require('path');
 
 var bodyParser = require('body-parser');
 var PercyClient = require('percy-client');
+var Environment = require('percy-client/dist/environment');
 var PromisePool = require('es6-promise-pool');
 var walk = require('walk');
 
@@ -102,19 +103,20 @@ module.exports = {
     var apiUrl = process.env.PERCY_API; // Optional.
     var environment = new Environment(process.env);
     var repo = environment.repo;
+
     if (token && repo) {
       percyClient = new PercyClient({token: token, apiUrl: apiUrl});
     } else {
-      // TODO: only show this warning in CI environments.
-      if (!token) {
+      isPercyEnabled = false;
+
+      if (environment.ci && !token) {
         console.warn(
           '[percy] Warning: Percy is disabled, no PERCY_TOKEN environment variable found.')
       }
-      if (!repo) {
+      if (environment.ci && !repo) {
         console.warn(
           '[percy] Warning: Percy is disabled, no PERCY_PROJECT environment variable found.')
       }
-      isPercyEnabled = false;
     }
     if (!isPercyEnabled) { return; }
 
