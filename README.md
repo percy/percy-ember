@@ -6,6 +6,7 @@ Ember addon for visual regression testing with [Percy](https://percy.io).
 
 ## Installation
 
+Requires Node >= 0.12.0.
 Requires `ember-cli` >= 1.13.13, preferably >= 2.4.0.
 
 1. `ember install ember-percy`
