@@ -14,7 +14,7 @@
   },
   "repository": "https://github.com/percy/ember-percy",
   "engines": {
-    "node": ">= 0.10.0"
+    "node": ">= 0.12.0"
   },
   "author": "Perceptual Inc.",
   "license": "MIT",
