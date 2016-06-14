@@ -19,8 +19,8 @@ Requires `ember-cli` >= 1.13.13, preferably >= 2.4.0.
 ## Usage
 
 ```javascript
-percySnapshot(name)
-percySnapshot(name, [options])
+percySnapshot(name);
+percySnapshot(name, options);
 ```
 
 `options` is an optional hash that can include:
@@ -30,11 +30,11 @@ percySnapshot(name, [options])
 Examples:
 
 ```javascript
-percySnapshot('homepage')
+percySnapshot('homepage');
 ```
 
 ```javascript
-percySnapshot('homepage', {scope: '#header'})
+percySnapshot('homepage', {scope: '#header'});
 ```
 
 With Mocha tests, you can use `this.test.fullTitle()` to autogenerate the name arg, for example:
@@ -88,8 +88,9 @@ describeComponent(
 
 ## Troubleshooting
 
-* If you use `ember-cli-mirage`, you may need to add `this.passthrough('/_percy/**');` to your
-  routes to whitelist Percy's internal requests that are made in tests.
+* If you use `ember-cli-mirage`, network requests that are not mocked will raise an error.
+  You will likely need to add `this.passthrough('/_percy/**');` to your mirage routes to whitelist
+  Percy's internal requests that are made in tests.
 
 ## Contributing
 
