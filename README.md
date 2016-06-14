@@ -10,7 +10,8 @@ Requires Node >= 0.12.0.
 Requires `ember-cli` >= 1.13.13, preferably >= 2.4.0.
 
 1. `ember install ember-percy`
-1. Set up the `PERCY_TOKEN` and `PERCY_REPO_SLUG` environment variables in your CI settings.
+1. Set the `PERCY_TOKEN` environment variables in your CI settings.
+1. Set the `PERCY_PROJECT=org/repo-name` environment variables in your CI settings.
 1. Register the percy test helpers for acceptance tests.
   * For apps, add `import '../helpers/percy/register-helpers';` to `module-for-acceptance.js`.
   * For addons, add `import 'dummy/tests/helpers/percy/register-helpers';` in `module-for-acceptance.js`.

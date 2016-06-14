@@ -99,9 +99,10 @@ module.exports = {
   },
   outputReady: function(result) {
     var token = process.env.PERCY_TOKEN;
-    var repoSlug = process.env.PERCY_REPO_SLUG;  // TODO: pull this from CI environment.
     var apiUrl = process.env.PERCY_API; // Optional.
-    if (token && repoSlug) {
+    var environment = new Environment(process.env);
+    var repo = environment.repo;
+    if (token && repo) {
       percyClient = new PercyClient({token: token, apiUrl: apiUrl});
     } else {
       // TODO: only show this warning in CI environments.
@@ -109,9 +110,9 @@ module.exports = {
         console.warn(
           '[percy] Warning: Percy is disabled, no PERCY_TOKEN environment variable found.')
       }
-      if (!repoSlug) {
+      if (!repo) {
         console.warn(
-          '[percy] Warning: Percy is disabled, no PERCY_REPO_SLUG environment variable found.')
+          '[percy] Warning: Percy is disabled, no PERCY_PROJECT environment variable found.')
       }
       isPercyEnabled = false;
     }
@@ -124,7 +125,7 @@ module.exports = {
     });
 
     // Initialize the percy client and a new build.
-    percyBuildPromise = percyClient.createBuild(repoSlug, {resources: resources});
+    percyBuildPromise = percyClient.createBuild(repo, {resources: resources});
 
     // Return a promise and only resolve when all build resources are uploaded, which
     // ensures that the output build dir is still available to be read from before deleted.
