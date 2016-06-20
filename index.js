@@ -77,7 +77,7 @@ function parseMissingResources(response) {
 
 function handlePercyFailure(error) {
   isPercyEnabled = false;
-  console.warn('[percy] ERROR: Failed to create build, skipping.')
+  console.warn('\n[percy] ERROR: Failed to create build, skipping.')
   if (error) {
     console.warn(error.toString());  // Stringify to prevent full response output.
   }
@@ -295,14 +295,17 @@ module.exports = {
               // Generally, this is not a problem because tests only run in CI and only once.
               isPercyEnabled = false;
 
-              var url = percyBuildData.attributes['web-url'];
-              console.log('[percy] Visual diffs are now processing:', url);
-
               // This is important, the ajax call to finalize_build is "async: false" and prevents
               // testem from shutting down the browser until this response.
               response.status(200);
               response.contentType('application/json');
               response.send(JSON.stringify({success: true}));
+
+              // Attempt to make our logging come last, give 200ms for test output to finish.
+              var url = percyBuildData.attributes['web-url'];
+              setTimeout(function() {
+                console.log('[percy] Visual diffs are now processing:', url);
+              }, 200);
             });
           });
         });
