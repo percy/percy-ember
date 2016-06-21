@@ -14,11 +14,28 @@ function getDoctype() {
   return doctype;
 }
 
+// jQuery Mockjax-specific handling to workaround blocking of HTTP requests if users have
+// set the throwUnmocked setting.
+function maybeDisableMockjax() {
+  if (jQuery && jQuery.mockjaxSettings && jQuery.mockjaxSettings.throwUnmocked) {
+    jQuery.mockjaxSettings._originalThrowUnmocked = jQuery.mockjaxSettings.throwUnmocked;
+    jQuery.mockjaxSettings.throwUnmocked = false;
+  }
+}
+function maybeResetMockjax() {
+  if (jQuery && jQuery.mockjaxSettings && jQuery.mockjaxSettings._originalThrowUnmocked) {
+     jQuery.mockjaxSettings.throwUnmocked = jQuery.mockjaxSettings._originalThrowUnmocked;
+  }
+}
+
+// Percy finalizer to be called at the very end of the test suite.
 function finalizeBuildOnce() {
   // Use "async: false" to block the browser from shutting down until the finalize_build call
   // has fully returned. This prevents testem from shutting down the express server until
   // our middleware has finished uploading resources and resolving promises.
+  maybeDisableMockjax();
   Ember.$.ajax('/_percy/finalize_build', {method: 'POST', async: false, timeout: 30000});
+  maybeResetMockjax();
 }
 
 let hasRegisteredFinalizer = false;
@@ -55,6 +72,7 @@ export function percySnapshot(name, options) {
   domCopy.find('body').html(snaphotHtml);
 
   Ember.run(function() {
+    maybeDisableMockjax();
     Ember.$.ajax('/_percy/snapshot', {
       method: 'POST',
       contentType: 'application/json; charset=utf-8',
@@ -63,5 +81,6 @@ export function percySnapshot(name, options) {
         content: getDoctype() + domCopy[0].outerHTML,
       }),
     });
+    maybeResetMockjax();
   });
 }
