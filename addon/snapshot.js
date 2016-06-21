@@ -14,29 +14,29 @@ function getDoctype() {
   return doctype;
 }
 
-let hasFinalizedBuild = false;
 function finalizeBuildOnce() {
-  // The Testem after tests hook fires many times, so we flag and only do it once.
-  if (!hasFinalizedBuild) {
-    hasFinalizedBuild = true;
-    // Use "async: false" to block the browser from shutting down until the finalize_build call
-    // has fully returned. This prevents testem from shutting down the express server until
-    // our middleware has finished uploading resources and resolving promises.
-    Ember.$.ajax('/_percy/finalize_build', {method: 'POST', async: false, timeout: 30000});
-  }
+  // Use "async: false" to block the browser from shutting down until the finalize_build call
+  // has fully returned. This prevents testem from shutting down the express server until
+  // our middleware has finished uploading resources and resolving promises.
+  Ember.$.ajax('/_percy/finalize_build', {method: 'POST', async: false, timeout: 30000});
 }
 
+let hasRegisteredFinalizer = false;
 export function percySnapshot(name, options) {
   let snaphotHtml;
   options = options || {};
   let scope = options.scope;
 
-  if (window.Testem.afterTests) {
-    // Testem >= v1.6.0. Technically we should just use afterTests, but it is such broken much wow.
-    window.Testem.on('after-tests-complete', finalizeBuildOnce);
-  } else {
-    // Testem < v1.6.0.
-    window.Testem.on('all-test-results', finalizeBuildOnce);
+  // On the first call to percySnapshot, register a Testem hook to know when all tests are finished.
+  if (!hasRegisteredFinalizer) {
+    hasRegisteredFinalizer = true;
+    if (window.Testem.afterTests) {
+      // Testem >= v1.6.0. (We should just use afterTests, but it does not work as expected).
+      window.Testem.on('after-tests-complete', finalizeBuildOnce);
+    } else {
+      // Testem < v1.6.0.
+      window.Testem.on('all-test-results', finalizeBuildOnce);
+    }
   }
 
   // Create a full-page DOM snapshot from the current testing page.
@@ -54,12 +54,14 @@ export function percySnapshot(name, options) {
   // We need to use the original DOM to keep the head stylesheet around.
   domCopy.find('body').html(snaphotHtml);
 
-  Ember.$.ajax('/_percy/snapshot', {
-    method: 'POST',
-    contentType: 'application/json; charset=utf-8',
-    data: JSON.stringify({
-      name: name,
-      content: getDoctype() + domCopy[0].outerHTML,
-    }),
+  Ember.run(function() {
+    Ember.$.ajax('/_percy/snapshot', {
+      method: 'POST',
+      contentType: 'application/json; charset=utf-8',
+      data: JSON.stringify({
+        name: name,
+        content: getDoctype() + domCopy[0].outerHTML,
+      }),
+    });
   });
 }

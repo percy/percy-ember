@@ -77,7 +77,7 @@ function parseMissingResources(response) {
 
 function handlePercyFailure(error) {
   isPercyEnabled = false;
-  console.warn('\n[percy] ERROR: Failed to create build, skipping.')
+  console.warn('\n[percy] ERROR: API call failed, Percy has been disabled for this build.')
   if (error) {
     console.warn(error.toString());  // Stringify to prevent full response output.
   }
@@ -135,6 +135,7 @@ module.exports = {
       percyBuildPromise.then(
         function(buildResponse) {
           var percyBuildData = buildResponse.body.data;
+          console.log('\n[percy] Build created:', percyBuildData.attributes['web-url']);
 
           // Upload all missing build resources.
           var missingResources = parseMissingResources(buildResponse);
@@ -152,14 +153,9 @@ module.exports = {
                 // Start the build resource upload and add it to a collection we can block on later
                 // because build resources must be fully uploaded before snapshots are finalized.
                 var promise = percyClient.uploadResource(percyBuildData.id, content);
-                promise.then(
-                  function(response) {
-                    console.log('\n[percy] Uploaded new build resource: ' + resource.resourceUrl);
-                  },
-                  function(error) {
-                    handlePercyFailure(error);
-                  }
-                );
+                promise.then(function(response) {
+                  console.log('\n[percy] Uploaded new build resource: ' + resource.resourceUrl);
+                }, handlePercyFailure);
                 buildResourceUploadPromises.push(promise);
                 return promise;
               } else {
@@ -263,7 +259,7 @@ module.exports = {
             // No resources to upload, so resolve immediately.
             resolveAfterResourceUploaded();
           }
-        });
+        }, handlePercyFailure);
       });
 
       response.status(201);
@@ -295,17 +291,17 @@ module.exports = {
               // Generally, this is not a problem because tests only run in CI and only once.
               isPercyEnabled = false;
 
+              // Attempt to make our logging come last, giving time for test output to finish.
+              var url = percyBuildData.attributes['web-url'];
+              process.nextTick(function() {
+                console.log('[percy] Visual diffs are now processing:', url);
+              });
+
               // This is important, the ajax call to finalize_build is "async: false" and prevents
               // testem from shutting down the browser until this response.
               response.status(200);
               response.contentType('application/json');
               response.send(JSON.stringify({success: true}));
-
-              // Attempt to make our logging come last, give 200ms for test output to finish.
-              var url = percyBuildData.attributes['web-url'];
-              setTimeout(function() {
-                console.log('[percy] Visual diffs are now processing:', url);
-              }, 200);
             });
           });
         });

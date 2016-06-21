@@ -45,7 +45,7 @@
     "body-parser": "^1.15.0",
     "ember-cli-babel": "^5.1.5",
     "es6-promise-pool": "^2.4.1",
-    "percy-client": "^1.0.1",
+    "percy-client": "^1.0.2",
     "walk": "^2.3.9"
   },
   "ember-addon": {
