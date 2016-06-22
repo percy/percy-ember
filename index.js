@@ -304,7 +304,7 @@ module.exports = {
               response.status(200);
               response.contentType('application/json');
               response.send(JSON.stringify({success: true}));
-            });
+            }, handlePercyFailure);
           });
         });
       });
