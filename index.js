@@ -106,7 +106,11 @@ module.exports = {
     var environment = new Environment(process.env);
     var repo = environment.repo;
 
-    if (token && repo) {
+    if (process.env.PERCY_ENABLE == '0') {
+      isPercyEnabled = false;
+    }
+
+    if (token && repo && isPercyEnabled) {
       percyClient = new PercyClient({token: token, apiUrl: apiUrl});
     } else {
       isPercyEnabled = false;
