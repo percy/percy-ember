@@ -48,7 +48,7 @@ percySnapshot(this.test.fullTitle());
 Using Mocha's `this.test.fullTitle()` will return a name that includes all nesting of the current
 test, for example: `Acceptance: Marketing pages can visit /about`.
 
-### Responsive visual diffs
+### Responsive visual diffs (optional)
 
 In your app's `config/environment.js`:
 
