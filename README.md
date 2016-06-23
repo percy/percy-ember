@@ -48,6 +48,26 @@ percySnapshot(this.test.fullTitle());
 Using Mocha's `this.test.fullTitle()` will return a name that includes all nesting of the current
 test, for example: `Acceptance: Marketing pages can visit /about`.
 
+### Responsive visual diffs
+
+In your app's `config/environment.js`:
+
+```javascript
+// ...
+if (environment === 'test') {
+  ENV.percy = {
+    defaultWidths: [375, 1280]
+  }
+}
+```
+
+This sets the default responsive widths to be used for every snapshot. You can also override on a
+per-snapshot basis by passing the `widths` option to `percySnapshot()`. For example:
+
+```javascript
+percySnapshot('meter bar full', {widths: [375, 700, 1280]});
+```
+
 ### Acceptance test example
 
 Make sure you have completed the [Installation](#installation) steps above.
@@ -86,26 +106,6 @@ describeComponent(
     });
   }
 );
-```
-
-### Responsive testing
-
-In your app's `config/environment.js`:
-
-```javascript
-// ...
-if (environment === 'test') {
-  ENV.percy = {
-    defaultWidths: [375, 1280]
-  }
-}
-```
-
-This sets the default responsive widths to be used for every snapshot. You can also override on a
-per-snapshot basis by passing the `widths` option to `percySnapshot()`. For example:
-
-```javascript
-percySnapshot('meter bar full', {widths: [375, 700, 1280]});
 ```
 
 ## Troubleshooting
