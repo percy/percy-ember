@@ -10,7 +10,8 @@
     "build": "ember build --environment test",
     "start": "ember server",
     "pretest": "bower cache clean && bower install",
-    "test": "ember try:testall"
+    "test": "ember try:testall",
+    "test:node_debug": "node debug node_modules/ember-cli/bin/ember test"
   },
   "repository": "https://github.com/percy/ember-percy",
   "engines": {

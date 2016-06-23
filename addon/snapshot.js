@@ -79,6 +79,7 @@ export function percySnapshot(name, options) {
       data: JSON.stringify({
         name: name,
         content: getDoctype() + domCopy[0].outerHTML,
+        widths: options.widths,
       }),
     });
     maybeResetMockjax();

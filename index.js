@@ -87,6 +87,7 @@ function handlePercyFailure(error) {
 
 // TODO: refactor to break down into a more modular design with less global state.
 var percyClient;
+var percyConfig;
 var percyBuildPromise;
 var buildResourceUploadPromises = [];
 var snapshotResourceUploadPromises = [];
@@ -96,10 +97,15 @@ var isPercyEnabled = true;
 module.exports = {
   name: 'ember-percy',
 
+  // Only allow the addon to be incorporated in tests.
   isEnabled: function() {
-    // Only allow the addon to be incorporated in tests.
     return (process.env.EMBER_ENV == 'test');
   },
+  // Grab and store the `percy` config set in an app's config/environment.js.
+  config: function(env, baseConfig) {
+    percyConfig = baseConfig.percy || {};
+  },
+  // After build output is ready, create a Percy build and upload missing build resources.
   outputReady: function(result) {
     var token = process.env.PERCY_TOKEN;
     var apiUrl = process.env.PERCY_API; // Optional.
@@ -237,7 +243,10 @@ module.exports = {
         var snapshotPromise = percyClient.createSnapshot(
           percyBuildData.id,
           [rootResource],
-          {name: data.name}
+          {
+            name: data.name,
+            widths: data.widths || percyConfig.defaultWidths,
+          }
         );
 
         // Upload missing resources (just the root resource HTML in this case).

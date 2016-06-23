@@ -88,6 +88,26 @@ describeComponent(
 );
 ```
 
+### Responsive testing
+
+In your app's `config/environment.js`:
+
+```javascript
+// ...
+if (environment === 'test') {
+  ENV.percy = {
+    defaultWidths: [375, 1280]
+  }
+}
+```
+
+This sets the default responsive widths to be used for every snapshot. You can also override on a
+per-snapshot basis by passing the `widths` option to `percySnapshot()`. For example:
+
+```javascript
+percySnapshot('meter bar full', {widths: [375, 700, 1280]});
+```
+
 ## Troubleshooting
 
 * If you use `ember-cli-mirage`, network requests that are not mocked will raise an error.

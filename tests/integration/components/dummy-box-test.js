@@ -18,4 +18,7 @@ test('it renders', function(assert) {
   assert.equal(this.$().text().trim(), 'This is a dummy box!');
 
   percySnapshot('dummy box test');
+
+  // Tests that per-snapshot widths override default widths.
+  percySnapshot('dummy box test on small width only', {widths: [375]});
 });
