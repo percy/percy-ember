@@ -53,19 +53,28 @@ test, for example: `Acceptance: Marketing pages can visit /about`.
 In your app's `config/environment.js`:
 
 ```javascript
-// ...
 if (environment === 'test') {
+  // ...
   ENV.percy = {
-    defaultWidths: [375, 1280]
+    breakpointsConfig: {
+      mobile: 375,
+      tablet: 768,
+      desktop: 1280
+    },
+    defaultBreakpoints: ['mobile', 'desktop']
   }
 }
 ```
 
-This sets the default responsive widths to be used for every snapshot. You can also override on a
-per-snapshot basis by passing the `widths` option to `percySnapshot()`. For example:
+With the above configuration, all snapshots will render at both the `mobile` and `desktop`
+breakpoints by default.
+
+You can override this on a per-snapshot basis by passing the `breakpoints` option to `percySnapshot()`.
+For example:
 
 ```javascript
-percySnapshot('meter bar full', {widths: [375, 700, 1280]});
+// Desktop-only snapshot:
+percySnapshot('meter bar full', {breakpoints: ['desktop']});
 ```
 
 ### Acceptance test example

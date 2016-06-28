@@ -80,7 +80,14 @@ export function percySnapshot(name, options) {
         name: name,
         content: getDoctype() + domCopy[0].outerHTML,
         widths: options.widths,
+        breakpoints: options.breakpoints,
       }),
+      statusCode: {
+        400: function(jqXHR) {
+          // Bubble up 400 errors, ie. when given options are invalid.
+          throw jqXHR.responseText;
+        },
+      }
     });
     maybeResetMockjax();
   });

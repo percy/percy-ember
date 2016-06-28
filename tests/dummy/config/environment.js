@@ -39,7 +39,12 @@ module.exports = function(environment) {
     ENV.APP.rootElement = '#ember-testing';
 
     ENV.percy = {
-      defaultWidths: [375, 1280]
+      breakpointsConfig: {
+        mobile: 375,
+        tablet: 768,
+        desktop: 1280
+      },
+      defaultBreakpoints: ['mobile', 'desktop']
     }
   }
 

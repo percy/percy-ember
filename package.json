@@ -11,6 +11,7 @@
     "start": "ember server",
     "pretest": "bower cache clean && bower install",
     "test": "ember try:testall",
+    "test:one": "ember try:one default",
     "test:node_debug": "node debug node_modules/ember-cli/bin/ember test"
   },
   "repository": "https://github.com/percy/ember-percy",
@@ -34,10 +35,10 @@
     "ember-cli-sri": "^1.2.0",
     "ember-cli-uglify": "^1.2.0",
     "ember-data": "1.13.15",
+    "ember-disable-prototype-extensions": "^1.0.0",
     "ember-disable-proxy-controllers": "^1.0.1",
     "ember-export-application-global": "^1.0.4",
-    "ember-disable-prototype-extensions": "^1.0.0",
-    "ember-try": "~0.0.8"
+    "ember-try": "0.2.2"
   },
   "keywords": [
     "ember-addon"

@@ -104,6 +104,9 @@ module.exports = {
   // Grab and store the `percy` config set in an app's config/environment.js.
   config: function(env, baseConfig) {
     percyConfig = baseConfig.percy || {};
+
+    // Make sure the percy config has a 'breakpoints' object.
+    percyConfig.breakpointsConfig = percyConfig.breakpointsConfig || {};
   },
   // After build output is ready, create a Percy build and upload missing build resources.
   outputReady: function(result) {
@@ -207,6 +210,8 @@ module.exports = {
 
     // Snapshot middleware, this is the endpoint that the percySnapshot() test helper hits.
     app.use('/_percy/snapshot', function(request, response, next) {
+      var data = request.body;
+
       if (!isPercyEnabled) {
         // Percy is disabled, send response now to unblock the ajax call.
         response.status(200);
@@ -214,6 +219,31 @@ module.exports = {
         response.send(JSON.stringify({}));
         return;
       }
+
+      var widths = [];
+      // Transform the `breakpoints` array of strings into an array of integer widths, mapped
+      // by the breakpoints config. The 'breakpoints' arg takes precedence over 'widths'.
+      if (!data.widths && data.breakpoints || percyConfig.defaultBreakpoints) {
+        var snapshotBreakpoints = data.breakpoints || percyConfig.defaultBreakpoints;
+
+        for (var i in snapshotBreakpoints) {
+          var breakpointName = snapshotBreakpoints[i];
+          var breakpointWidth = percyConfig.breakpointsConfig[breakpointName];
+          if (!parseInt(breakpointWidth)) {
+            response.status(400);
+            response.send(
+              'Breakpoint name "' + breakpointName + '" is not defined in Percy config.');
+            return;
+          }
+          if (widths.indexOf(breakpointWidth) === -1) {
+            widths.push(breakpointWidth);
+          }
+        }
+      } else if (data.widths || percyConfig.defaultWidths) {
+        // Deprecated: support a 'widths' list of integers.
+        widths = data.widths || percyConfig.defaultWidths;
+      }
+
 
       // Add a new promise to the list of resource uploads so that finalize_build can wait on
       // resource uploads. We MUST do this immediately here with a custom promise, not wait for
@@ -232,7 +262,6 @@ module.exports = {
         var percyBuildData = buildResponse.body.data;
 
         // Construct the root resource and create the snapshot.
-        var data = request.body;
         var rootResource = percyClient.makeResource({
           resourceUrl: '/',
           content: data.content,
@@ -245,7 +274,7 @@ module.exports = {
           [rootResource],
           {
             name: data.name,
-            widths: data.widths || percyConfig.defaultWidths,
+            widths: widths,
           }
         );
 

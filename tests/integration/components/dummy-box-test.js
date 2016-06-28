@@ -19,6 +19,6 @@ test('it renders', function(assert) {
 
   percySnapshot('dummy box test');
 
-  // Tests that per-snapshot widths override default widths.
-  percySnapshot('dummy box test on small width only', {widths: [375]});
+  // Tests that per-snapshot breakpoints override default breakpoints.
+  percySnapshot('dummy box test on small width only', {breakpoints: ['mobile']});
 });
