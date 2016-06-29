@@ -40,6 +40,12 @@ function finalizeBuildOnce() {
 
 let hasRegisteredFinalizer = false;
 export function percySnapshot(name, options) {
+  // Skip if Testem is not available (we're probably running from `ember server` and Percy is not
+  // enabled anyway).
+  if (!window.Testem) {
+    return;
+  }
+
   let snaphotHtml;
   options = options || {};
   let scope = options.scope;
