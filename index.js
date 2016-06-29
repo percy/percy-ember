@@ -97,9 +97,11 @@ var isPercyEnabled = true;
 module.exports = {
   name: 'ember-percy',
 
-  // Only allow the addon to be incorporated in tests.
+  // Only allow the addon to be incorporated in non-production envs.
   isEnabled: function() {
-    return (process.env.EMBER_ENV == 'test');
+    // This cannot be just 'test', because people often run tests from development servers, and the
+    // helper imports will fail since ember-cli excludes addon files entirely if not enabled.
+    return (process.env.EMBER_ENV !== 'production');
   },
   // Grab and store the `percy` config set in an app's config/environment.js.
   config: function(env, baseConfig) {
