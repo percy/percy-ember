@@ -313,18 +313,28 @@ module.exports = {
       response.send(JSON.stringify({success: true}));
     });
     app.use('/_percy/finalize_build', function(request, response, next) {
-      if (!isPercyEnabled) {
-        // Percy is disabled, send response now to unblock the ajax call.
+      // Important, this middleware must always return a response because the ajax call to
+      // finalize_build is "async: false" and prevents testem from shutting down the browser
+      // until this response.
+      function sendResponse(success) {
+        success = success || false;
         response.status(200);
         response.contentType('application/json');
-        response.send(JSON.stringify({}));
+        response.send(JSON.stringify({success: success}));
+      }
+      function handleError(error) {
+        handlePercyFailure(error);
+        sendResponse(false);
+      }
+      if (!isPercyEnabled) {
+        sendResponse(true);
         return;
       }
 
+      // TODO: simplify this callback nesting, but retain strong ordering guarantees.
       console.log('[percy] Finalizing build...');
       percyBuildPromise.then(function(buildResponse) {
         var percyBuildData = buildResponse.body.data;
-
         // We need to wait until all build resources are uploaded before finalizing the build.
         Promise.all(buildResourceUploadPromises).then(function() {
           // We also need to wait until all snapshot resources have been uploaded. We do NOT need to
@@ -342,21 +352,10 @@ module.exports = {
               process.nextTick(function() {
                 console.log('[percy] Visual diffs are now processing:', url);
               });
-
-              // This is important, the ajax call to finalize_build is "async: false" and prevents
-              // testem from shutting down the browser until this response.
-              response.status(200);
-              response.contentType('application/json');
-              response.send(JSON.stringify({success: true}));
-            }, function(error) {
-              handlePercyFailure(error);
-              response.status(200);
-              response.contentType('application/json');
-              response.send(JSON.stringify({success: false}));
-            });
-          });
-        });
-      });
+            }, handleError);
+          }, handleError);
+        }, handleError);
+      }, handleError);
     });
   },
 };
