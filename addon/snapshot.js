@@ -46,7 +46,7 @@ export function percySnapshot(name, options) {
     return;
   }
 
-  let snaphotHtml;
+  let snapshotHtml;
   options = options || {};
   let scope = options.scope;
 
@@ -68,14 +68,14 @@ export function percySnapshot(name, options) {
   let testingContainer = domCopy.find('#ember-testing-container');
 
   if (scope) {
-    snaphotHtml = Ember.$('#ember-testing-container').find(scope).html();
+    snapshotHtml = Ember.$('#ember-testing-container').find(scope).html();
   } else {
-    snaphotHtml = testingContainer.html();
+    snapshotHtml = testingContainer.html();
   }
 
   // Hoist the testing container contents up to the body.
   // We need to use the original DOM to keep the head stylesheet around.
-  domCopy.find('body').html(snaphotHtml);
+  domCopy.find('body').html(snapshotHtml);
 
   Ember.run(function() {
     maybeDisableMockjax();
