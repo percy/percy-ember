@@ -114,6 +114,7 @@ module.exports = {
   outputReady: function(result) {
     // Disable Percy when running Fastboot builds (for now).
     if (typeof process.env.EMBER_CLI_FASTBOOT !== 'undefined') {
+      console.warn('[percy] Disabling Percy in Fastboot build.')
       return;
     }
 
