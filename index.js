@@ -24,6 +24,7 @@ var SKIPPED_ASSETS = [
   '/assets/dummy.js',
   '/index.html',
   '/testem.js',
+  '/package.json',
   /\.map$/,
   /\.DS_Store$/
 ];
