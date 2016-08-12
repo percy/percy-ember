@@ -27,6 +27,7 @@ var SKIPPED_ASSETS = [
   /\.map$/,
   /\.DS_Store$/
 ];
+var MAX_FILE_SIZE_BYTES = 5242880;  // 5MB.
 
 // Synchronously walk the build directory, read each file and calculate its SHA 256 hash,
 // and create a mapping of hashes to Resource objects.
@@ -46,6 +47,12 @@ function gatherBuildResources(percyClient, buildDir) {
             next();
             return;
           }
+        }
+
+        // Skip large files.
+        if (fs.statSync(absolutePath)['size'] > MAX_FILE_SIZE_BYTES) {
+          console.warn('\n[percy][WARNING] Skipping large build resource: ', resourceUrl);
+          return;
         }
 
         // TODO(fotinakis): this is synchronous and potentially memory intensive, but we don't
@@ -79,7 +86,7 @@ function parseMissingResources(response) {
 
 function handlePercyFailure(error) {
   isPercyEnabled = false;
-  console.warn('\n[percy] ERROR: API call failed, Percy has been disabled for this build.')
+  console.warn('\n[percy][ERROR] API call failed, Percy has been disabled for this build.')
   if (error) {
     console.warn(error.toString());  // Stringify to prevent full response output.
   }
@@ -133,11 +140,11 @@ module.exports = {
 
       if (environment.ci && !token) {
         console.warn(
-          '[percy] Warning: Percy is disabled, no PERCY_TOKEN environment variable found.')
+          '[percy][WARNING] Percy is disabled, no PERCY_TOKEN environment variable found.')
       }
       if (environment.ci && !repo) {
         console.warn(
-          '[percy] Warning: Percy is disabled, no PERCY_PROJECT environment variable found.')
+          '[percy][WARNING] Percy is disabled, no PERCY_PROJECT environment variable found.')
       }
     }
     if (!isPercyEnabled) { return; }
