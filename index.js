@@ -96,6 +96,7 @@ function handlePercyFailure(error) {
 var percyClient;
 var percyConfig;
 var percyBuildPromise;
+var seenSnapshotNames = [];
 var buildResourceUploadPromises = [];
 var snapshotResourceUploadPromises = [];
 var isPercyEnabled = true;
@@ -225,8 +226,18 @@ module.exports = {
     // Snapshot middleware, this is the endpoint that the percySnapshot() test helper hits.
     app.use('/_percy/snapshot', function(request, response, next) {
       var data = request.body;
+      var skipSnapshot = false;
 
-      if (!isPercyEnabled) {
+      if (seenSnapshotNames.indexOf(data.name) !== -1) {
+        skipSnapshot = true;
+        console.warn(
+          '[percy][WARNING] Snapshot name must be unique, skipping duplicate snapshot: ' +
+          data.name);
+      } else {
+        seenSnapshotNames.push(data.name);
+      }
+
+      if (!isPercyEnabled || skipSnapshot) {
         // Percy is disabled, send response now to unblock the ajax call.
         response.status(200);
         response.contentType('application/json');
