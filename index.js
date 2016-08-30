@@ -25,6 +25,7 @@ var SKIPPED_ASSETS = [
   '/index.html',
   '/testem.js',
   /\.map$/,
+  /\.log$/,
   /\.DS_Store$/
 ];
 var MAX_FILE_SIZE_BYTES = 5242880;  // 5MB.
@@ -226,18 +227,8 @@ module.exports = {
     // Snapshot middleware, this is the endpoint that the percySnapshot() test helper hits.
     app.use('/_percy/snapshot', function(request, response, next) {
       var data = request.body;
-      var skipSnapshot = false;
 
-      if (seenSnapshotNames.indexOf(data.name) !== -1) {
-        skipSnapshot = true;
-        console.warn(
-          '[percy][WARNING] Snapshot name must be unique, skipping duplicate snapshot: ' +
-          data.name);
-      } else {
-        seenSnapshotNames.push(data.name);
-      }
-
-      if (!isPercyEnabled || skipSnapshot) {
+      if (!isPercyEnabled) {
         // Percy is disabled, send response now to unblock the ajax call.
         response.status(200);
         response.contentType('application/json');
@@ -328,7 +319,18 @@ module.exports = {
             // No resources to upload, so resolve immediately.
             resolveAfterResourceUploaded();
           }
-        }, handlePercyFailure);
+        }, function(error) {
+          if (error.statusCode && error.statusCode == 400) {
+            console.warn(
+              '[percy][WARNING] Bad request error, skipping snapshot: ' + data.name
+            );
+            console.warn(error.toString());
+            // Skip this snapshot, resolve on error to unblock the finalization promise chain.
+            resolveAfterResourceUploaded();
+          } else {
+            handlePercyFailure(error);
+          }
+        });
       });
 
       response.status(201);
