@@ -43,7 +43,7 @@ function gatherBuildResources(percyClient, buildDir) {
         var absolutePath = path.join(root, fileStats.name);
         var resourceUrl = absolutePath.replace(buildDir, '');
 
-        if (path.sep == '/') {
+        if (path.sep == '\\') {
           // Windows support: transform filesystem backslashes into forward-slashes for the URL.
           resourceUrl = resourceUrl.replace('\\', '/');
         }
