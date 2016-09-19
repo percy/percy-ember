@@ -46,6 +46,14 @@ export function percySnapshot(name, options) {
     return;
   }
 
+  // Automatic name generation for QUnit tests by passing in the `assert` object.
+  if (name.test && name.test.module && name.test.module.name && name.test.testName) {
+    name = `${name.test.module.name} | ${name.test.testName}`;
+  } else if (name.fullTitle) {
+    // Automatic name generation for Mocha tests by passing in the `this.test` object.
+    name = name.fullTitle();
+  }
+
   let snapshotHtml;
   options = options || {};
   let scope = options.scope;
