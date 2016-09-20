@@ -124,6 +124,12 @@ module.exports = {
     // Make sure the percy config has a 'breakpoints' object.
     percyConfig.breakpointsConfig = percyConfig.breakpointsConfig || {};
   },
+  // Inject percy finalization into the footer of tests/index.html.
+  contentFor: function(type) {
+    if (type === 'test-body-footer') {
+      return "<script>require('ember-percy/finalize')['default']();</script>";
+    }
+  },
   // After build output is ready, create a Percy build and upload missing build resources.
   outputReady: function(result) {
     // Disable Percy when running Fastboot builds (for now).
