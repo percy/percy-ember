@@ -142,7 +142,8 @@ module.exports = {
     var environment = new Environment(process.env);
     var repo = environment.repo;
 
-    if (process.env.PERCY_ENABLE == '0') {
+    // Disable if Percy is explicitly disabled or if this is not an 'ember test' run.
+    if (process.env.PERCY_ENABLE == '0' || process.env.EMBER_ENV !== 'test') {
       isPercyEnabled = false;
     }
 
