@@ -15,6 +15,18 @@ function getDoctype() {
   return doctype;
 }
 
+// Set the property value into the attribute value for snapshotting inputs
+function setAttributeValues(dom) {
+  let inputs = dom.find('input');
+
+  for (let i = 0; i < inputs.length; i++) {
+    let input = inputs[i];
+    input.setAttribute('value', input.value);
+  }
+
+  return dom;
+}
+
 export function percySnapshot(name, options) {
   // Skip if Testem is not available (we're probably running from `ember server` and Percy is not
   // enabled anyway).
@@ -40,10 +52,12 @@ export function percySnapshot(name, options) {
   let testingContainer = domCopy.find('#ember-testing-container');
 
   if (scope) {
-    snapshotHtml = Ember.$('#ember-testing-container').find(scope).html();
+    snapshotHtml = Ember.$('#ember-testing-container').find(scope);
   } else {
-    snapshotHtml = testingContainer.html();
+    snapshotHtml = testingContainer;
   }
+
+  snapshotHtml = setAttributeValues(snapshotHtml).html();
 
   // Hoist the testing container contents up to the body.
   // We need to use the original DOM to keep the head stylesheet around.
