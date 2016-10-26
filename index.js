@@ -132,7 +132,12 @@ module.exports = {
       return;
     }
     if (type === 'test-body-footer') {
-      return "<script>require('ember-percy/finalize')['default']();</script>";
+      return "\
+        <script> \
+          require('ember-percy/native-xhr')['default'](); \
+          require('ember-percy/finalize')['default'](); \
+        </script> \
+      ";
     }
   },
   // After build output is ready, create a Percy build and upload missing build resources.

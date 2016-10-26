@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import { getNativeXhr } from './native-xhr';
 import { maybeDisableMockjax, maybeResetMockjax } from './mockjax-wrapper';
 
 function getDoctype() {
@@ -52,6 +53,7 @@ export function percySnapshot(name, options) {
   Ember.run(function() {
     maybeDisableMockjax();
     Ember.$.ajax('/_percy/snapshot', {
+      xhr: getNativeXhr,
       method: 'POST',
       contentType: 'application/json; charset=utf-8',
       data: JSON.stringify({
