@@ -15,7 +15,7 @@ function finalizeBuildOnce() {
     // our middleware has finished uploading resources and resolving promises.
     async: false,
     timeout: 30000,
-  }
+  };
   Ember.$.ajax('/_percy/finalize_build', options);
   maybeResetMockjax();
 }

@@ -1,5 +1,5 @@
 export function getNativeXhr() {
-  return new window._percyNativeXhr;
+  return new window._percyNativeXhr();
 }
 
 // When imported into test-body-footer, grab a reference to the native XHR object so we can avoid
