@@ -1,7 +1,6 @@
 import { module } from 'qunit';
 import startApp from '../helpers/start-app';
 import destroyApp from '../helpers/destroy-app';
-import 'dummy/tests/helpers/percy/register-helpers';
 
 export default function(name, options = {}) {
   module(name, {
