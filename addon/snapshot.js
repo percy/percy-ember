@@ -38,10 +38,10 @@ export function percySnapshot(name, options) {
   // Create a full-page DOM snapshot from the current testing page.
   // TODO(fotinakis): more memory-efficient way to do this?
   let domCopy = Ember.$('html').clone();
-  let testingContainer = domCopy.find('#ember-testing-container');
+  let testingContainer = domCopy.find('#ember-testing');
 
   if (scope) {
-    snapshotHtml = Ember.$('#ember-testing-container').find(scope).html();
+    snapshotHtml = Ember.$('#ember-testing').find(scope).html();
   } else {
     snapshotHtml = testingContainer.html();
   }
