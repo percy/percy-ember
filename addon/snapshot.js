@@ -61,6 +61,7 @@ export function percySnapshot(name, options) {
         content: getDoctype() + domCopy[0].outerHTML,
         widths: options.widths,
         breakpoints: options.breakpoints,
+        enableJavascript: options.enableJavascript,
       }),
       statusCode: {
         400: function(jqXHR) {
