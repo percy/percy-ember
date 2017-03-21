@@ -313,7 +313,7 @@ module.exports = {
           {
             name: data.name,
             widths: widths,
-            enableJavascript: data.enableJavascript,
+            enableJavaScript: data.enableJavaScript,
           }
         );
 
