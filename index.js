@@ -28,7 +28,7 @@ var SKIPPED_ASSETS = [
   /\.log$/,
   /\.DS_Store$/
 ];
-var MAX_FILE_SIZE_BYTES = 5242880;  // 5MB.
+var MAX_FILE_SIZE_BYTES = 15728640;  // 15MB.
 
 // Synchronously walk the build directory, read each file and calculate its SHA 256 hash,
 // and create a mapping of hashes to Resource objects.
