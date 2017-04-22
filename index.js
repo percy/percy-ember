@@ -67,7 +67,7 @@ function gatherBuildResources(percyClient, buildDir) {
         var sha = crypto.createHash('sha256').update(content).digest('hex');
 
         var resource = percyClient.makeResource({
-          resourceUrl: resourceUrl,
+          resourceUrl: encodeURI(resourceUrl),
           sha: sha,
           localPath: absolutePath,
         });
