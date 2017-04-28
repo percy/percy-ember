@@ -45,7 +45,7 @@ function gatherBuildResources(percyClient, buildDir) {
 
         if (path.sep == '\\') {
           // Windows support: transform filesystem backslashes into forward-slashes for the URL.
-          resourceUrl = resourceUrl.replace('\\', '/');
+          resourceUrl = resourceUrl.replace(/\\/g, '/');
         }
 
         for (var i in SKIPPED_ASSETS) {
