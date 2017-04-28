@@ -6,6 +6,7 @@ node_js:
 sudo: false
 
 cache:
+  yarn: true
   directories:
     - node_modules
 
