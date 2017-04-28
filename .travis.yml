@@ -1,17 +1,20 @@
 ---
 language: node_js
 node_js:
-  - "0.12"
+  - "4"
 
 sudo: false
 
 cache:
+  yarn: true
   directories:
     - node_modules
 
 env:
-  - EMBER_TRY_SCENARIO=default
-  - PERCY_ENABLE=0 EMBER_TRY_SCENARIO=ember-release
+  # we recommend testing LTS's and latest stable release (bonus points to beta/canary)
+  - PERCY_ENABLE=0 EMBER_TRY_SCENARIO=ember-1.13
+  - PERCY_ENABLE=0 EMBER_TRY_SCENARIO=ember-lts-2.4
+  - EMBER_TRY_SCENARIO=ember-release
   - PERCY_ENABLE=0 EMBER_TRY_SCENARIO=ember-beta
   - PERCY_ENABLE=0 EMBER_TRY_SCENARIO=ember-canary
 
@@ -21,14 +24,16 @@ matrix:
     - env: PERCY_ENABLE=0 EMBER_TRY_SCENARIO=ember-canary
 
 before_install:
-  - export PATH=/usr/local/phantomjs-2.0.0/bin:$PATH
-  - "npm config set spin false"
-  - "npm install -g npm@^2"
+  - yarn global add bower
+  - bower --version
+  - yarn add phantomjs-prebuilt
+  - node_modules/phantomjs-prebuilt/bin/phantomjs --version
 
 install:
-  - npm install -g bower
-  - npm install
+  - yarn
   - bower install
 
 script:
-  - ember try:one $EMBER_TRY_SCENARIO
+  # Usually, it's ok to finish the test scenario without reverting
+  #  to the addon's original dependency state, skipping "cleanup".
+  - ember try:one $EMBER_TRY_SCENARIO test --skip-cleanup
