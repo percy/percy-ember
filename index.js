@@ -48,6 +48,9 @@ function gatherBuildResources(percyClient, buildDir) {
           resourceUrl = resourceUrl.replace(/\\/g, '/');
         }
 
+        // Append the Ember rootURL if it exists.
+        resourceUrl = normalizedRootUrl + resourceUrl;
+
         for (var i in SKIPPED_ASSETS) {
           if (resourceUrl.match(SKIPPED_ASSETS[i])) {
             next();
@@ -101,6 +104,7 @@ function handlePercyFailure(error) {
 // TODO: refactor to break down into a more modular design with less global state.
 var percyClient;
 var percyConfig;
+var normalizedRootUrl;
 var percyBuildPromise;
 var seenSnapshotNames = [];
 var buildResourceUploadPromises = [];
@@ -120,6 +124,9 @@ module.exports = {
   // Grab and store the `percy` config set in an app's config/environment.js.
   config: function(env, baseConfig) {
     percyConfig = baseConfig.percy || {};
+
+    // Store the Ember rootURL without a trailing slash, or a blank string.
+    normalizedRootUrl = (baseConfig.rootURL || '/').replace(/\/$/, '');
 
     // Make sure the percy config has a 'breakpoints' object.
     percyConfig.breakpointsConfig = percyConfig.breakpointsConfig || {};
