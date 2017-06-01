@@ -16,6 +16,27 @@ function getDoctype() {
   return doctype;
 }
 
+// Set the property value into the attribute value for snapshotting inputs
+function setAttributeValues(dom) {
+    // Limit scope to inputs only as textareas do not retain their value when cloned
+    let elems = dom.find('input[type=text], input[type=checkbox], input[type=radio]');
+
+    Ember.$(elems).each(function() {
+        switch(Ember.$(this).attr('type')) {
+            case 'checkbox':
+            case 'radio':
+                if (Ember.$(this).is(':checked')) {
+                    Ember.$(this).attr('checked', '');
+                }
+                break;
+            default:
+                Ember.$(this).attr('value', Ember.$(this).val());
+        }
+    });
+
+    return dom;
+}
+
 export function percySnapshot(name, options) {
   // Skip if Testem is not available (we're probably running from `ember server` and Percy is not
   // enabled anyway).
@@ -41,10 +62,12 @@ export function percySnapshot(name, options) {
   let testingContainer = domCopy.find('#ember-testing');
 
   if (scope) {
-    snapshotHtml = Ember.$('#ember-testing').find(scope).html();
+    snapshotHtml = Ember.$('#ember-testing').find(scope);
   } else {
-    snapshotHtml = testingContainer.html();
+    snapshotHtml = testingContainer;
   }
+
+  snapshotHtml = setAttributeValues(snapshotHtml).html();
 
   // Hoist the testing container contents up to the body.
   // We need to use the original DOM to keep the head stylesheet around.
