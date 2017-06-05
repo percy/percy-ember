@@ -18,23 +18,24 @@ function getDoctype() {
 
 // Set the property value into the attribute value for snapshotting inputs
 function setAttributeValues(dom) {
-    // Limit scope to inputs only as textareas do not retain their value when cloned
-    let elems = dom.find('input[type=text], input[type=checkbox], input[type=radio]');
+  // Limit scope to inputs only as textareas do not retain their value when cloned
+  let elems = dom.find('input[type=text], input[type=checkbox], input[type=radio]');
 
-    Ember.$(elems).each(function() {
-        switch(Ember.$(this).attr('type')) {
-            case 'checkbox':
-            case 'radio':
-                if (Ember.$(this).is(':checked')) {
-                    Ember.$(this).attr('checked', '');
-                }
-                break;
-            default:
-                Ember.$(this).attr('value', Ember.$(this).val());
+  Ember.$(elems).each(function() {
+    let elem = Ember.$(this);
+    switch(elem.attr('type')) {
+      case 'checkbox':
+      case 'radio':
+        if (elem.is(':checked')) {
+          elem.attr('checked', '');
         }
-    });
+        break;
+      default:
+        elem.attr('value', elem.val());
+    }
+  });
 
-    return dom;
+  return dom;
 }
 
 export function percySnapshot(name, options) {
@@ -52,7 +53,7 @@ export function percySnapshot(name, options) {
     name = name.fullTitle();
   }
 
-  let snapshotHtml;
+  let snapshotRoot;
   options = options || {};
   let scope = options.scope;
 
@@ -62,12 +63,12 @@ export function percySnapshot(name, options) {
   let testingContainer = domCopy.find('#ember-testing');
 
   if (scope) {
-    snapshotHtml = Ember.$('#ember-testing').find(scope);
+    snapshotRoot = testingContainer.find(scope);
   } else {
-    snapshotHtml = testingContainer;
+    snapshotRoot = testingContainer;
   }
 
-  snapshotHtml = setAttributeValues(snapshotHtml).html();
+  let snapshotHtml = setAttributeValues(snapshotRoot).html();
 
   // Hoist the testing container contents up to the body.
   // We need to use the original DOM to keep the head stylesheet around.
