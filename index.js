@@ -149,11 +149,6 @@ module.exports = {
   },
   // After build output is ready, create a Percy build and upload missing build resources.
   outputReady: function(result) {
-    // Disable Percy when running Fastboot builds (for now).
-    if (typeof process.env.EMBER_CLI_FASTBOOT !== 'undefined') {
-      return;
-    }
-
     var token = process.env.PERCY_TOKEN;
     var apiUrl = process.env.PERCY_API; // Optional.
     var environment = new Environment(process.env);
