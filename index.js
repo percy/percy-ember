@@ -11,7 +11,6 @@ var Environment = require('percy-client/dist/environment');
 var PromisePool = require('es6-promise-pool');
 var walk = require('walk');
 
-
 // Some build assets we never want to upload.
 var SKIPPED_ASSETS = [
   '/assets/tests.js',
@@ -29,6 +28,10 @@ var SKIPPED_ASSETS = [
   /\.DS_Store$/
 ];
 var MAX_FILE_SIZE_BYTES = 15728640;  // 15MB.
+
+var version = require('./package.json').version;
+var emberSourceVersion = require('ember-source/package.json').version;
+var emberCliVersionUtils = require('ember-cli/lib/utilities/version-utils');
 
 // Synchronously walk the build directory, read each file and calculate its SHA 256 hash,
 // and create a mapping of hashes to Resource objects.
@@ -115,6 +118,8 @@ var isPercyEnabled = true;
 module.exports = {
   name: 'ember-percy',
 
+  _emberCliVersion: emberCliVersionUtils && emberCliVersionUtils.emberCLIVersion(),
+
   // Only allow the addon to be incorporated in non-production envs.
   isEnabled: function() {
     // This cannot be just 'test', because people often run tests from development servers, and the
@@ -147,6 +152,12 @@ module.exports = {
       ";
     }
   },
+  _environmentInfo: function() {
+    return [
+      `ember/${emberSourceVersion}`,
+      `ember-cli/${this._emberCliVersion}`
+    ].filter(function(el) { return el != null; }).join(' ');
+  },
   // After build output is ready, create a Percy build and upload missing build resources.
   outputReady: function(result) {
     var token = process.env.PERCY_TOKEN;
@@ -160,7 +171,12 @@ module.exports = {
     }
 
     if (token && repo && isPercyEnabled) {
-      percyClient = new PercyClient({token: token, apiUrl: apiUrl});
+      percyClient = new PercyClient({
+        token: token,
+        apiUrl: apiUrl,
+        clientInfo: `ember-percy/${version}`,
+        environmentInfo: this._environmentInfo(),
+      });
     } else {
       isPercyEnabled = false;
 
