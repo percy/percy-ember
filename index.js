@@ -30,7 +30,12 @@ var SKIPPED_ASSETS = [
 var MAX_FILE_SIZE_BYTES = 15728640;  // 15MB.
 
 var version = require('./package.json').version;
-var emberSourceVersion = require('ember-source/package.json').version;
+
+var emberSourceVersion = '';
+try {
+  emberSourceVersion = require('ember-source/package.json').version;
+} catch (e) {};
+
 var emberCliVersionUtils = require('ember-cli/lib/utilities/version-utils');
 
 // Synchronously walk the build directory, read each file and calculate its SHA 256 hash,
