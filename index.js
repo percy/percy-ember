@@ -116,7 +116,8 @@ module.exports = {
 
   _clientInfo: function() {
     if(!this._clientInfoCache) {
-      this._clientInfoCache = `${this.name}/${require('./package.json').version}`;
+      var version = require('./package.json').version;
+      this._clientInfoCache = `${this.name}/${version}`;
     }
 
     return this._clientInfoCache;
