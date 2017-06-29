@@ -29,15 +29,6 @@ var SKIPPED_ASSETS = [
 ];
 var MAX_FILE_SIZE_BYTES = 15728640;  // 15MB.
 
-var version = require('./package.json').version;
-
-var emberSourceVersion = '';
-try {
-  emberSourceVersion = require('ember-source/package.json').version;
-} catch (e) {};
-
-var emberCliVersionUtils = require('ember-cli/lib/utilities/version-utils');
-
 // Synchronously walk the build directory, read each file and calculate its SHA 256 hash,
 // and create a mapping of hashes to Resource objects.
 function gatherBuildResources(percyClient, buildDir) {
@@ -123,7 +114,42 @@ var isPercyEnabled = true;
 module.exports = {
   name: 'ember-percy',
 
-  _emberCliVersion: emberCliVersionUtils && emberCliVersionUtils.emberCLIVersion(),
+  _clientInfo: function() {
+    if(!this._clientInfoCache) {
+      this._clientInfoCache = `${this.name}/${require('./package.json').version}`;
+    }
+
+    return this._clientInfoCache;
+  },
+
+  _environmentInfo: function() {
+    if(!this._environmentInfoCache) {
+      this._environmentInfoCache = [
+        `ember/${this._emberSourceVersion()}`,
+        `ember-cli/${this._emberCliVersion()}`
+      ].filter(function(el) {
+        return !el.match(/\/$/);
+      }).join('; ');
+    }
+
+    return this._environmentInfoCache;
+  },
+
+  _emberSourceVersion: function() {
+    try {
+      return require('ember-source/package.json').version;
+    } catch (e) {
+      return '';
+    };
+  },
+
+  _emberCliVersion: function() {
+    try {
+      return require('ember-cli/lib/utilities/version-utils').emberCLIVersion();
+    } catch (e) {
+      return '';
+    };
+  },
 
   // Only allow the addon to be incorporated in non-production envs.
   isEnabled: function() {
@@ -131,6 +157,7 @@ module.exports = {
     // helper imports will fail since ember-cli excludes addon files entirely if not enabled.
     return (process.env.EMBER_ENV !== 'production');
   },
+
   // Grab and store the `percy` config set in an app's config/environment.js.
   config: function(env, baseConfig) {
     percyConfig = baseConfig.percy || {};
@@ -141,6 +168,7 @@ module.exports = {
     // Make sure the percy config has a 'breakpoints' object.
     percyConfig.breakpointsConfig = percyConfig.breakpointsConfig || {};
   },
+
   // Inject percy finalization into the footer of tests/index.html.
   contentFor: function(type) {
     // Disable finalize injection if Percy is explicitly disabled or if not in an 'ember test' run.
@@ -157,12 +185,7 @@ module.exports = {
       ";
     }
   },
-  _environmentInfo: function() {
-    return [
-      `ember/${emberSourceVersion}`,
-      `ember-cli/${this._emberCliVersion}`
-    ].filter(function(el) { return el != null; }).join(' ');
-  },
+
   // After build output is ready, create a Percy build and upload missing build resources.
   outputReady: function(result) {
     var token = process.env.PERCY_TOKEN;
@@ -179,7 +202,7 @@ module.exports = {
       percyClient = new PercyClient({
         token: token,
         apiUrl: apiUrl,
-        clientInfo: `ember-percy/${version}`,
+        clientInfo: this._clientInfo(),
         environmentInfo: this._environmentInfo(),
       });
     } else {
@@ -194,6 +217,7 @@ module.exports = {
           '[percy][WARNING] Percy is disabled, no PERCY_PROJECT environment variable found.')
       }
     }
+
     if (!isPercyEnabled) { return; }
 
     var hashToResource = gatherBuildResources(percyClient, result.directory);
@@ -233,6 +257,7 @@ module.exports = {
                   console.log('\n[percy] Uploaded new build resource: ' + resource.resourceUrl);
                 }, handlePercyFailure);
                 buildResourceUploadPromises.push(promise);
+
                 return promise;
               } else {
                 // Trigger the pool to end.
@@ -256,6 +281,7 @@ module.exports = {
             resolve();
           }
         },
+
         function(error) {
           handlePercyFailure(error);
 
@@ -265,6 +291,7 @@ module.exports = {
       );
     });
   },
+
   testemMiddleware: function(app) {
     // Add middleware to add request.body because it is not populated in express by default.
     app.use(bodyParser.json({limit: '50mb'}));
@@ -290,6 +317,7 @@ module.exports = {
         for (var i in snapshotBreakpoints) {
           var breakpointName = snapshotBreakpoints[i];
           var breakpointWidth = percyConfig.breakpointsConfig[breakpointName];
+
           if (!parseInt(breakpointWidth)) {
             response.status(400);
             response.send(
@@ -393,10 +421,12 @@ module.exports = {
         response.contentType('application/json');
         response.send(JSON.stringify({success: success}));
       }
+
       function handleError(error) {
         handlePercyFailure(error);
         sendResponse(false);
       }
+
       if (!isPercyEnabled) {
         sendResponse(true);
         return;
