@@ -128,9 +128,7 @@ module.exports = {
       this._environmentInfoCache = [
         `ember/${this._emberSourceVersion()}`,
         `ember-cli/${this._emberCliVersion()}`
-      ].filter(function(el) {
-        return !el.match(/\/$/);
-      }).join('; ');
+      ].join('; ');
     }
 
     return this._environmentInfoCache;
@@ -140,7 +138,7 @@ module.exports = {
     try {
       return require('ember-source/package.json').version;
     } catch (e) {
-      return '';
+      return 'unknown';
     };
   },
 
@@ -148,7 +146,7 @@ module.exports = {
     try {
       return require('ember-cli/lib/utilities/version-utils').emberCLIVersion();
     } catch (e) {
-      return '';
+      return 'unknown';
     };
   },
 
