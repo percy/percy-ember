@@ -11,7 +11,6 @@ var Environment = require('percy-client/dist/environment');
 var PromisePool = require('es6-promise-pool');
 var walk = require('walk');
 
-
 // Some build assets we never want to upload.
 var SKIPPED_ASSETS = [
   '/assets/tests.js',
@@ -115,12 +114,49 @@ var isPercyEnabled = true;
 module.exports = {
   name: 'ember-percy',
 
+  _clientInfo: function() {
+    if(!this._clientInfoCache) {
+      var version = require('./package.json').version;
+      this._clientInfoCache = `${this.name}/${version}`;
+    }
+
+    return this._clientInfoCache;
+  },
+
+  _environmentInfo: function() {
+    if(!this._environmentInfoCache) {
+      this._environmentInfoCache = [
+        `ember/${this._emberSourceVersion()}`,
+        `ember-cli/${this._emberCliVersion()}`
+      ].join('; ');
+    }
+
+    return this._environmentInfoCache;
+  },
+
+  _emberSourceVersion: function() {
+    try {
+      return require('ember-source/package.json').version;
+    } catch (e) {
+      return 'unknown';
+    };
+  },
+
+  _emberCliVersion: function() {
+    try {
+      return require('ember-cli/lib/utilities/version-utils').emberCLIVersion();
+    } catch (e) {
+      return 'unknown';
+    };
+  },
+
   // Only allow the addon to be incorporated in non-production envs.
   isEnabled: function() {
     // This cannot be just 'test', because people often run tests from development servers, and the
     // helper imports will fail since ember-cli excludes addon files entirely if not enabled.
     return (process.env.EMBER_ENV !== 'production');
   },
+
   // Grab and store the `percy` config set in an app's config/environment.js.
   config: function(env, baseConfig) {
     percyConfig = baseConfig.percy || {};
@@ -131,6 +167,7 @@ module.exports = {
     // Make sure the percy config has a 'breakpoints' object.
     percyConfig.breakpointsConfig = percyConfig.breakpointsConfig || {};
   },
+
   // Inject percy finalization into the footer of tests/index.html.
   contentFor: function(type) {
     // Disable finalize injection if Percy is explicitly disabled or if not in an 'ember test' run.
@@ -147,6 +184,7 @@ module.exports = {
       ";
     }
   },
+
   // After build output is ready, create a Percy build and upload missing build resources.
   outputReady: function(result) {
     var token = process.env.PERCY_TOKEN;
@@ -160,7 +198,12 @@ module.exports = {
     }
 
     if (token && repo && isPercyEnabled) {
-      percyClient = new PercyClient({token: token, apiUrl: apiUrl});
+      percyClient = new PercyClient({
+        token: token,
+        apiUrl: apiUrl,
+        clientInfo: this._clientInfo(),
+        environmentInfo: this._environmentInfo(),
+      });
     } else {
       isPercyEnabled = false;
 
@@ -173,6 +216,7 @@ module.exports = {
           '[percy][WARNING] Percy is disabled, no PERCY_PROJECT environment variable found.')
       }
     }
+
     if (!isPercyEnabled) { return; }
 
     var hashToResource = gatherBuildResources(percyClient, result.directory);
@@ -212,6 +256,7 @@ module.exports = {
                   console.log('\n[percy] Uploaded new build resource: ' + resource.resourceUrl);
                 }, handlePercyFailure);
                 buildResourceUploadPromises.push(promise);
+
                 return promise;
               } else {
                 // Trigger the pool to end.
@@ -235,6 +280,7 @@ module.exports = {
             resolve();
           }
         },
+
         function(error) {
           handlePercyFailure(error);
 
@@ -244,6 +290,7 @@ module.exports = {
       );
     });
   },
+
   testemMiddleware: function(app) {
     // Add middleware to add request.body because it is not populated in express by default.
     app.use(bodyParser.json({limit: '50mb'}));
@@ -269,6 +316,7 @@ module.exports = {
         for (var i in snapshotBreakpoints) {
           var breakpointName = snapshotBreakpoints[i];
           var breakpointWidth = percyConfig.breakpointsConfig[breakpointName];
+
           if (!parseInt(breakpointWidth)) {
             response.status(400);
             response.send(
@@ -372,10 +420,12 @@ module.exports = {
         response.contentType('application/json');
         response.send(JSON.stringify({success: success}));
       }
+
       function handleError(error) {
         handlePercyFailure(error);
         sendResponse(false);
       }
+
       if (!isPercyEnabled) {
         sendResponse(true);
         return;
