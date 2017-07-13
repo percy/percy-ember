@@ -38,6 +38,19 @@ function setAttributeValues(dom) {
   return dom;
 }
 
+// `Ember.TextArea` sets its content by updating `HTMLTextAreaElement.value` directly
+// This doesn't update the actual text content and so the clone shows up blank - by copying
+// `HTMLTextAreaElement.value` to `Node.textContent`, the percy snapshot is able to include
+// the current value for the textarea
+function setTextareaContent(dom) {
+  dom.find('textarea').each(function() {
+    let elem = Ember.$(this);
+    elem.text(elem.val());
+  });
+
+  return dom;
+}
+
 export function percySnapshot(name, options) {
   // Skip if Testem is not available (we're probably running from `ember server` and Percy is not
   // enabled anyway).
@@ -68,7 +81,10 @@ export function percySnapshot(name, options) {
     snapshotRoot = testingContainer;
   }
 
-  let snapshotHtml = setAttributeValues(snapshotRoot).html();
+  snapshotRoot = setAttributeValues(snapshotRoot);
+  snapshotRoot = setTextareaContent(snapshotRoot);
+
+  let snapshotHtml = snapshotRoot.html();
 
   // Hoist the testing container contents up to the body.
   // We need to use the original DOM to keep the head stylesheet around.
