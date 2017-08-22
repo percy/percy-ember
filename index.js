@@ -444,11 +444,6 @@ module.exports = {
             percyClient.finalizeBuild(percyBuildData.id).then(function() {
               sendResponse(true);
 
-              // Avoid trying to add snapshots to an already-finalized build. This might happen when
-              // running tests locally and the browser gets refreshed after the end of a test run.
-              // Generally, this is not a problem because tests only run in CI and only once.
-              isPercyEnabled = false;
-
               // Attempt to make our logging come last, giving time for test output to finish.
               var url = percyBuildData.attributes['web-url'];
               process.nextTick(function() {
