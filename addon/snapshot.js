@@ -38,6 +38,16 @@ function setAttributeValues(dom) {
   return dom;
 }
 
+// jQuery clone() does not copy textarea contents, so we explicitly do it here.
+function setTextareaContent(dom) {
+  dom.find('textarea').each(function() {
+    let elem = Ember.$(this);
+    elem.text(elem.val());
+  });
+
+  return dom;
+}
+
 export function percySnapshot(name, options) {
   // Skip if Testem is not available (we're probably running from `ember server` and Percy is not
   // enabled anyway).
@@ -68,7 +78,10 @@ export function percySnapshot(name, options) {
     snapshotRoot = testingContainer;
   }
 
-  let snapshotHtml = setAttributeValues(snapshotRoot).html();
+  snapshotRoot = setAttributeValues(snapshotRoot);
+  snapshotRoot = setTextareaContent(snapshotRoot);
+
+  let snapshotHtml = snapshotRoot.html();
 
   // Hoist the testing container contents up to the body.
   // We need to use the original DOM to keep the head stylesheet around.

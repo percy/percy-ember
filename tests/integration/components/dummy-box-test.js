@@ -68,3 +68,12 @@ test('it snapshots radio button values', function(assert) {
   assert.equal(this.$('input')[0].checked, true, 'radio button is checked');
   percySnapshot('checkbox with check');
 });
+
+test('it snapshots textarea values', function(assert) {
+  this.render(hbs`{{textarea value="Testing"}}`);
+
+  assert.equal(this.$('textarea')[0].value, 'Testing', 'value property is set');
+  assert.equal(this.$('textarea').text(), '', 'text content is not set');
+
+  percySnapshot('textarea with value');
+});
