@@ -38,10 +38,7 @@ function setAttributeValues(dom) {
   return dom;
 }
 
-// `Ember.TextArea` sets its content by updating `HTMLTextAreaElement.value` directly
-// This doesn't update the actual text content and so the clone shows up blank - by copying
-// `HTMLTextAreaElement.value` to `Node.textContent`, the percy snapshot is able to include
-// the current value for the textarea
+// jQuery clone() does not copy textarea contents, so we explicitly do it here.
 function setTextareaContent(dom) {
   dom.find('textarea').each(function() {
     let elem = Ember.$(this);
