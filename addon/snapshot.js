@@ -18,8 +18,13 @@ function getDoctype() {
 
 // Set the property value into the attribute value for snapshotting inputs
 function setAttributeValues(dom) {
+  // List of input types here https://www.w3.org/TR/html5/forms.html#the-input-element
+
   // Limit scope to inputs only as textareas do not retain their value when cloned
-  let elems = dom.find('input[type=text], input[type=checkbox], input[type=radio]');
+  let elems = dom.find(
+    `input[type=text], input[type=search], input[type=tel], input[type=url], input[type=email], 
+     input[type=password], input[type=number], input[type=checkbox], input[type=radio]`
+  );
 
   Ember.$(elems).each(function() {
     let elem = Ember.$(this);
