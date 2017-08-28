@@ -8,4 +8,4 @@
 1. Ensure tests have passed on that tag
 1. Draft and publish a [new release on github](https://github.com/percy/ember-percy/releases)
 1. `npm publish`
-2. [Visit NPM](https://www.npmjs.com/package/ember-percy) and see that your version is now live.
+1. [Visit NPM](https://www.npmjs.com/package/ember-percy) and see that your version is now live.
