@@ -10,6 +10,7 @@ install:
   - ps: Install-Product node $env:nodejs_version
 
   - npm install -g yarn
+  - npm install -g phantomjs-prebuilt
 
   # install modules
   - yarn install
