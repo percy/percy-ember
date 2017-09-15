@@ -292,6 +292,18 @@ module.exports = {
   },
 
   testemMiddleware: function(app) {
+    // some special-case logic for when `ember test` is invoked with the `--path=foo`
+    // flag.  `ember-cli` doesn't expose command arguments to addons, but does
+    // set the `EMBER_CLI_TEST_OUTPUT` env variable to the value of the `--path` option.
+    // `ember-cli` also apparently sets `EMBER_CLI_TEST_COMMAND` to `true` when
+    // running `ember test`.
+    // Under these conditions, the `outputReady` step is never called, because it
+    // was (presumably) called during the `ember build` step.
+    // This covers the case where tests are run via
+    // `ember build --environment=test --output-path=foo && ember test --path=foo`
+    if (!percyBuildPromise && process.env.EMBER_CLI_TEST_COMMAND === 'true' && process.env.EMBER_CLI_TEST_OUTPUT) {
+      this.outputReady({ directory: process.env.EMBER_CLI_TEST_OUTPUT });
+    }
     // Add middleware to add request.body because it is not populated in express by default.
     app.use(bodyParser.json({limit: '50mb'}));
 
