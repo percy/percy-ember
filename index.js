@@ -109,6 +109,7 @@ var seenSnapshotNames = [];
 var buildResourceUploadPromises = [];
 var snapshotResourceUploadPromises = [];
 var isPercyEnabled = true;
+var createPercyBuildInvoked = false;
 
 
 module.exports = {
@@ -187,6 +188,15 @@ module.exports = {
 
   // After build output is ready, create a Percy build and upload missing build resources.
   outputReady: function(result) {
+    if (process.env.EMBER_CLI_TEST_COMMAND === 'true') {
+      this.createPercyBuild(result.directory);
+    }
+  },
+
+  // Create a Percy build and upload missing build resources.
+  createPercyBuild: function(buildOutputDirectory) {
+    this.createPercyBuildInvoked = true;
+
     var token = process.env.PERCY_TOKEN;
     var apiUrl = process.env.PERCY_API; // Optional.
     var environment = new Environment(process.env);
@@ -219,7 +229,7 @@ module.exports = {
 
     if (!isPercyEnabled) { return; }
 
-    var hashToResource = gatherBuildResources(percyClient, result.directory);
+    var hashToResource = gatherBuildResources(percyClient, buildOutputDirectory);
     var resources = [];
     Object.keys(hashToResource).forEach(function(key) {
       resources.push(hashToResource[key]);
@@ -292,6 +302,29 @@ module.exports = {
   },
 
   testemMiddleware: function(app) {
+    // `ember test` can be run in two ways that we cater to.
+    // 1) `ember test` can be run WITHOUT the `--path` flag, in which case ember test first runs the
+    // ember build, and then runs the tests.  In this scenario outputReady would have already been
+    // invoked, calling createPercyBuild.
+    // 2) `ember test` can be supplied a `--path=dist` flag, which means the app has been pre-built
+    // in a separate build step, and is being passed in with the `--path` flag.  In this scenario,
+    // outputReady is not invoked by the `ember test` command, so we need to create the Percy build
+    // here.
+    //
+    // The value passed to --path is available in process.env.EMBER_CLI_TEST_OUTPUT
+    // We can also check we're executing the test command with process.env.EMBER_CLI_TEST_COMMAND
+
+    if (!this.createPercyBuildInvoked) {
+      if (process.env.EMBER_CLI_TEST_COMMAND === 'true' && process.env.EMBER_CLI_TEST_OUTPUT) {
+        this.createPercyBuild(process.env.EMBER_CLI_TEST_OUTPUT);
+      } else {
+        console.warn(
+          '[percy][WARNING] Disabling Percy as no ember build is available.'
+        );
+        isPercyEnabled = false;
+      }
+    }
+
     // Add middleware to add request.body because it is not populated in express by default.
     app.use(bodyParser.json({limit: '50mb'}));
 
