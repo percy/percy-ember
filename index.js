@@ -301,13 +301,15 @@ module.exports = {
     // was (presumably) called during the `ember build` step.
     // This covers the case where tests are run via
     // `ember build --environment=test --output-path=foo && ember test --path=foo`
-    if (!percyBuildPromise && process.env.EMBER_CLI_TEST_COMMAND === 'true' && process.env.EMBER_CLI_TEST_OUTPUT) {
-      this.outputReady({ directory: process.env.EMBER_CLI_TEST_OUTPUT });
-    } else {
-      console.warn(
-        '[percy][WARNING] No percy build available, and there isn\'t enough information to make one.'
-      );
-      isPercyEnabled = false;
+    if (!percyBuildPromise) {
+      if (process.env.EMBER_CLI_TEST_COMMAND === 'true' && process.env.EMBER_CLI_TEST_OUTPUT) {
+        this.outputReady({ directory: process.env.EMBER_CLI_TEST_OUTPUT });
+      } else {
+        console.warn(
+          '[percy][WARNING] No percy build available, and there isn\'t enough information to make one.'
+        );
+        isPercyEnabled = false;
+      }
     }
     // Add middleware to add request.body because it is not populated in express by default.
     app.use(bodyParser.json({limit: '50mb'}));
