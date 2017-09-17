@@ -195,7 +195,7 @@ module.exports = {
 
   // Create a Percy build and upload missing build resources.
   createPercyBuild: function(buildOutputDirectory) {
-    this.createPercyBuildInvoked = true;
+    createPercyBuildInvoked = true;
 
     var token = process.env.PERCY_TOKEN;
     var apiUrl = process.env.PERCY_API; // Optional.
@@ -314,7 +314,7 @@ module.exports = {
     // The value passed to --path is available in process.env.EMBER_CLI_TEST_OUTPUT
     // We can also check we're executing the test command with process.env.EMBER_CLI_TEST_COMMAND
 
-    if (!this.createPercyBuildInvoked) {
+    if (!createPercyBuildInvoked) {
       if (process.env.EMBER_CLI_TEST_COMMAND === 'true' && process.env.EMBER_CLI_TEST_OUTPUT) {
         this.createPercyBuild(process.env.EMBER_CLI_TEST_OUTPUT);
       } else {
