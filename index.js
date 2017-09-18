@@ -186,8 +186,10 @@ module.exports = {
     }
   },
 
-  // After build output is ready, create a Percy build and upload missing build resources.
+
   outputReady: function(result) {
+    // outputReady is run both in `ember build` and in `ember test` when a build is completed.
+    // Only create a Percy Build in the `ember test` context. Tests aren't run for `ember build`.
     if (process.env.EMBER_CLI_TEST_COMMAND === 'true') {
       this.createPercyBuild(result.directory);
     }
