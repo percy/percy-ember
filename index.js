@@ -191,7 +191,9 @@ module.exports = {
     // outputReady is run both in `ember build` and in `ember test` when a build is completed.
     // Only create a Percy Build in the `ember test` context. Tests aren't run for `ember build`.
     if (process.env.EMBER_CLI_TEST_COMMAND === 'true') {
-      this.createPercyBuild(result.directory);
+      // NOTE: it's important to return a promise from outputReady to make sure the uploads are
+      // finished before the tests are run.
+      return this.createPercyBuild(result.directory);
     }
   },
 
