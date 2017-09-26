@@ -1,6 +1,6 @@
-import Ember from 'ember';
 import { getNativeXhr } from './native-xhr';
 import { maybeDisableMockjax, maybeResetMockjax } from './mockjax-wrapper';
+import ajax from 'ember-fetch/ajax';
 
 // Percy finalizer to be called at the very end of the test suite.
 // Note: it is important that this is called always, no matter if percySnapshot was used or not,
@@ -16,7 +16,7 @@ function finalizeBuildOnce() {
     async: false,
     timeout: 30000,
   };
-  Ember.$.ajax('/_percy/finalize_build', options);
+  ajax('/_percy/finalize_build', options);
   maybeResetMockjax();
 }
 
