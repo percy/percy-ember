@@ -1,10 +1,18 @@
-import Ember from 'ember';
 import { getNativeXhr } from './native-xhr';
 import { maybeDisableMockjax, maybeResetMockjax } from './mockjax-wrapper';
-import $ from 'jquery';
 import ajax from 'ember-fetch/ajax';
+import run from 'ember-runloop';
 
-const { run } = Ember;
+function matches(el, selector) {
+  return (
+    el.matches ||
+    el.matchesSelector ||
+    el.msMatchesSelector ||
+    el.mozMatchesSelector ||
+    el.webkitMatchesSelector ||
+    el.oMatchesSelector
+  ).call(el, selector);
+}
 
 function getDoctype() {
   let doctypeNode = document.doctype;
@@ -25,22 +33,21 @@ function setAttributeValues(dom) {
   // List of input types here https://www.w3.org/TR/html5/forms.html#the-input-element
 
   // Limit scope to inputs only as textareas do not retain their value when cloned
-  let elems = dom.find(
+  let elems = dom.querySelectorAll(
     `input[type=text], input[type=search], input[type=tel], input[type=url], input[type=email],
      input[type=password], input[type=number], input[type=checkbox], input[type=radio]`
   );
 
-  $(elems).each(function() {
-    let elem = $(this);
-    switch(elem.attr('type')) {
+  Array.prototype.forEach.call(elems, function(elem) {
+    switch(elem.getAttribute('type')) {
       case 'checkbox':
       case 'radio':
-        if (elem.is(':checked')) {
-          elem.attr('checked', '');
+        if (matches(elem, ':checked')) {
+          elem.setAttribute('checked', '');
         }
         break;
       default:
-        elem.attr('value', elem.val());
+        elem.setAttribute('value', elem.value);
     }
   });
 
@@ -49,9 +56,8 @@ function setAttributeValues(dom) {
 
 // jQuery clone() does not copy textarea contents, so we explicitly do it here.
 function setTextareaContent(dom) {
-  dom.find('textarea').each(function() {
-    let elem = $(this);
-    elem.text(elem.val());
+  Array.prototype.forEach.call(dom.querySelectorAll('textarea'), function(elem) {
+    elem.textContent = elem.value;
   });
 
   return dom;
@@ -78,11 +84,11 @@ export function percySnapshot(name, options) {
 
   // Create a full-page DOM snapshot from the current testing page.
   // TODO(fotinakis): more memory-efficient way to do this?
-  let domCopy = $('html').clone();
-  let testingContainer = domCopy.find('#ember-testing');
+  let domCopy = document.querySelector('html').cloneNode(true);
+  let testingContainer = domCopy.querySelector('#ember-testing');
 
   if (scope) {
-    snapshotRoot = testingContainer.find(scope);
+    snapshotRoot = testingContainer.querySelector(scope);
   } else {
     snapshotRoot = testingContainer;
   }
@@ -90,11 +96,11 @@ export function percySnapshot(name, options) {
   snapshotRoot = setAttributeValues(snapshotRoot);
   snapshotRoot = setTextareaContent(snapshotRoot);
 
-  let snapshotHtml = snapshotRoot.html();
+  let snapshotHtml = snapshotRoot.innerHTML;
 
   // Hoist the testing container contents up to the body.
   // We need to use the original DOM to keep the head stylesheet around.
-  domCopy.find('body').html(snapshotHtml);
+  domCopy.querySelector('body').innerHTML = snapshotHtml;
 
   run(function() {
     maybeDisableMockjax();
@@ -104,7 +110,7 @@ export function percySnapshot(name, options) {
       contentType: 'application/json; charset=utf-8',
       data: JSON.stringify({
         name: name,
-        content: getDoctype() + domCopy[0].outerHTML,
+        content: getDoctype() + domCopy.outerHTML,
         widths: options.widths,
         breakpoints: options.breakpoints,
         enableJavaScript: options.enableJavaScript,
