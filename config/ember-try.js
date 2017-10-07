@@ -3,13 +3,13 @@
 module.exports = {
   scenarios: [
     {
-      name: 'ember-1.13',
+      name: 'ember-lts-2.8',
       bower: {
         dependencies: {
-          'ember': '~1.13.0'
+          'ember': 'components/ember#lts-2-8'
         },
         resolutions: {
-          'ember': '~1.13.0'
+          'ember': 'lts-2-8'
         }
       },
       npm: {
@@ -19,17 +19,15 @@ module.exports = {
       }
     },
     {
-      name: 'ember-lts-2.4',
+      name: 'ember-lts-2.12',
       bower: {
         dependencies: {
-          'ember': 'components/ember#lts-2-4'
-        },
-        resolutions: {
-          'ember': 'lts-2-4'
+          'ember': null
         }
       },
       npm: {
         devDependencies: {
+          'ember-source': '~2.12.0',
           'ember-native-dom-event-dispatcher': null
         }
       }
@@ -43,6 +41,11 @@ module.exports = {
         resolutions: {
           'ember': 'release'
         }
+      },
+      npm: {
+        devDependencies: {
+          'ember-source': null
+        }
       }
     },
     {
@@ -54,6 +57,11 @@ module.exports = {
         resolutions: {
           'ember': 'beta'
         }
+      },
+      npm: {
+        devDependencies: {
+          'ember-source': null
+        }
       }
     },
     {
@@ -64,6 +72,11 @@ module.exports = {
         },
         resolutions: {
           'ember': 'canary'
+        }
+      },
+      npm: {
+        devDependencies: {
+          'ember-source': null
         }
       }
     }
