@@ -27,7 +27,7 @@
     "ember-cli-dependency-checker": "^1.3.0",
     "ember-cli-eslint": "^4.2.0",
     "ember-cli-htmlbars": "^1.0.10",
-    "ember-cli-htmlbars-inline-precompile": "^0.3.3",
+    "ember-cli-htmlbars-inline-precompile": "^0.4.0",
     "ember-cli-inject-live-reload": "^1.4.1",
     "ember-cli-qunit": "^3.0.1",
     "ember-cli-release": "^0.2.9",
@@ -52,7 +52,7 @@
   ],
   "dependencies": {
     "body-parser": "^1.15.0",
-    "ember-cli-babel": "^5.1.7",
+    "ember-cli-babel": "^6.8.2",
     "es6-promise-pool": "^2.4.1",
     "percy-client": "^2.1.3",
     "walk": "^2.3.9"
