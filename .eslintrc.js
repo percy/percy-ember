@@ -4,31 +4,33 @@ module.exports = {
     ecmaVersion: 2017,
     sourceType: 'module'
   },
-  extends: 'eslint:recommended',
+  extends: [
+    'eslint:recommended'
+  ],
   env: {
     browser: true
   },
   rules: {
-    "no-cond-assign": [
-      2,
-      "except-parens"
+    'no-cond-assign': [
+      'error',
+      'except-parens'
     ],
-    "curly": 2,
-    "no-debugger": 0,
-    "eqeqeq": 2,
-    "no-eval": 2,
-    "guard-for-in": 0,
-    "wrap-iife": 0,
-    "linebreak-style": 0,
-    "new-cap": 2,
-    "no-caller": 2,
-    "no-empty": 0,
-    "no-new": 0,
-    "no-plusplus": 0,
-    "no-undef": 2,
-    "dot-notation": 0,
-    "strict": 0,
-    "no-eq-null": 2,
-    "no-unused-vars": 2
+    'curly': 'error',
+    'no-debugger': 'off',
+    'eqeqeq': 'error',
+    'no-eval': 'error',
+    'guard-for-in': 'off',
+    'wrap-iife': 'off',
+    'linebreak-style': 'off',
+    'new-cap': 'error',
+    'no-caller': 'error',
+    'no-empty': 'off',
+    'no-new': 'off',
+    'no-plusplus': 'off',
+    'no-undef': 'error',
+    'dot-notation': 'off',
+    'strict': 'off',
+    'no-eq-null': 'error',
+    'no-unused-vars': 'error',
   }
 };
