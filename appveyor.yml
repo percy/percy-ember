@@ -10,6 +10,7 @@ install:
   - ps: Install-Product node $env:nodejs_version
 
   - npm install -g yarn
+  - npm install -g bower
   - npm install -g phantomjs-prebuilt
 
   # install modules
@@ -20,6 +21,7 @@ test_script:
   # Output useful info for debugging.
   - node --version
   - yarn --version
+  - bower --version
   # run tests
   - yarn build
   - yarn test
