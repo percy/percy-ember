@@ -13,9 +13,7 @@ addons:
       - google-chrome-stable
 
 cache:
-  yarn: true
-  directories:
-    - node_modules
+  yarn: false
 
 env:
   # we recommend testing LTS's and latest stable release (bonus points to beta/canary)
