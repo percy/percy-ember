@@ -54,7 +54,6 @@ function setAttributeValues(dom) {
   return dom;
 }
 
-// jQuery clone() does not copy textarea contents, so we explicitly do it here.
 function setTextareaContent(dom) {
   Array.prototype.forEach.call(dom.querySelectorAll('textarea'), function(elem) {
     elem.textContent = elem.value;

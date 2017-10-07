@@ -11,6 +11,11 @@ module.exports = {
         resolutions: {
           'ember': '~1.13.0'
         }
+      },
+      npm: {
+        devDependencies: {
+          'ember-native-dom-event-dispatcher': null
+        }
       }
     },
     {
@@ -21,6 +26,11 @@ module.exports = {
         },
         resolutions: {
           'ember': 'lts-2-4'
+        }
+      },
+      npm: {
+        devDependencies: {
+          'ember-native-dom-event-dispatcher': null
         }
       }
     },

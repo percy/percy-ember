@@ -1,7 +1,7 @@
-import { find, click } from 'ember-native-dom-helpers';
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 import { percySnapshot } from 'ember-percy';
+import { find, click } from 'ember-native-dom-helpers';
 
 moduleForComponent('dummy-box', 'Integration | Component | dummy box', {
   integration: true
@@ -59,7 +59,7 @@ test('it snapshots checkbox values', async function(assert) {
   assert.equal(find('input').checked, false, 'checkbox is not checked');
   percySnapshot('checkbox without check');
 
-  await click('input');
+  this.set('isChecked', true); // clicking a checkbox triggers a missing internal Ember jQuery event
   assert.equal(find('input').checked, true, 'checkbox is checked');
   percySnapshot('checkbox with check');
 });
