@@ -4,7 +4,8 @@ module.exports = {
     sourceType: 'module'
   },
   extends: [
-    'eslint:recommended'
+    'eslint:recommended',
+    'plugin:ember/recommended'
   ],
   env: {
     browser: true
@@ -32,6 +33,7 @@ module.exports = {
     'strict': 'off',
     'no-eq-null': 'error',
     'no-unused-vars': 'error',
-
+    'ember/no-global-jquery': 'warn',
+    'ember/no-jquery': 'warn'
   }
 }
