@@ -1,7 +1,13 @@
 /* eslint node: true */
 
 module.exports = {
+  useYarn: true,
   scenarios: [
+    {
+      name: 'default',
+      bower: { },
+      npm: { }
+    },
     {
       name: 'ember-lts-2.8',
       bower: {
@@ -14,7 +20,8 @@ module.exports = {
       },
       npm: {
         devDependencies: {
-          'ember-native-dom-event-dispatcher': null
+          'ember-native-dom-event-dispatcher': null,
+          'ember-source': null
         }
       }
     },
