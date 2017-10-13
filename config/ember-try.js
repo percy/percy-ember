@@ -9,6 +9,23 @@ module.exports = {
       npm: { }
     },
     {
+      name: 'ember-1.13',
+      bower: {
+        dependencies: {
+          'ember': '~1.13.0'
+        },
+        resolutions: {
+          'ember': '~1.13.0'
+        }
+      },
+      npm: {
+        devDependencies: {
+          'ember-native-dom-event-dispatcher': null,
+          'ember-source': null
+        }
+      }
+    },
+    {
       name: 'ember-lts-2.8',
       bower: {
         dependencies: {
