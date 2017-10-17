@@ -1,7 +1,6 @@
 import { test } from 'qunit';
 import moduleForAcceptance from '../../tests/helpers/module-for-acceptance';
 import { currentURL, visit } from 'ember-native-dom-helpers';
-import { percySnapshot } from 'ember-percy';
 
 moduleForAcceptance('Acceptance | dummy');
 

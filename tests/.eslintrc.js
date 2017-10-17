@@ -10,7 +10,9 @@ module.exports = {
   env: {
     browser: true
   },
-  globals: {},
+  globals: {
+    'percySnapshot': true
+  },
   rules: {
     'no-cond-assign': [
       'error',
