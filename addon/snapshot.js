@@ -1,5 +1,3 @@
-import { getNativeXhr } from './native-xhr';
-import { maybeDisableMockjax, maybeResetMockjax } from './mockjax-wrapper';
 import ajax from 'ember-fetch/ajax';
 import run from 'ember-runloop';
 
@@ -26,6 +24,15 @@ function getDoctype() {
     (doctypeNode.systemId ? ' "' + doctypeNode.systemId + '"' : '') +
     '>';
   return doctype;
+}
+
+function bubbleErrors(response) {
+  if (response.status === 400) {
+    // Bubble up 400 errors, ie. when given options are invalid.
+    let error = new Error(response.statusText);
+    error.response = response;
+    throw error;
+  }
 }
 
 // Set the property value into the attribute value for snapshotting inputs
@@ -101,26 +108,24 @@ export function percySnapshot(name, options) {
   // We need to use the original DOM to keep the head stylesheet around.
   domCopy.querySelector('body').innerHTML = snapshotHtml;
 
+  let { widths, breakpoints, enableJavaScript } = options;
+  let content = getDoctype() + domCopy.outerHTML;
+
   run(function() {
-    maybeDisableMockjax();
-    ajax('/_percy/snapshot', {
-      xhr: getNativeXhr,
+    return ajax('/_percy/snapshot', {
+      mode: 'cors',
       method: 'POST',
-      contentType: 'application/json; charset=utf-8',
-      data: JSON.stringify({
-        name: name,
-        content: getDoctype() + domCopy.outerHTML,
-        widths: options.widths,
-        breakpoints: options.breakpoints,
-        enableJavaScript: options.enableJavaScript,
-      }),
-      statusCode: {
-        400: function(jqXHR) {
-          // Bubble up 400 errors, ie. when given options are invalid.
-          throw jqXHR.responseText;
-        },
-      }
-    });
-    maybeResetMockjax();
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+      },
+      body: JSON.stringify({
+        name,
+        content,
+        widths,
+        breakpoints,
+        enableJavaScript,
+      })
+    })
+    .then(bubbleErrors);
   });
 }

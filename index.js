@@ -180,7 +180,6 @@ module.exports = {
     if (type === 'test-body-footer') {
       return "\
         <script> \
-          require('ember-percy/native-xhr')['default'](); \
           require('ember-percy/finalize')['default'](); \
         </script> \
       ";
