@@ -11,6 +11,10 @@ module.exports = {
   env: {
     browser: true
   },
+  globals: {
+    'percySnapshot': true,
+    'Promise': true
+  },
   rules: {
     'no-cond-assign': [
       'error',
@@ -34,6 +38,7 @@ module.exports = {
     'no-eq-null': 'error',
     'no-unused-vars': 'error',
     'ember/no-global-jquery': 'warn',
-    'ember/no-jquery': 'warn'
+    'ember/no-jquery': 'warn',
+    'ember/named-functions-in-promises': 'off'
   }
 };
