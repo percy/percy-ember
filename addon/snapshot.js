@@ -100,13 +100,14 @@ export function percySnapshot(name, options) {
   }
 
   snapshotRoot = setAttributeValues(snapshotRoot);
-  snapshotRoot = setTextareaContent(snapshotRoot);
 
   let snapshotHtml = snapshotRoot.innerHTML;
 
   // Hoist the testing container contents up to the body.
   // We need to use the original DOM to keep the head stylesheet around.
   domCopy.querySelector('body').innerHTML = snapshotHtml;
+
+  domCopy = setTextareaContent(domCopy);
 
   let { widths, breakpoints, enableJavaScript } = options;
   let content = getDoctype() + domCopy.outerHTML;
