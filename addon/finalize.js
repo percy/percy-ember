@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import $ from 'jquery';
 import { getNativeXhr } from './native-xhr';
 import { maybeDisableMockjax, maybeResetMockjax } from './mockjax-wrapper';
 
@@ -16,7 +16,7 @@ function finalizeBuildOnce(config, data, callback) {
     async: false,
     timeout: 30000,
   };
-  Ember.$.ajax('/_percy/finalize_build', options)
+  $.ajax('/_percy/finalize_build', options)
     .done( () => {
       if(callback) {
         callback();
