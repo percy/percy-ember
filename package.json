@@ -1,6 +1,6 @@
 {
   "name": "ember-percy",
-  "version": "1.2.20",
+  "version": "1.2.21",
   "description": "Ember addon for visual regression testing with Percy (https://percy.io).",
   "directories": {
     "doc": "doc",
