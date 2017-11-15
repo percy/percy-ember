@@ -1,6 +1,6 @@
 {
   "name": "ember-percy",
-  "version": "1.2.20",
+  "version": "1.2.21",
   "description": "Ember addon for visual regression testing with Percy (https://percy.io).",
   "directories": {
     "doc": "doc",
@@ -56,7 +56,7 @@
     "ember-cli-babel": "^6.8.2",
     "es6-promise-pool": "^2.4.1",
     "global": "^4.3.2",
-    "percy-client": "^2.1.3",
+    "percy-client": "^2.4.2",
     "walk": "^2.3.9"
   },
   "ember-addon": {
