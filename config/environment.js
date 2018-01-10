@@ -1,4 +1,4 @@
-/*jshint node:true*/
+/* eslint node: true */
 'use strict';
 
 module.exports = function(/* environment, appConfig */) {

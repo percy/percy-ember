@@ -1,22 +1,31 @@
----
+sudo: false
+dist: trusty
+
+addons:
+  chrome: stable
+
 language: node_js
 node_js:
   - "4"
-
-sudo: false
+  - "6"
+  - "8"
 
 cache:
   yarn: true
   directories:
-    - node_modules
+    - $HOME/.npm
+    - $HOME/.cache
 
 env:
-  # we recommend testing LTS's and latest stable release (bonus points to beta/canary)
-  - PERCY_ENABLE=0 EMBER_TRY_SCENARIO=ember-1.13
-  - PERCY_ENABLE=0 EMBER_TRY_SCENARIO=ember-lts-2.4
-  - EMBER_TRY_SCENARIO=ember-release
-  - PERCY_ENABLE=0 EMBER_TRY_SCENARIO=ember-beta
-  - PERCY_ENABLE=0 EMBER_TRY_SCENARIO=ember-canary
+  global:
+    - JOBS=1
+  matrix:
+    - PERCY_ENABLE=0 EMBER_TRY_SCENARIO=ember-1.13
+    - PERCY_ENABLE=0 EMBER_TRY_SCENARIO=ember-lts-2.8
+    - PERCY_ENABLE=0 EMBER_TRY_SCENARIO=ember-lts-2.12
+    - EMBER_TRY_SCENARIO=ember-release
+    - PERCY_ENABLE=0 EMBER_TRY_SCENARIO=ember-beta
+    - PERCY_ENABLE=0 EMBER_TRY_SCENARIO=ember-canary
 
 matrix:
   fast_finish: true
@@ -27,8 +36,6 @@ matrix:
 before_install:
   - yarn global add bower
   - bower --version
-  - yarn add phantomjs-prebuilt
-  - node_modules/phantomjs-prebuilt/bin/phantomjs --version
 
 install:
   - yarn
@@ -36,5 +43,5 @@ install:
 
 script:
   # Usually, it's ok to finish the test scenario without reverting
-  #  to the addon's original dependency state, skipping "cleanup".
+  # to the addon's original dependency state, skipping "cleanup".
   - ember try:one $EMBER_TRY_SCENARIO test --skip-cleanup

@@ -1,6 +1,7 @@
 # Test against the latest version of this Node.js version
 environment:
   matrix:
+    - nodejs_version: "4"
     - nodejs_version: "6"
     - nodejs_version: "8"
 
@@ -10,6 +11,7 @@ install:
   - ps: Install-Product node $env:nodejs_version
 
   - npm install -g yarn
+  - npm install -g bower
   - npm install -g phantomjs-prebuilt
 
   # install modules
@@ -20,6 +22,7 @@ test_script:
   # Output useful info for debugging.
   - node --version
   - yarn --version
+  - bower --version
   # run tests
   - yarn build
   - yarn test

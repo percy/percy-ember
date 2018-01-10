@@ -1,6 +1,13 @@
-/*jshint node:true*/
+/* eslint node: true */
+
 module.exports = {
+  useYarn: true,
   scenarios: [
+    {
+      name: 'default',
+      bower: { },
+      npm: { }
+    },
     {
       name: 'ember-1.13',
       bower: {
@@ -10,16 +17,42 @@ module.exports = {
         resolutions: {
           'ember': '~1.13.0'
         }
+      },
+      npm: {
+        devDependencies: {
+          'ember-native-dom-event-dispatcher': null,
+          'ember-source': null
+        }
       }
     },
     {
-      name: 'ember-lts-2.4',
+      name: 'ember-lts-2.8',
       bower: {
         dependencies: {
-          'ember': 'components/ember#lts-2-4'
+          'ember': 'components/ember#lts-2-8'
         },
         resolutions: {
-          'ember': 'lts-2-4'
+          'ember': 'lts-2-8'
+        }
+      },
+      npm: {
+        devDependencies: {
+          'ember-native-dom-event-dispatcher': null,
+          'ember-source': null
+        }
+      }
+    },
+    {
+      name: 'ember-lts-2.12',
+      bower: {
+        dependencies: {
+          'ember': null
+        }
+      },
+      npm: {
+        devDependencies: {
+          'ember-source': '~2.12.0',
+          'ember-native-dom-event-dispatcher': null
         }
       }
     },
@@ -32,6 +65,11 @@ module.exports = {
         resolutions: {
           'ember': 'release'
         }
+      },
+      npm: {
+        devDependencies: {
+          'ember-source': null
+        }
       }
     },
     {
@@ -43,6 +81,11 @@ module.exports = {
         resolutions: {
           'ember': 'beta'
         }
+      },
+      npm: {
+        devDependencies: {
+          'ember-source': null
+        }
       }
     },
     {
@@ -53,6 +96,11 @@ module.exports = {
         },
         resolutions: {
           'ember': 'canary'
+        }
+      },
+      npm: {
+        devDependencies: {
+          'ember-source': null
         }
       }
     }
