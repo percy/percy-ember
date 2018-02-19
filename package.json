@@ -10,6 +10,7 @@
     "build": "ember build --environment test",
     "start": "ember server",
     "pretest": "bower cache clean && bower install",
+    "lint:js": "eslint ./*.js app config lib server tests",
     "test": "ember try:each",
     "test:one": "ember try:one ember-release",
     "test:node_debug": "node debug node_modules/ember-cli/bin/ember test"
