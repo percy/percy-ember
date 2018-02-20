@@ -1,4 +1,5 @@
-/* jshint node: true */
+/* eslint no-console: off */
+
 'use strict';
 
 var crypto = require('crypto');
@@ -82,7 +83,7 @@ function gatherBuildResources(percyClient, buildDir) {
   walk.walkSync(buildDir, walkOptions);
 
   return hashToResource;
-};
+}
 
 // Helper method to parse missing-resources from an API response.
 function parseMissingResources(response) {
@@ -105,7 +106,6 @@ var percyClient;
 var percyConfig;
 var normalizedRootUrl;
 var percyBuildPromise;
-var seenSnapshotNames = [];
 var buildResourceUploadPromises = [];
 var snapshotResourceUploadPromises = [];
 var isPercyEnabled = true;
@@ -137,18 +137,20 @@ module.exports = {
 
   _emberSourceVersion: function() {
     try {
+      // eslint-disable-next-line node/no-unpublished-require
       return require('ember-source/package.json').version;
     } catch (e) {
       return 'unknown';
-    };
+    }
   },
 
   _emberCliVersion: function() {
     try {
+      // eslint-disable-next-line node/no-unpublished-require
       return require('ember-cli/lib/utilities/version-utils').emberCLIVersion();
     } catch (e) {
       return 'unknown';
-    };
+    }
   },
 
   // Only allow the addon to be incorporated in non-production envs.
@@ -266,7 +268,7 @@ module.exports = {
                 // Start the build resource upload and add it to a collection we can block on later
                 // because build resources must be fully uploaded before snapshots are finalized.
                 var promise = percyClient.uploadResource(percyBuildData.id, content);
-                promise.then(function(response) {
+                promise.then(function() {
                   console.log('\n[percy] Uploaded new build resource: ' + resource.resourceUrl);
                 }, handlePercyFailure);
                 buildResourceUploadPromises.push(promise);
@@ -333,7 +335,7 @@ module.exports = {
     app.use(bodyParser.json({limit: '50mb'}));
 
     // Snapshot middleware, this is the endpoint that the percySnapshot() test helper hits.
-    app.use('/_percy/snapshot', function(request, response, next) {
+    app.use('/_percy/snapshot', function(request, response) {
       var data = request.body;
 
       if (!isPercyEnabled) {
@@ -411,7 +413,6 @@ module.exports = {
           if (missingResources.length > 0) {
             // We assume there is only one missing resource here and it is the root resource.
             // All other resources should be build resources.
-            var missingResource = missingResources[0];
             percyClient.uploadResource(percyBuildData.id, rootResource.content).then(function() {
               resolveAfterResourceUploaded();
 
@@ -447,7 +448,7 @@ module.exports = {
       response.contentType('application/json');
       response.send(JSON.stringify({success: true}));
     });
-    app.use('/_percy/finalize_build', function(request, response, next) {
+    app.use('/_percy/finalize_build', function(request, response) {
       // Important, this middleware must always return a response because the ajax call to
       // finalize_build is "async: false" and prevents testem from shutting down the browser
       // until this response.

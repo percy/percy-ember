@@ -52,6 +52,7 @@ module.exports = function(environment) {
     }
   }
 
+  // eslint-disable-next-line no-empty
   if (environment === 'production') {
 
   }
