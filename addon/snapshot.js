@@ -1,6 +1,10 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import $ from 'jquery';
 import { getNativeXhr } from './native-xhr';
-import { maybeDisableMockjax, maybeResetMockjax } from './mockjax-wrapper';
+import {
+  maybeDisableMockjax,
+  maybeResetMockjax
+} from './mockjax-wrapper';
 
 function getDoctype() {
   let doctypeNode = document.doctype;
@@ -26,8 +30,8 @@ function setAttributeValues(dom) {
      input[type=password], input[type=number], input[type=checkbox], input[type=radio]`
   );
 
-  Ember.$(elems).each(function() {
-    let elem = Ember.$(this);
+  $(elems).each(function() {
+    let elem = $(this);
     switch(elem.attr('type')) {
       case 'checkbox':
       case 'radio':
@@ -46,7 +50,7 @@ function setAttributeValues(dom) {
 // jQuery clone() does not copy textarea contents, so we explicitly do it here.
 function setTextareaContent(dom) {
   dom.find('textarea').each(function() {
-    let elem = Ember.$(this);
+    let elem = $(this);
     elem.text(elem.val());
   });
 
@@ -74,7 +78,7 @@ export function percySnapshot(name, options) {
 
   // Create a full-page DOM snapshot from the current testing page.
   // TODO(fotinakis): more memory-efficient way to do this?
-  let domCopy = Ember.$('html').clone();
+  let domCopy = $('html').clone();
   let testingContainer = domCopy.find('#ember-testing');
 
   if (scope) {
@@ -92,9 +96,9 @@ export function percySnapshot(name, options) {
   // We need to use the original DOM to keep the head stylesheet around.
   domCopy.find('body').html(snapshotHtml);
 
-  Ember.run(function() {
+  run(function() {
     maybeDisableMockjax();
-    Ember.$.ajax('/_percy/snapshot', {
+    $.ajax('/_percy/snapshot', {
       xhr: getNativeXhr,
       method: 'POST',
       contentType: 'application/json; charset=utf-8',
