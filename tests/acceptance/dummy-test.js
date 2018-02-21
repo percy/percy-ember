@@ -43,3 +43,11 @@ test('enableJavaScript option can pass through', function(assert) {
   });
   percySnapshot(assert, {enableJavaScript: true});
 });
+
+test('attributes on rootElement are copied to the DOM snapshot', function(assert) {
+  visit('/test-route-styles');
+  andThen(function() {
+    assert.equal(currentURL(), '/test-route-styles');
+  });
+  percySnapshot(assert);
+});

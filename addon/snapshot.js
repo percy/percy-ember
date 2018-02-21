@@ -26,7 +26,7 @@ function setAttributeValues(dom) {
 
   // Limit scope to inputs only as textareas do not retain their value when cloned
   let elems = dom.find(
-    `input[type=text], input[type=search], input[type=tel], input[type=url], input[type=email], 
+    `input[type=text], input[type=search], input[type=tel], input[type=url], input[type=email],
      input[type=password], input[type=number], input[type=checkbox], input[type=radio]`
   );
 
@@ -77,9 +77,18 @@ export function percySnapshot(name, options) {
   let scope = options.scope;
 
   // Create a full-page DOM snapshot from the current testing page.
-  // TODO(fotinakis): more memory-efficient way to do this?
   let domCopy = $('html').clone();
   let testingContainer = domCopy.find('#ember-testing');
+
+  // Copy attributes from Ember's rootElement to the DOM snapshot <body> tag. Some applications rely
+  // on setting attributes on the Ember rootElement (for example, to drive dynamic per-route
+  // styling). In tests these attributes are added to the #ember-testing container and would be lost
+  // in the DOM hoisting below, so we copy them to the to the snapshot's <body> tag to
+  // make sure that they persist in the DOM snapshot.
+  let attributesToCopy = testingContainer.prop('attributes');
+  $.each(attributesToCopy, function() {
+    domCopy.attr(this.name, this.value);
+  });
 
   if (scope) {
     snapshotRoot = testingContainer.find(scope);
