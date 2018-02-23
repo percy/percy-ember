@@ -78,6 +78,7 @@ export function percySnapshot(name, options) {
 
   // Create a full-page DOM snapshot from the current testing page.
   let domCopy = $('html').clone();
+  let domCopyBody = domCopy.find('body');
   let testingContainer = domCopy.find('#ember-testing');
 
   // Copy attributes from Ember's rootElement to the DOM snapshot <body> tag. Some applications rely
@@ -87,7 +88,7 @@ export function percySnapshot(name, options) {
   // make sure that they persist in the DOM snapshot.
   let attributesToCopy = testingContainer.prop('attributes');
   $.each(attributesToCopy, function() {
-    domCopy.attr(this.name, this.value);
+    domCopyBody.attr(this.name, this.value);
   });
 
   if (scope) {
@@ -103,7 +104,7 @@ export function percySnapshot(name, options) {
 
   // Hoist the testing container contents up to the body.
   // We need to use the original DOM to keep the head stylesheet around.
-  domCopy.find('body').html(snapshotHtml);
+  domCopyBody.html(snapshotHtml);
 
   run(function() {
     maybeDisableMockjax();
