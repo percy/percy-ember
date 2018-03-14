@@ -7,7 +7,7 @@ const Router = EmberRouter.extend({
   rootURL: config.rootURL,
 
   addDataRoute: on('didTransition', function() {
-    // document.querySelector('.ember-application').attr('data-route', this.currentRouteName);
+    document.querySelector('.ember-application').setAttribute('data-route', this.currentRouteName);
   }),
 });
 

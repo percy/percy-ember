@@ -156,7 +156,6 @@ module.exports = {
   included: function(app) {
     this._super.included(app);
     app.import('vendor/percy-jquery.js', {type: 'test'});
-    return;
   },
 
   // Only allow the addon to be incorporated in non-production envs.
