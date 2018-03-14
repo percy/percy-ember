@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import { on } from '@ember/object/evented';
 import EmberRouter from '@ember/routing/router';
 import config from './config/environment';
@@ -8,7 +7,7 @@ const Router = EmberRouter.extend({
   rootURL: config.rootURL,
 
   addDataRoute: on('didTransition', function() {
-    $('.ember-application').attr('data-route', this.currentRouteName);
+    // document.querySelector('.ember-application').attr('data-route', this.currentRouteName);
   }),
 });
 
