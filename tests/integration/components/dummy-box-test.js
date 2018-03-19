@@ -44,7 +44,7 @@ module('Integration | Component | dummy box', function(hooks) {
       this.set('inputType', inputType);
       this.set('inputValue', `Testing ${inputType} input type`);
 
-      await render(hbs`asdlkfaslkdfklasdflkasdf {{input value="Testing" type="inputType"}}`);
+      await render(hbs`{{input value="Testing" type="inputType"}}`);
 
       assert.equal(findAll('input')[0].value, 'Testing', 'value property is set');
       assert.equal(findAll('input')[0].getAttribute('value'), null, 'value attribute is not set');
@@ -70,11 +70,11 @@ module('Integration | Component | dummy box', function(hooks) {
     this.set('isChecked', false);
     await render(hbs`{{input type="radio" checked=isChecked}}`);
     assert.equal(findAll('input')[0].checked, false, 'radio button is not checked');
-    percySnapshot('checkbox without check');
+    percySnapshot('radio unselected');
 
     await click('input');
     assert.equal(findAll('input')[0].checked, true, 'radio button is checked');
-    percySnapshot('checkbox with check');
+    percySnapshot('radio selected');
   });
 
   test('it snapshots textarea values', async function(assert) {
