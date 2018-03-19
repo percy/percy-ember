@@ -53,18 +53,16 @@ module('Integration | Component | dummy box', function(hooks) {
     });
   });
 
-  // TODO: clicking on inputs apparently still relys on jquery?
-  //
-  // test('it snapshots checkbox values', async function(assert) {
-  //   this.set('isChecked', false);
-  //   await render(hbs`{{input type="checkbox" checked=isChecked}}`);
-  //   assert.equal(findAll('input')[0].checked, false, 'checkbox is not checked');
-  //   percySnapshot('checkbox without check');
-  //
-  //   await click('input');
-  //   // assert.equal(findAll('input')[0].checked, true, 'checkbox is checked');
-  //   // percySnapshot('checkbox with check');
-  // });
+  test('it snapshots checkbox values', async function(assert) {
+    this.set('isChecked', false);
+    await render(hbs`{{input type="checkbox" checked=isChecked}}`);
+    assert.equal(findAll('input')[0].checked, false, 'checkbox is not checked');
+    percySnapshot('checkbox without check');
+
+    await click('input');
+    assert.equal(findAll('input')[0].checked, true, 'checkbox is checked');
+    percySnapshot('checkbox with check');
+  });
 
   test('it snapshots radio button values', async function(assert) {
     this.set('isChecked', false);
