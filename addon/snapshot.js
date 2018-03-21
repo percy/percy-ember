@@ -66,10 +66,9 @@ function copyAttributesToBodyCopy(bodyCopy, testingContainer) {
   let attributesToCopy = testingContainer.prop('attributes');
   $.each(attributesToCopy, function() {
     // Special case for the class attribute - append new classes onto existing body classes
-    if(this.name == 'class') {
+    if (this.name === 'class') {
       bodyCopy.attr(this.name, bodyCopy.attr('class') + ' ' + this.value);
-    }
-    else {
+    } else {
       bodyCopy.attr(this.name, this.value);
     }
   });
