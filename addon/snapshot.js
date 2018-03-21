@@ -60,23 +60,14 @@ function setTextareaContent(dom) {
 // Copy attributes from Ember's rootElement to the DOM snapshot <body> tag. Some applications rely
 // on setting attributes on the Ember rootElement (for example, to drive dynamic per-route
 // styling). In tests these attributes are added to the #ember-testing container and would be lost
-// in the DOM hoisting below, so we copy them to the to the snapshot's <body> tag to
+// in the DOM hoisting, so we copy them to the to the snapshot's <body> tag to
 // make sure that they persist in the DOM snapshot.
 function copyAttributesToBodyCopy(bodyCopy, testingContainer) {
   let attributesToCopy = testingContainer.prop('attributes');
   $.each(attributesToCopy, function() {
-    // Treat the class attribute as special - merge classes from the body and testingContainer
+    // Special case for the class attribute - append new classes onto existing body classes
     if(this.name == 'class') {
-      if(bodyCopy.attr('class') && this.value) {
-        let bodyClasses = bodyCopy.attr('class').split(' ');
-        let testingContainerClasses = this.value.split(' ');
-        testingContainerClasses.forEach(function(className) {
-          if(!bodyClasses.includes(className)) {
-            bodyClasses.push(className);
-          }
-        })
-        bodyCopy.attr('class', bodyClasses.join(' '));
-      }
+      bodyCopy.attr(this.name, bodyCopy.attr('class') + ' ' + this.value);
     }
     else {
       bodyCopy.attr(this.name, this.value);
