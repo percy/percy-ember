@@ -51,3 +51,13 @@ test('attributes on rootElement are copied to the DOM snapshot', function(assert
   });
   percySnapshot(assert);
 });
+
+test('class on body that turns it green is preserved the DOM snapshot', function(assert) {
+  visit('/');
+  // find('body').attr('class', 'all-green');
+  console.log(find('body'));
+  andThen(function() {
+    assert.equal(currentURL(), '/');
+  });
+  percySnapshot(assert);
+});
