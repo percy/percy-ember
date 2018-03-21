@@ -2,6 +2,10 @@ body {
   font-size: 26px;
 }
 
+.AllGreen {
+  background: green;
+}
+
 .DummyBox {
   background: lightblue;
   padding: 20px;

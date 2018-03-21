@@ -57,6 +57,24 @@ function setTextareaContent(dom) {
   return dom;
 }
 
+// Copy attributes from Ember's rootElement to the DOM snapshot <body> tag. Some applications rely
+// on setting attributes on the Ember rootElement (for example, to drive dynamic per-route
+// styling). In tests these attributes are added to the #ember-testing container and would be lost
+// in the DOM hoisting, so we copy them to the to the snapshot's <body> tag to
+// make sure that they persist in the DOM snapshot.
+function copyAttributesToBodyCopy(bodyCopy, testingContainer) {
+  let attributesToCopy = testingContainer.prop('attributes');
+  percyJQuery.each(attributesToCopy, function() {
+    // Special case for the class attribute - append new classes onto existing body classes
+    if (this.name === 'class') {
+      bodyCopy.attr(this.name, bodyCopy.attr('class') + ' ' + this.value);
+    } else {
+      bodyCopy.attr(this.name, this.value);
+    }
+  });
+}
+
+
 export function percySnapshot(name, options) {
   // Skip if Testem is not available (we're probably running from `ember server` and Percy is not
   // enabled anyway).
@@ -78,18 +96,10 @@ export function percySnapshot(name, options) {
 
   // Create a full-page DOM snapshot from the current testing page.
   let domCopy = percyJQuery('html').clone();
-  let domCopyBody = domCopy.find('body');
+  let bodyCopy = domCopy.find('body');
   let testingContainer = domCopy.find('#ember-testing');
 
-  // Copy attributes from Ember's rootElement to the DOM snapshot <body> tag. Some applications rely
-  // on setting attributes on the Ember rootElement (for example, to drive dynamic per-route
-  // styling). In tests these attributes are added to the #ember-testing container and would be lost
-  // in the DOM hoisting below, so we copy them to the to the snapshot's <body> tag to
-  // make sure that they persist in the DOM snapshot.
-  let attributesToCopy = testingContainer.prop('attributes');
-  percyJQuery.each(attributesToCopy, function() {
-    domCopyBody.attr(this.name, this.value);
-  });
+  copyAttributesToBodyCopy(bodyCopy, testingContainer);
 
   if (scope) {
     snapshotRoot = testingContainer.find(scope);
@@ -104,7 +114,7 @@ export function percySnapshot(name, options) {
 
   // Hoist the testing container contents up to the body.
   // We need to use the original DOM to keep the head stylesheet around.
-  domCopyBody.html(snapshotHtml);
+  bodyCopy.html(snapshotHtml);
 
   run(function() {
     maybeDisableMockjax();

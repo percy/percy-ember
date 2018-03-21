@@ -47,3 +47,19 @@ module('Acceptance | dummy', function(hooks) {
     percySnapshot(assert);
   });
 });
+
+test('class on body that turns it green is preserved the DOM snapshot', function(assert) {
+  visit('/');
+  // find's default scope is the testing container, so be sure to rescope to html
+  let body = find('body', 'html');
+  body.attr('class', 'AllGreen');
+  andThen(function() {
+    assert.equal(currentURL(), '/');
+  });
+  percySnapshot(assert);
+  assert.equal(body.attr('class').includes('AllGreen'), true);
+  // Remove AllGreen so it doesn't impact other tests
+  andThen(function() {
+    body.attr('class', '');
+  });
+});
