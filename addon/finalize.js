@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import percyJQuery from 'percy-jquery';
 import { getNativeXhr } from './native-xhr';
 import {
   maybeDisableMockjax,
@@ -19,7 +19,7 @@ function finalizeBuildOnce(config, data, callback) {
     async: false,
     timeout: 30000,
   };
-  $.ajax('/_percy/finalize_build', options)
+  percyJQuery.ajax('/_percy/finalize_build', options)
     .done( () => {
       if(callback) {
         callback();

@@ -1,5 +1,5 @@
 import { run } from '@ember/runloop';
-import $ from 'jquery';
+import percyJQuery from 'percy-jquery';
 import { getNativeXhr } from './native-xhr';
 import {
   maybeDisableMockjax,
@@ -30,8 +30,8 @@ function setAttributeValues(dom) {
      input[type=password], input[type=number], input[type=checkbox], input[type=radio]`
   );
 
-  $(elems).each(function() {
-    let elem = $(this);
+  percyJQuery(elems).each(function() {
+    let elem = percyJQuery(this);
     switch(elem.attr('type')) {
       case 'checkbox':
       case 'radio':
@@ -50,7 +50,7 @@ function setAttributeValues(dom) {
 // jQuery clone() does not copy textarea contents, so we explicitly do it here.
 function setTextareaContent(dom) {
   dom.find('textarea').each(function() {
-    let elem = $(this);
+    let elem = percyJQuery(this);
     elem.text(elem.val());
   });
 
@@ -64,7 +64,7 @@ function setTextareaContent(dom) {
 // make sure that they persist in the DOM snapshot.
 function copyAttributesToBodyCopy(bodyCopy, testingContainer) {
   let attributesToCopy = testingContainer.prop('attributes');
-  $.each(attributesToCopy, function() {
+  percyJQuery.each(attributesToCopy, function() {
     // Special case for the class attribute - append new classes onto existing body classes
     if (this.name === 'class') {
       bodyCopy.attr(this.name, bodyCopy.attr('class') + ' ' + this.value);
@@ -95,7 +95,7 @@ export function percySnapshot(name, options) {
   let scope = options.scope;
 
   // Create a full-page DOM snapshot from the current testing page.
-  let domCopy = $('html').clone();
+  let domCopy = percyJQuery('html').clone();
   let bodyCopy = domCopy.find('body');
   let testingContainer = domCopy.find('#ember-testing');
 
@@ -118,7 +118,7 @@ export function percySnapshot(name, options) {
 
   run(function() {
     maybeDisableMockjax();
-    $.ajax('/_percy/snapshot', {
+    percyJQuery.ajax('/_percy/snapshot', {
       xhr: getNativeXhr,
       method: 'POST',
       contentType: 'application/json; charset=utf-8',
