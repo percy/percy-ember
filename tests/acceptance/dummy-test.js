@@ -1,4 +1,4 @@
-import { currentURL, visit } from '@ember/test-helpers';
+import { currentURL, visit, findAll } from '@ember/test-helpers';
 import { module, test } from 'qunit';
 import { setupApplicationTest } from 'ember-qunit';
 import { percySnapshot } from 'ember-percy';
@@ -46,20 +46,17 @@ module('Acceptance | dummy', function(hooks) {
     assert.equal(currentURL(), '/test-route-styles');
     percySnapshot(assert);
   });
-});
 
-test('class on body that turns it green is preserved the DOM snapshot', function(assert) {
-  visit('/');
-  // find's default scope is the testing container, so be sure to rescope to html
-  let body = find('body', 'html');
-  body.attr('class', 'AllGreen');
-  andThen(function() {
+  test('class on body that turns it green is preserved the DOM snapshot', async function(assert) {
+    await visit('/');
+    // find's default scope is the testing container, so be sure to rescope to html
+    let body = document.querySelector('body');
+    body.setAttribute('class', 'AllGreen');
     assert.equal(currentURL(), '/');
-  });
-  percySnapshot(assert);
-  assert.equal(body.attr('class').includes('AllGreen'), true);
-  // Remove AllGreen so it doesn't impact other tests
-  andThen(function() {
-    body.attr('class', '');
+    percySnapshot(assert);
+
+    // Remove AllGreen so it doesn't impact other tests
+    assert.equal(body.getAttribute('class').includes('AllGreen'), true);
+    body.removeAttribute('class');
   });
 });
