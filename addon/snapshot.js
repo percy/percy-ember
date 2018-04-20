@@ -25,22 +25,22 @@ function setAttributeValues(dom) {
   // List of input types here https://www.w3.org/TR/html5/forms.html#the-input-element
 
   // Limit scope to inputs only as textareas do not retain their value when cloned
-  let elems = dom.find(
+  let elems = dom.querySelectorAll(
     `input[type=text], input[type=search], input[type=tel], input[type=url], input[type=email],
      input[type=password], input[type=number], input[type=checkbox], input[type=radio]`
   );
 
   percyJQuery(elems).each(function() {
-    let elem = percyJQuery(this);
-    switch(elem.attr('type')) {
+    let elem = this;
+    switch(elem.getAttribute('type')) {
       case 'checkbox':
       case 'radio':
-        if (elem.is(':checked')) {
-          elem.attr('checked', '');
+        if (elem.checked) {
+          elem.setAttribute('checked', '');
         }
         break;
       default:
-        elem.attr('value', elem.val());
+        elem.setAttribute('value', elem.value);
     }
   });
 
@@ -49,9 +49,8 @@ function setAttributeValues(dom) {
 
 // jQuery clone() does not copy textarea contents, so we explicitly do it here.
 function setTextareaContent(dom) {
-  dom.find('textarea').each(function() {
-    let elem = percyJQuery(this);
-    elem.text(elem.val());
+  dom.querySelectorAll('textarea').forEach((elem) => {
+    elem.textContent = elem.value;
   });
 
   return dom;
@@ -63,13 +62,13 @@ function setTextareaContent(dom) {
 // in the DOM hoisting, so we copy them to the to the snapshot's <body> tag to
 // make sure that they persist in the DOM snapshot.
 function copyAttributesToBodyCopy(bodyCopy, testingContainer) {
-  let attributesToCopy = testingContainer.prop('attributes');
+  let attributesToCopy = testingContainer.attributes;
   percyJQuery.each(attributesToCopy, function() {
     // Special case for the class attribute - append new classes onto existing body classes
     if (this.name === 'class') {
-      bodyCopy.attr(this.name, bodyCopy.attr('class') + ' ' + this.value);
+      bodyCopy.setAttribute(this.name, bodyCopy.getAttribute('class') + ' ' + this.value);
     } else {
-      bodyCopy.attr(this.name, this.value);
+      bodyCopy.setAttribute(this.name, this.value);
     }
   });
 }
@@ -95,14 +94,14 @@ export function percySnapshot(name, options) {
   let scope = options.scope;
 
   // Create a full-page DOM snapshot from the current testing page.
-  let domCopy = percyJQuery('html').clone();
-  let bodyCopy = domCopy.find('body');
-  let testingContainer = domCopy.find('#ember-testing');
+  let domCopy = document.documentElement.cloneNode(true);
+  let bodyCopy = domCopy.querySelector('body');
+  let testingContainer = domCopy.querySelector('#ember-testing');
 
   copyAttributesToBodyCopy(bodyCopy, testingContainer);
 
   if (scope) {
-    snapshotRoot = testingContainer.find(scope);
+    snapshotRoot = testingContainer.querySelector(scope);
   } else {
     snapshotRoot = testingContainer;
   }
@@ -110,11 +109,11 @@ export function percySnapshot(name, options) {
   snapshotRoot = setAttributeValues(snapshotRoot);
   snapshotRoot = setTextareaContent(snapshotRoot);
 
-  let snapshotHtml = snapshotRoot.html();
+  let snapshotHtml = snapshotRoot.innerHTML;
 
   // Hoist the testing container contents up to the body.
   // We need to use the original DOM to keep the head stylesheet around.
-  bodyCopy.html(snapshotHtml);
+  bodyCopy.innerHTML = snapshotHtml;
 
   run(function() {
     maybeDisableMockjax();
@@ -124,7 +123,7 @@ export function percySnapshot(name, options) {
       contentType: 'application/json; charset=utf-8',
       data: JSON.stringify({
         name: name,
-        content: getDoctype() + domCopy[0].outerHTML,
+        content: getDoctype() + domCopy.outerHTML,
         widths: options.widths,
         breakpoints: options.breakpoints,
         enableJavaScript: options.enableJavaScript,
