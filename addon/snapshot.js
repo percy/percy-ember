@@ -57,6 +57,28 @@ function setTextareaContent(dom) {
   return dom;
 }
 
+function serializeCanvasElements(originalDOM, clonedDOM) {
+  let originals = originalDOM.find('canvas');
+  let clones = clonedDOM.find('canvas');
+
+  for (let i = 0; i < originals.length && clones.length; i++) {
+    let original = originals[i];
+    let clone = clones[i];
+
+    let dataURL = original.toDataURL();
+
+    let imageElement = document.createElement('img');
+    for (let attribute of original.attributes) {
+      imageElement.setAttribute(attribute.name, attribute.value);
+    }
+    imageElement.setAttribute('src', dataURL);
+
+    clone.parentNode.replaceChild(imageElement, clone);
+  }
+
+  return clonedDOM;
+}
+
 // Copy attributes from Ember's rootElement to the DOM snapshot <body> tag. Some applications rely
 // on setting attributes on the Ember rootElement (for example, to drive dynamic per-route
 // styling). In tests these attributes are added to the #ember-testing container and would be lost
@@ -109,6 +131,10 @@ export function percySnapshot(name, options) {
 
   snapshotRoot = setAttributeValues(snapshotRoot);
   snapshotRoot = setTextareaContent(snapshotRoot);
+
+  if (options.experimentalSerializedCanvasElements) {
+    snapshotRoot = serializeCanvasElements(percyJQuery('html'), snapshotRoot);
+  }
 
   let snapshotHtml = snapshotRoot.html();
 
