@@ -28,62 +28,6 @@ var SKIPPED_ASSETS = [
   /\.log$/,
   /\.DS_Store$/
 ];
-var MAX_FILE_SIZE_BYTES = 15728640;  // 15MB.
-
-// Synchronously walk the build directory, read each file and calculate its SHA 256 hash,
-// and create a mapping of hashes to Resource objects.
-function gatherBuildResources(percyClient, buildDir) {
-  var hashToResource = {};
-  var walkOptions = {
-    // Follow symlinks because many assets in the ember build directory are just symlinks.
-    followLinks: true,
-
-    listeners: {
-      file: function (root, fileStats, next) {
-        var absolutePath = path.join(root, fileStats.name);
-        var resourceUrl = absolutePath.replace(buildDir, '');
-
-        if (path.sep == '\\') {
-          // Windows support: transform filesystem backslashes into forward-slashes for the URL.
-          resourceUrl = resourceUrl.replace(/\\/g, '/');
-        }
-
-        // Append the Ember rootURL if it exists.
-        resourceUrl = normalizedRootUrl + resourceUrl;
-
-        for (var i in SKIPPED_ASSETS) {
-          if (resourceUrl.match(SKIPPED_ASSETS[i])) {
-            next();
-            return;
-          }
-        }
-
-        // Skip large files.
-        if (fs.statSync(absolutePath)['size'] > MAX_FILE_SIZE_BYTES) {
-          console.warn('\n[percy][WARNING] Skipping large build resource: ', resourceUrl);
-          return;
-        }
-
-        // TODO(fotinakis): this is synchronous and potentially memory intensive, but we don't
-        // keep a reference to the content around so this should be garbage collected. Re-evaluate?
-        var content = fs.readFileSync(absolutePath);
-        var sha = crypto.createHash('sha256').update(content).digest('hex');
-
-        var resource = percyClient.makeResource({
-          resourceUrl: encodeURI(resourceUrl),
-          sha: sha,
-          localPath: absolutePath,
-        });
-
-        hashToResource[sha] = resource;
-        next();
-      }
-    }
-  };
-  walk.walkSync(buildDir, walkOptions);
-
-  return hashToResource;
-}
 
 // Helper method to parse missing-resources from an API response.
 function parseMissingResources(response) {
@@ -104,7 +48,6 @@ function handlePercyFailure(error) {
 // TODO: refactor to break down into a more modular design with less global state.
 var percyClient;
 var percyConfig;
-var normalizedRootUrl;
 var percyBuildPromise;
 var buildResourceUploadPromises = [];
 var snapshotResourceUploadPromises = [];
@@ -169,8 +112,8 @@ module.exports = {
   config: function(env, baseConfig) {
     percyConfig = baseConfig.percy || {};
 
-    // Store the Ember rootURL without a trailing slash, or a blank string.
-    normalizedRootUrl = (baseConfig.rootURL || '/').replace(/\/$/, '');
+    // Store the Ember rootURL to be used later.
+    percyConfig.baseUrlPath = baseConfig.rootURL;
 
     // Make sure the percy config has a 'breakpoints' object.
     percyConfig.breakpointsConfig = percyConfig.breakpointsConfig || {};
@@ -240,10 +183,9 @@ module.exports = {
 
     if (!isPercyEnabled) { return; }
 
-    var hashToResource = gatherBuildResources(percyClient, buildOutputDirectory);
-    var resources = [];
-    Object.keys(hashToResource).forEach(function(key) {
-      resources.push(hashToResource[key]);
+    var resources = percyClient.gatherBuildResources(buildOutputDirectory, {
+      baseUrlPath: percyConfig.baseUrlPath,
+      skippedPathRegexes: SKIPPED_ASSETS,
     });
 
     // Initialize the percy client and a new build.
@@ -260,6 +202,13 @@ module.exports = {
           // Upload all missing build resources.
           var missingResources = parseMissingResources(buildResponse);
           if (missingResources && missingResources.length > 0) {
+
+            // Note that duplicate resources with the same SHA will get clobbered here into this
+            // hash, but that is ok since we only use this to access the content below for upload.
+            var hashToResource = {};
+            resources.forEach(function(resource) {
+              hashToResource[resource.sha] = resource;
+            });
 
             var missingResourcesIndex = 0;
             var promiseGenerator = function() {
