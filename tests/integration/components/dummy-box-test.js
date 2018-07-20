@@ -83,4 +83,17 @@ module('Integration | Component | dummy box', function(hooks) {
 
     percySnapshot('textarea with value');
   });
+
+  test('it handles identical assets with different paths', async function(assert) {
+    await render(hbs`
+      {{#dummy-box}}
+        This box should have two identical images below:
+        <img src="/test-root-url/images/identical-image-1.png">
+        <img src="/test-root-url/images/identical-image-2.png">
+      {{/dummy-box}}
+    `);
+
+    percySnapshot('dummy box test with identical assets');
+    assert.ok(true);
+  });
 });
