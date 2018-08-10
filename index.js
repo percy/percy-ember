@@ -43,7 +43,7 @@ function handlePercyFailure(error) {
 
 // TODO: refactor to break down into a more modular design with less global state.
 var percyClient;
-var percyConfig;
+var percyConfig = {};
 var percyBuildPromise;
 var buildResourceUploadPromises = [];
 var snapshotResourceUploadPromises = [];
@@ -109,7 +109,7 @@ module.exports = {
     percyConfig = baseConfig.percy || {};
 
     // Store the Ember rootURL to be used later.
-    percyConfig.baseUrlPath = baseConfig.rootURL;
+    percyConfig.baseUrlPath = baseConfig.rootURL || '/';
 
     // Make sure the percy config has a 'breakpoints' object.
     percyConfig.breakpointsConfig = percyConfig.breakpointsConfig || {};
