@@ -56,7 +56,7 @@
     "body-parser": "^1.15.0",
     "ember-cli-babel": "^6.10.0",
     "es6-promise-pool": "^2.4.1",
-    "percy-client": "^2.10.0",
+    "percy-client": "https://github.com/percy/percy-js.git#map/update-build-creation-endpoint",
     "walk": "^2.3.9"
   },
   "ember-addon": {

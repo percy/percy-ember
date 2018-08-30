@@ -157,7 +157,8 @@ module.exports = {
       isPercyEnabled = false;
     }
 
-    if (token && repo && isPercyEnabled) {
+    if (token && isPercyEnabled) {
+      console.warn('[percy] Percy is running.');
       percyClient = new PercyClient({
         token: token,
         apiUrl: apiUrl,
@@ -166,14 +167,10 @@ module.exports = {
       });
     } else {
       isPercyEnabled = false;
-
-      if (environment.ci && !token) {
+      console.warn('[percy] Percy is not running.');
+      if (!token) {
         console.warn(
           '[percy][WARNING] Percy is disabled, no PERCY_TOKEN environment variable found.')
-      }
-      if (environment.ci && !repo) {
-        console.warn(
-          '[percy][WARNING] Percy is disabled, no PERCY_PROJECT environment variable found.')
       }
     }
 
