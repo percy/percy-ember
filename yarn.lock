@@ -5434,8 +5434,8 @@ path-type@^1.0.0:
     pinkie-promise "^2.0.0"
 
 "percy-client@https://github.com/percy/percy-js.git#map/update-build-creation-endpoint":
-  version "2.11.0"
-  resolved "https://github.com/percy/percy-js.git#aafc22504ccda932f763f7f9def39c9a64222c29"
+  version "2.11.1"
+  resolved "https://github.com/percy/percy-js.git#90adb9882817a1200537db998b60b8678671f276"
   dependencies:
     base64-js "^1.2.3"
     bluebird "^3.5.1"
