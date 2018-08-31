@@ -149,8 +149,6 @@ module.exports = {
 
     var token = process.env.PERCY_TOKEN;
     var apiUrl = process.env.PERCY_API; // Optional.
-    var environment = new Environment(process.env);
-    var repo = environment.repo;
 
     // Disable if Percy is explicitly disabled or if this is not an 'ember test' run.
     if (process.env.PERCY_ENABLE == '0' || process.env.EMBER_ENV !== 'test') {
@@ -182,7 +180,7 @@ module.exports = {
     });
 
     // Initialize the percy client and a new build.
-    percyBuildPromise = percyClient.createBuild(repo, {resources: resources});
+    percyBuildPromise = percyClient.createBuild({resources: resources});
 
     // Return a promise and only resolve when all build resources are uploaded, which
     // ensures that the output build dir is still available to be read from before deleted.
