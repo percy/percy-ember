@@ -5,7 +5,6 @@
 var fs = require('fs');
 var bodyParser = require('body-parser');
 var PercyClient = require('percy-client');
-var Environment = require('percy-client/dist/environment');
 var PromisePool = require('es6-promise-pool');
 
 // Some build assets we never want to upload.
