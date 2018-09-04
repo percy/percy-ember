@@ -5433,9 +5433,9 @@ path-type@^1.0.0:
     pify "^2.0.0"
     pinkie-promise "^2.0.0"
 
-"percy-client@https://github.com/percy/percy-js.git#map/update-build-creation-endpoint":
-  version "2.11.1"
-  resolved "https://github.com/percy/percy-js.git#90adb9882817a1200537db998b60b8678671f276"
+percy-client@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/percy-client/-/percy-client-3.0.0.tgz#86289f8224817cf550c9b21aaf994b7fa16f291d"
   dependencies:
     base64-js "^1.2.3"
     bluebird "^3.5.1"
