@@ -55,6 +55,7 @@ module.exports = {
 
   _clientInfo: function() {
     if(!this._clientInfoCache) {
+      // eslint-disable-next-line node/no-missing-require
       var version = require('./package.json').version;
       this._clientInfoCache = `${this.name}/${version}`;
     }
@@ -164,7 +165,6 @@ module.exports = {
       });
     } else {
       isPercyEnabled = false;
-      console.warn('[percy] Percy is not running.');
       if (!token) {
         console.warn(
           '[percy][WARNING] Percy is disabled, no PERCY_TOKEN environment variable found.')
