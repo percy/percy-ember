@@ -9,7 +9,6 @@
   "scripts": {
     "build": "ember build --environment test",
     "start": "ember server",
-    "pretest": "bower cache clean && bower install",
     "lint:js": "eslint ./*.js app config lib server tests",
     "test": "ember try:each",
     "test:one": "ember try:one ember-release",
@@ -22,7 +21,6 @@
   "author": "Perceptual Inc.",
   "license": "MIT",
   "devDependencies": {
-    "bower": "^1.8.2",
     "broccoli-asset-rev": "^2.4.5",
     "ember-cli": "~3.0.0",
     "ember-cli-app-version": "^3.1.3",
