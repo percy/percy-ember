@@ -5,7 +5,6 @@
 var fs = require('fs');
 var bodyParser = require('body-parser');
 var PercyClient = require('percy-client');
-var Environment = require('percy-client/dist/environment');
 var PromisePool = require('es6-promise-pool');
 
 // Some build assets we never want to upload.
@@ -56,6 +55,7 @@ module.exports = {
 
   _clientInfo: function() {
     if(!this._clientInfoCache) {
+      // eslint-disable-next-line node/no-missing-require
       var version = require('./package.json').version;
       this._clientInfoCache = `${this.name}/${version}`;
     }
@@ -149,15 +149,14 @@ module.exports = {
 
     var token = process.env.PERCY_TOKEN;
     var apiUrl = process.env.PERCY_API; // Optional.
-    var environment = new Environment(process.env);
-    var repo = environment.repo;
 
     // Disable if Percy is explicitly disabled or if this is not an 'ember test' run.
     if (process.env.PERCY_ENABLE == '0' || process.env.EMBER_ENV !== 'test') {
       isPercyEnabled = false;
     }
 
-    if (token && repo && isPercyEnabled) {
+    if (token && isPercyEnabled) {
+      console.warn('[percy] Percy is running.');
       percyClient = new PercyClient({
         token: token,
         apiUrl: apiUrl,
@@ -166,14 +165,9 @@ module.exports = {
       });
     } else {
       isPercyEnabled = false;
-
-      if (environment.ci && !token) {
+      if (!token) {
         console.warn(
           '[percy][WARNING] Percy is disabled, no PERCY_TOKEN environment variable found.')
-      }
-      if (environment.ci && !repo) {
-        console.warn(
-          '[percy][WARNING] Percy is disabled, no PERCY_PROJECT environment variable found.')
       }
     }
 
@@ -185,7 +179,7 @@ module.exports = {
     });
 
     // Initialize the percy client and a new build.
-    percyBuildPromise = percyClient.createBuild(repo, {resources: resources});
+    percyBuildPromise = percyClient.createBuild({resources: resources});
 
     // Return a promise and only resolve when all build resources are uploaded, which
     // ensures that the output build dir is still available to be read from before deleted.

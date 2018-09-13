@@ -5433,9 +5433,9 @@ path-type@^1.0.0:
     pify "^2.0.0"
     pinkie-promise "^2.0.0"
 
-percy-client@^2.10.0:
-  version "2.10.0"
-  resolved "https://registry.yarnpkg.com/percy-client/-/percy-client-2.10.0.tgz#9e70e5c51dc32721ea72fd35efe4b18657e897a6"
+percy-client@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/percy-client/-/percy-client-3.0.0.tgz#86289f8224817cf550c9b21aaf994b7fa16f291d"
   dependencies:
     base64-js "^1.2.3"
     bluebird "^3.5.1"
