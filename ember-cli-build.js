@@ -1,6 +1,7 @@
 'use strict';
 
 const EmberAddon = require('ember-cli/lib/broccoli/ember-addon');
+// eslint-disable-next-line node/no-extraneous-require
 const semver = require('semver');
 const fs = require('fs');
 
