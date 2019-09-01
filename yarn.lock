@@ -6169,10 +6169,10 @@ path-type@^3.0.0:
   dependencies:
     pify "^3.0.0"
 
-percy-client@^3.0.12:
-  version "3.0.12"
-  resolved "https://registry.yarnpkg.com/percy-client/-/percy-client-3.0.12.tgz#325e7fded4860e61b8f219aa1a3653e72cbb1280"
-  integrity sha512-xpddmKn0C/nDDOJYP5dSfAefYzcge8P0FoZB2y1vWyZl587TAkdJCkG6/CF04QYfIfBxLYh4RV0G/h++LgxyzA==
+percy-client@^3.0.13:
+  version "3.0.13"
+  resolved "https://registry.yarnpkg.com/percy-client/-/percy-client-3.0.13.tgz#86f48ac39bca8474a02917cea1756978d0214b83"
+  integrity sha512-XJllub665ccrxK2qLnrweBma1aMSu0Qkj4EYepw6dxsMp1kcE41HMpL3vpjwSnMO7wOvhVYdv7Jx3o5EcMAxLw==
   dependencies:
     base64-js "^1.2.3"
     bluebird "^3.5.1"
