@@ -23,7 +23,7 @@
     "es6-promise-pool": "^2.4.1",
     "percy-client": "^3.0.12",
     "walk": "^2.3.9",
-    "ember-cli-babel": "^7.10.0"
+    "ember-cli-babel": "^7.11.0"
   },
   "devDependencies": {
     "@ember/optional-features": "^0.7.0",
