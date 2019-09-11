@@ -20,41 +20,70 @@ function getDoctype() {
   return doctype;
 }
 
-// Set the property value into the attribute value for snapshotting inputs
-function setAttributeValues(dom) {
-  // List of input types here https://www.w3.org/TR/html5/forms.html#the-input-element
+const FORM_ELEMENTS_SELECTOR = 'input, textarea, select';
 
-  // Limit scope to inputs only as textareas do not retain their value when cloned
-  let elems = dom.find(
-    `input[type=text], input[type=search], input[type=tel], input[type=url], input[type=email],
-     input[type=password], input[type=number], input[type=checkbox], input[type=radio]`
-  );
+function mutateOriginalDOM(dom) {
+  function createUID($el) {
+    const ID = `_${Math.random().toString(36).substr(2, 9)}`;
 
-  percyJQuery(elems).each(function() {
-    let elem = percyJQuery(this);
-    switch(elem.attr('type')) {
-      case 'checkbox':
-      case 'radio':
-        if (elem.is(':checked')) {
-          elem.attr('checked', '');
-        }
-        break;
-      default:
-        elem.attr('value', elem.val());
+    $el.setAttribute('data-percy-element-id', ID)
+  }
+
+  let formNodes = dom.querySelectorAll(FORM_ELEMENTS_SELECTOR)
+  let formElements = Array.from(formNodes);
+
+  // loop through each form element and apply an ID for serialization later
+  formElements.forEach((elem) => {
+    if (!elem.getAttribute('data-percy-element-id')) {
+      createUID(elem)
     }
-  });
-
-  return dom;
+  })
 }
 
-// jQuery clone() does not copy textarea contents, so we explicitly do it here.
-function setTextareaContent(dom) {
-  dom.find('textarea').each(function() {
-    let elem = percyJQuery(this);
-    elem.text(elem.val());
-  });
+// Set the property value into the attribute value for snapshotting inputs
+function setAttributeValues(originalDOM, clonedDOM) {
+  let formNodes = originalDOM.querySelectorAll(FORM_ELEMENTS_SELECTOR)
+  let formElements = Array.from(formNodes);
 
-  return dom;
+  formElements.forEach(elem => {
+    let inputId = elem.getAttribute('data-percy-element-id')
+    let selector = `[data-percy-element-id="${inputId}"]`;
+    let cloneEl = clonedDOM.querySelector(selector)
+
+    if(!cloneEl) return;
+
+    switch (elem.type) {
+      case 'checkbox':
+      case 'radio':
+        if (elem.checked) {
+          cloneEl.setAttribute('checked', '')
+        }
+        break
+      case 'select-one':
+        if (elem.selectedIndex !== -1) {
+          cloneEl.options[elem.selectedIndex].setAttribute('selected', 'true');
+        }
+        break
+      case 'select-multiple':
+        let selectedOptions = Array.from(elem.selectedOptions); // eslint-disable-line
+        let clonedOptions = Array.from(cloneEl.options); // eslint-disable-line
+
+        if (selectedOptions.length) {
+          selectedOptions.forEach((option) => {
+            const matchingOption = clonedOptions.find((cloneOption) => option.text === cloneOption.text)
+            matchingOption.setAttribute('selected', 'true')
+          })
+        }
+
+        break
+      case 'textarea':
+        // setting text or value does not work but innerHTML does
+        cloneEl.innerHTML = elem.value
+        break
+      default:
+        cloneEl.setAttribute('value', elem.value)
+    }
+  })
 }
 
 // Copy attributes from Ember's rootElement to the DOM snapshot <body> tag. Some applications rely
@@ -95,7 +124,9 @@ export function percySnapshot(name, options) {
   let scope = options.scope;
 
   // Create a full-page DOM snapshot from the current testing page.
-  let domCopy = percyJQuery('html').clone();
+  let dom = percyJQuery('html');
+  mutateOriginalDOM(dom[0]);
+  let domCopy = dom.clone();
   let bodyCopy = domCopy.find('body');
   let testingContainer = domCopy.find('#ember-testing');
 
@@ -107,8 +138,8 @@ export function percySnapshot(name, options) {
     snapshotRoot = testingContainer;
   }
 
-  snapshotRoot = setAttributeValues(snapshotRoot);
-  snapshotRoot = setTextareaContent(snapshotRoot);
+  // Pass the actual DOM nodes, not the jquery object
+  setAttributeValues(dom[0], snapshotRoot[0]);
 
   let snapshotHtml = snapshotRoot.html();
 
