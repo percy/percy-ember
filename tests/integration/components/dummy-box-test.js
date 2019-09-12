@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
-import { render, findAll, click } from '@ember/test-helpers';
+import { render, findAll, click, fillIn } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 import { percySnapshot } from 'ember-percy';
 
@@ -82,6 +82,21 @@ module('Integration | Component | dummy box', function(hooks) {
     assert.equal(findAll('textarea')[0].textContent, '', 'text content is not set');
 
     percySnapshot('textarea with value');
+  });
+
+  test('it snapshots select values', async function(assert) {
+    await render(
+      hbs`<select>
+            <option value="one">One</option>
+            <option value="two">Two</option>
+          </select>
+    `);
+
+    await percySnapshot('select without value');
+    await fillIn('select', 'two');
+    await percySnapshot('select with value');
+
+    assert.ok(true);
   });
 
   test('it handles identical assets with different paths', async function(assert) {

@@ -1,5 +1,6 @@
 {
   "name": "ember-percy",
+  "version": "1.5.1",
   "keywords": [
     "ember-addon"
   ],
