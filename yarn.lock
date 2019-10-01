@@ -2940,6 +2940,11 @@ dot-prop@^4.1.0:
   dependencies:
     is-obj "^1.0.0"
 
+dotenv@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.1.0.tgz#d811e178652bfb8a1e593c6dd704ec7e90d85ea2"
+  integrity sha512-GUE3gqcDCaMltj2++g6bRQ5rBJWtkWTmqmD0fo1RnnMuUqHNCt2oTPeDnS9n6fKYvlhn7AeBkb38lymBtWBQdA==
+
 duplex@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/duplex/-/duplex-1.0.0.tgz#6abc5c16ec17e4c578578727126700590d3a2dda"
@@ -6138,14 +6143,15 @@ path-type@^3.0.0:
   dependencies:
     pify "^3.0.0"
 
-percy-client@^3.0.13:
-  version "3.0.13"
-  resolved "https://registry.yarnpkg.com/percy-client/-/percy-client-3.0.13.tgz#86f48ac39bca8474a02917cea1756978d0214b83"
-  integrity sha512-XJllub665ccrxK2qLnrweBma1aMSu0Qkj4EYepw6dxsMp1kcE41HMpL3vpjwSnMO7wOvhVYdv7Jx3o5EcMAxLw==
+percy-client@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/percy-client/-/percy-client-3.1.0.tgz#f072e3c3e9c978a1666f77bb950ab804b9d1efa1"
+  integrity sha512-OzKg+o0dtt/LxcCNHNpe7B+oZ196fMiPFzySvFz1ouXNoEBITiborIGN49e8dN5puwIEILoePlX91q6C834XGg==
   dependencies:
     base64-js "^1.2.3"
     bluebird "^3.5.1"
     bluebird-retry "^0.11.0"
+    dotenv "^8.1.0"
     es6-promise-pool "^2.5.0"
     jssha "^2.1.0"
     regenerator-runtime "^0.13.1"
