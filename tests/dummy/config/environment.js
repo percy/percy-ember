@@ -1,15 +1,15 @@
-/* jshint node: true */
+'use strict';
 
 module.exports = function(environment) {
-  var ENV = {
+  let ENV = {
     modulePrefix: 'dummy',
     environment,
-    rootURL: '/test-root-url/',
+    rootURL: '/',
     locationType: 'auto',
     EmberENV: {
       FEATURES: {
         // Here you can enable experimental features on an ember canary build
-        // e.g. 'with-controller': true
+        // e.g. EMBER_NATIVE_DECORATOR_SUPPORT: true
       },
       EXTEND_PROTOTYPES: {
         // Prevent Ember Data from overriding Date.parse.
@@ -41,20 +41,10 @@ module.exports = function(environment) {
 
     ENV.APP.rootElement = '#ember-testing';
     ENV.APP.autoboot = false;
-
-    ENV.percy = {
-      breakpointsConfig: {
-        mobile: 375,
-        tablet: 768,
-        desktop: 1280
-      },
-      defaultBreakpoints: ['mobile', 'desktop']
-    }
   }
 
-  // eslint-disable-next-line no-empty
   if (environment === 'production') {
-
+    // here you can enable a production-specific feature
   }
 
   return ENV;

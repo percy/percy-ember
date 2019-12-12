@@ -1,4 +1,3 @@
-
 interface QUnitAssert {
   test: {
     testName: string;
