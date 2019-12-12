@@ -8,6 +8,17 @@ function clientInfo() {
   return `@percy/ember/v2.0.0`;
 }
 
+// only works for the default styles.
+// Other wise, use Percy CSS to remove these styles
+function removeEmberTestStyles(dom) {
+  dom
+    .querySelector('#ember-testing')
+    .setAttribute(
+      'style',
+      'width: initial !important; height: initial !important; transform: initial !important;'
+    );
+}
+
 export default async function percySnapshot(name, options = {}) {
   // Skip if Testem is not available (we're probably running from `ember server` and Percy is not
   // enabled anyway).
@@ -40,7 +51,6 @@ export default async function percySnapshot(name, options = {}) {
   }
 
   function captureDOM() {
-    // We only want to capture the ember application, not the testing UI
     let scopedSelector = options.scope || '#ember-testing';
     let script = document.createElement('script');
     script.innerText = agentJS;
@@ -48,6 +58,7 @@ export default async function percySnapshot(name, options = {}) {
 
     return new window.PercyAgent({
       handleAgentCommunication: false,
+      // We only want to capture the ember application, not the testing UI
       domTransformation: function(dom) {
         let $scopedRoot = dom.querySelector(scopedSelector);
         let $body = dom.querySelector('body');
@@ -56,10 +67,15 @@ export default async function percySnapshot(name, options = {}) {
 
         for (let i = 0; i < $scopedRoot.attributes.length; i++) {
           let attr = $scopedRoot.attributes.item(i);
-          console.log('attr', attr);
-          $body.setAttribute(attr.nodeName, attr.nodeValue);
+          // Merge the two class lists
+          if (attr.nodeName === 'class') {
+            $body.setAttribute('class', `${$body.getAttribute('class')} ${attr.nodeValue}`);
+          } else {
+            $body.setAttribute(attr.nodeName, attr.nodeValue);
+          }
         }
 
+        removeEmberTestStyles(dom);
         return dom;
       }
     }).domSnapshot(document, options);
