@@ -8,14 +8,14 @@ function clientInfo() {
   return `@percy/ember/v2.0.0`;
 }
 
-// only works for the default styles.
-// Other wise, use Percy CSS to remove these styles
+// This will only remove the transform applied by Ember's defaults
+// If there are custom styles applied, use Percy CSS to overwrite
 function removeEmberTestStyles(dom) {
   dom
     .querySelector('#ember-testing')
     .setAttribute(
       'style',
-      'width: initial !important; height: initial !important; transform: initial !important;'
+      'width: initial !important; height: initial !important; transform: initial !important; zoom: initial !important;'
     );
 }
 
@@ -62,6 +62,7 @@ export default async function percySnapshot(name, options = {}) {
       domTransformation: function(dom) {
         let $scopedRoot = dom.querySelector(scopedSelector);
         let $body = dom.querySelector('body');
+        let bodyClass = $body.getAttribute('class') || '';
 
         $body.innerHTML = $scopedRoot.innerHTML;
 
@@ -69,7 +70,7 @@ export default async function percySnapshot(name, options = {}) {
           let attr = $scopedRoot.attributes.item(i);
           // Merge the two class lists
           if (attr.nodeName === 'class') {
-            $body.setAttribute('class', `${$body.getAttribute('class')} ${attr.nodeValue}`);
+            $body.setAttribute('class', `${bodyClass} ${attr.nodeValue}`);
           } else {
             $body.setAttribute(attr.nodeName, attr.nodeValue);
           }
