@@ -49,7 +49,16 @@ export default async function percySnapshot(name, options = {}) {
     return new window.PercyAgent({
       handleAgentCommunication: false,
       domTransformation: function(dom) {
-        dom.querySelector('body').innerHTML = dom.querySelector(scopedSelector).innerHTML;
+        let $scopedRoot = dom.querySelector(scopedSelector);
+        let $body = dom.querySelector('body');
+
+        $body.innerHTML = $scopedRoot.innerHTML;
+
+        for (let i = 0; i < $scopedRoot.attributes.length; i++) {
+          let attr = $scopedRoot.attributes.item(i);
+          console.log('attr', attr);
+          $body.setAttribute(attr.nodeName, attr.nodeValue);
+        }
 
         return dom;
       }
