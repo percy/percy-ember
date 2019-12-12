@@ -19,6 +19,16 @@ export default async function percySnapshot(name, options = {}) {
     return false;
   }
 
+  function setSnapshotName() {
+    // Automatic name generation for QUnit tests by passing in the `assert` object.
+    if (name.test && name.test.module && name.test.module.name && name.test.testName) {
+      name = `${name.test.module.name} | ${name.test.testName}`;
+    } else if (name.fullTitle) {
+      // Automatic name generation for Mocha tests by passing in the `this.test` object.
+      name = name.fullTitle();
+    }
+  }
+
   async function fetchDOMLib() {
     try {
       return await fetch('http://localhost:5338/percy-agent.js').then(res => res.text());
@@ -72,6 +82,7 @@ export default async function percySnapshot(name, options = {}) {
 
   let agentJS = await fetchDOMLib();
   if (!agentJS) return;
+  setSnapshotName();
   let domSnapshot = captureDOM();
   // not awaited on to run in parallel
   postDOM();
