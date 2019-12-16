@@ -3,7 +3,7 @@ let isPercyRunning = true;
 let PercyFetch = window.fetch;
 
 function envInfo() {
-  let frameworkVersion = () => {
+  function frameworkVersion() {
     if (window.QUnit) {
       return `qunit/${window.QUnit.version}`;
     } else if (window.Mocha) {
@@ -12,13 +12,13 @@ function envInfo() {
     }
 
     return 'unknown';
-  };
+  }
 
-  return `ember/${window.Ember.VERSION}/${frameworkVersion()}`;
+  return `ember/${window.Ember.VERSION}; ${frameworkVersion()};`;
 }
 
 function clientInfo() {
-  return `@percy/ember/v2.0.0`;
+  return `@percy/ember@v2.0.0`;
 }
 
 // This will only remove the transform applied by Ember's defaults
@@ -79,6 +79,7 @@ export default async function percySnapshot(name, options = {}) {
 
         $body.innerHTML = $scopedRoot.innerHTML;
 
+        // Copy over the attributes from the ember applications root node
         for (let i = 0; i < $scopedRoot.attributes.length; i++) {
           let attr = $scopedRoot.attributes.item(i);
           // Merge the two class lists
@@ -113,7 +114,7 @@ export default async function percySnapshot(name, options = {}) {
       });
     } catch (err) {
       if (isPercyRunning) {
-        console.log('[percy] Error POSTing DOM, disabling.');
+        console.log(`[percy] Error POSTing DOM, disabling: ${err}`);
         isPercyRunning = false;
       }
     }
