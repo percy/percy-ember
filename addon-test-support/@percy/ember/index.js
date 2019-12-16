@@ -1,4 +1,6 @@
 let isPercyRunning = true;
+// Capture fetch before it's mutated by Pretender
+let PercyFetch = window.fetch;
 
 function envInfo() {
   return `ember`;
@@ -42,7 +44,7 @@ export default async function percySnapshot(name, options = {}) {
 
   async function fetchDOMLib() {
     try {
-      return await fetch('http://localhost:5338/percy-agent.js').then(res => res.text());
+      return await PercyFetch('http://localhost:5338/percy-agent.js').then(res => res.text());
     } catch (err) {
       console.log(`[percy] Error fetching DOM library, disabling: ${err}`);
       isPercyRunning = false;
@@ -84,7 +86,7 @@ export default async function percySnapshot(name, options = {}) {
 
   async function postDOM() {
     try {
-      await fetch('http://localhost:5338/percy/snapshot', {
+      await PercyFetch('http://localhost:5338/percy/snapshot', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
