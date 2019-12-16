@@ -3,7 +3,18 @@ let isPercyRunning = true;
 let PercyFetch = window.fetch;
 
 function envInfo() {
-  return `ember`;
+  let frameworkVersion = () => {
+    if (window.QUnit) {
+      return `qunit/${window.QUnit.version}`;
+    } else if (window.Mocha) {
+      // Doesn't look easy to grab the version while in the browser
+      return `mocha/unknown`;
+    }
+
+    return 'unknown';
+  };
+
+  return `ember/${window.Ember.VERSION}/${frameworkVersion()}`;
 }
 
 function clientInfo() {

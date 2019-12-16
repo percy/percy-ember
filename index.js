@@ -8,7 +8,8 @@ module.exports = {
   // Inspired by `@ember/test-helpers`:
   // https://github.com/emberjs/ember-test-helpers/blob/master/index.js#L28-L57
   treeForAddonTestSupport(tree) {
-    // intentionally not calling _super here (TODO, check?)
+    // intentionally not calling _super here
+    // _super would return same tree but with namespace including the sub folder
     let input = debugTree(tree, 'addon-test-support:input');
     let output = this.preprocessJs(input, '/', this.name, {
       registry: this.registry
