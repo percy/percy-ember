@@ -1,5 +1,5 @@
 name: Windows
-on: [pull_request]
+on: [push, pull_request]
 jobs:
   build:
     runs-on: windows-2019
