@@ -107,25 +107,24 @@ export default async function percySnapshot(name, options = {}) {
     }
   }).domSnapshot(document, options);
 
-  try {
-    await PercyFetch('http://localhost:5338/percy/snapshot', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        clientInfo: clientInfo(),
-        environmentInfo: envInfo(),
-        url: document.URL,
-        domSnapshot,
-        name: autoGenerateName(name),
-        ...options
-      })
-    });
-  } catch (err) {
+  // POST the snapshot in parallal by not awaiting
+  PercyFetch('http://localhost:5338/percy/snapshot', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      clientInfo: clientInfo(),
+      environmentInfo: envInfo(),
+      url: document.URL,
+      domSnapshot,
+      name: autoGenerateName(name),
+      ...options
+    })
+  }).catch(err => {
     if (isPercyRunning) {
       console.log(`[percy] Error POSTing DOM, disabling: ${err}`);
       isPercyRunning = false;
     }
-  }
+  });
 }
