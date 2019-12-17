@@ -1,6 +1,18 @@
 let isPercyRunning = true;
+let agentJS;
 // Capture fetch before it's mutated by Pretender
 let PercyFetch = window.fetch;
+
+async function fetchDOMLib() {
+  if (agentJS) return agentJS;
+
+  try {
+    return await PercyFetch('http://localhost:5338/percy-agent.js').then(res => res.text());
+  } catch (err) {
+    console.log(`[percy] Error fetching DOM library, disabling: ${err}`);
+    isPercyRunning = false;
+  }
+}
 
 function envInfo() {
   function frameworkVersion() {
@@ -28,8 +40,25 @@ function removeEmberTestStyles(dom) {
     .querySelector('#ember-testing')
     .setAttribute(
       'style',
-      'width: initial !important; height: initial !important; transform: initial !important; zoom: initial !important;'
+      [
+        'width: initial !important',
+        'height: initial !important',
+        'transform: initial !important',
+        'zoom: initial !important'
+      ].join('; ')
     );
+}
+
+function autoGenerateName(name) {
+  // Automatic name generation for QUnit tests by passing in the `assert` object.
+  if (name.test && name.test.module && name.test.module.name && name.test.testName) {
+    return `${name.test.module.name} | ${name.test.testName}`;
+  } else if (name.fullTitle) {
+    // Automatic name generation for Mocha tests by passing in the `this.test` object.
+    return name.fullTitle();
+  } else {
+    return name;
+  }
 }
 
 export default async function percySnapshot(name, options = {}) {
@@ -43,87 +72,60 @@ export default async function percySnapshot(name, options = {}) {
     return false;
   }
 
-  function setSnapshotName() {
-    // Automatic name generation for QUnit tests by passing in the `assert` object.
-    if (name.test && name.test.module && name.test.module.name && name.test.testName) {
-      name = `${name.test.module.name} | ${name.test.testName}`;
-    } else if (name.fullTitle) {
-      // Automatic name generation for Mocha tests by passing in the `this.test` object.
-      name = name.fullTitle();
-    }
-  }
-
-  async function fetchDOMLib() {
-    try {
-      return await PercyFetch('http://localhost:5338/percy-agent.js').then(res => res.text());
-    } catch (err) {
-      console.log(`[percy] Error fetching DOM library, disabling: ${err}`);
-      isPercyRunning = false;
-      return '';
-    }
-  }
-
-  function captureDOM() {
-    let scopedSelector = options.scope || '#ember-testing';
-    let script = document.createElement('script');
-    script.innerText = agentJS;
-    document.body.appendChild(script);
-
-    return new window.PercyAgent({
-      handleAgentCommunication: false,
-      // We only want to capture the ember application, not the testing UI
-      domTransformation: function(dom) {
-        let $scopedRoot = dom.querySelector(scopedSelector);
-        let $body = dom.querySelector('body');
-        let bodyClass = $body.getAttribute('class') || '';
-
-        $body.innerHTML = $scopedRoot.innerHTML;
-
-        // Copy over the attributes from the ember applications root node
-        for (let i = 0; i < $scopedRoot.attributes.length; i++) {
-          let attr = $scopedRoot.attributes.item(i);
-          // Merge the two class lists
-          if (attr.nodeName === 'class') {
-            $body.setAttribute('class', `${bodyClass} ${attr.nodeValue}`);
-          } else {
-            $body.setAttribute(attr.nodeName, attr.nodeValue);
-          }
-        }
-
-        removeEmberTestStyles(dom);
-        return dom;
-      }
-    }).domSnapshot(document, options);
-  }
-
-  async function postDOM() {
-    try {
-      await PercyFetch('http://localhost:5338/percy/snapshot', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          clientInfo: clientInfo(),
-          environmentInfo: envInfo(),
-          url: document.URL,
-          domSnapshot,
-          name,
-          ...options
-        })
-      });
-    } catch (err) {
-      if (isPercyRunning) {
-        console.log(`[percy] Error POSTing DOM, disabling: ${err}`);
-        isPercyRunning = false;
-      }
-    }
-  }
-
-  let agentJS = await fetchDOMLib();
+  // cache the JS lib
+  agentJS = await fetchDOMLib();
   if (!agentJS) return;
-  setSnapshotName();
-  let domSnapshot = captureDOM();
-  // not awaited on to run in parallel
-  postDOM();
+
+  let scopedSelector = options.scope || '#ember-testing';
+  let script = document.createElement('script');
+  script.innerText = agentJS;
+  document.body.appendChild(script);
+
+  let domSnapshot = new window.PercyAgent({
+    handleAgentCommunication: false,
+    // We only want to capture the ember application, not the testing UI
+    domTransformation: function(dom) {
+      let $scopedRoot = dom.querySelector(scopedSelector);
+      let $body = dom.querySelector('body');
+      let bodyClass = $body.getAttribute('class') || '';
+
+      $body.innerHTML = $scopedRoot.innerHTML;
+
+      // Copy over the attributes from the ember applications root node
+      for (let i = 0; i < $scopedRoot.attributes.length; i++) {
+        let attr = $scopedRoot.attributes.item(i);
+        // Merge the two class lists
+        if (attr.nodeName === 'class') {
+          $body.setAttribute('class', `${bodyClass} ${attr.nodeValue}`);
+        } else {
+          $body.setAttribute(attr.nodeName, attr.nodeValue);
+        }
+      }
+
+      removeEmberTestStyles(dom);
+      return dom;
+    }
+  }).domSnapshot(document, options);
+
+  try {
+    await PercyFetch('http://localhost:5338/percy/snapshot', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        clientInfo: clientInfo(),
+        environmentInfo: envInfo(),
+        url: document.URL,
+        domSnapshot,
+        name: autoGenerateName(name),
+        ...options
+      })
+    });
+  } catch (err) {
+    if (isPercyRunning) {
+      console.log(`[percy] Error POSTing DOM, disabling: ${err}`);
+      isPercyRunning = false;
+    }
+  }
 }
