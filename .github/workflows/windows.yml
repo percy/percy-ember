@@ -1,0 +1,16 @@
+name: Windows
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: windows-2019
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2-beta
+      - name: Install
+        run: yarn
+      - name: Percy Test
+        uses: percy/exec-action@v0.1.1
+        with:
+          command: "yarn test"
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}

@@ -3,7 +3,7 @@
 ## Installation
 
 * `git clone <repository-url>`
-* `cd ember-percy`
+* `cd @percy/ember`
 * `yarn install`
 
 ## Linting

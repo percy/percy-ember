@@ -13,6 +13,6 @@ body {
   height: 300px;
 }
 
-[data-route="test-route-styles"] .DummyBox {
+[data-route="/test-route-styles"] .DummyBox {
   background: lightgreen;
 }

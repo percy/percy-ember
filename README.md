@@ -1,8 +1,10 @@
-# ember-percy
+# @percy/ember
 
-[![Package Status](https://img.shields.io/npm/v/ember-percy.svg)](https://www.npmjs.com/package/ember-percy)
-[![Build Status](https://travis-ci.org/percy/ember-percy.svg?branch=master)](https://travis-ci.org/percy/ember-percy)
+[![Package
+Version](https://img.shields.io/npm/v/@percy/ember.svg)](https://www.npmjs.com/package/@percy/ember)
+![Package Status](https://github.com/percy/ember-percy/workflows/CI/badge.svg?branch=master)
+
 
 Ember addon for visual regression testing with [Percy](https://percy.io).
 
-#### Docs here: [https://percy.io/docs/clients/javascript/ember](https://percy.io/docs/clients/javascript/ember)
+#### Docs here: [https://docs.percy.io/docs/ember](https://docs.percy.io/docs/ember)
