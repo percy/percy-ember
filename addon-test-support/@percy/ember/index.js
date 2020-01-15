@@ -107,8 +107,9 @@ export default async function percySnapshot(name, options = {}) {
     }
   }).domSnapshot(document, options);
 
-  // POST the snapshot in parallal by not awaiting
-  PercyFetch('http://localhost:5338/percy/snapshot', {
+  // Must be awaited on or you run the risk of doing asset discovery
+  // when the ember server has already shut down
+  await PercyFetch('http://localhost:5338/percy/snapshot', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
