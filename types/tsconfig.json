@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "lib": [
+      "ES2015",
+      "DOM"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@percy/ember": [
+        "./index.d.ts"
+      ]
+    }
+  }
+}
