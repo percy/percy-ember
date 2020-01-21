@@ -5,6 +5,10 @@
 # dependencies
 /bower_components/
 
+# type declaration tests
+/types/tsconfig.json
+/types/tests/
+
 # misc
 /.bowerrc
 /.editorconfig
