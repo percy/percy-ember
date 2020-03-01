@@ -30,7 +30,7 @@
     "@types/ember-qunit": "^3.4.7",
     "@types/mocha": "^7.0.1",
     "@types/qunit": "^2.9.0",
-    "babel-eslint": "^10.0.3",
+    "babel-eslint": "^10.1.0",
     "broccoli-asset-rev": "^3.0.0",
     "dtslint": "^2.0.5",
     "ember-auto-import": "^1.5.2",
