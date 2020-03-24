@@ -81,30 +81,35 @@ export default async function percySnapshot(name, options = {}) {
   script.innerText = agentJS;
   document.body.appendChild(script);
 
+  // This takes the embeded Ember apps DOM and hoists it
+  // up and out of the test output UI. Without this Percy
+  // would capture the Ember test output too
+  function hoistAppDom(dom) {
+    let $scopedRoot = dom.querySelector(scopedSelector);
+    let $body = dom.querySelector('body');
+    let bodyClass = $body.getAttribute('class') || '';
+
+    $body.innerHTML = $scopedRoot.innerHTML;
+
+    // Copy over the attributes from the ember applications root node
+    for (let i = 0; i < $scopedRoot.attributes.length; i++) {
+      let attr = $scopedRoot.attributes.item(i);
+      // Merge the two class lists
+      if (attr.nodeName === 'class') {
+        $body.setAttribute('class', `${bodyClass} ${attr.nodeValue}`);
+      } else {
+        $body.setAttribute(attr.nodeName, attr.nodeValue);
+      }
+    }
+
+    removeEmberTestStyles(dom);
+    return dom;
+  }
+
   let domSnapshot = new window.PercyAgent({
     handleAgentCommunication: false,
     // We only want to capture the ember application, not the testing UI
-    domTransformation: function(dom) {
-      let $scopedRoot = dom.querySelector(scopedSelector);
-      let $body = dom.querySelector('body');
-      let bodyClass = $body.getAttribute('class') || '';
-
-      $body.innerHTML = $scopedRoot.innerHTML;
-
-      // Copy over the attributes from the ember applications root node
-      for (let i = 0; i < $scopedRoot.attributes.length; i++) {
-        let attr = $scopedRoot.attributes.item(i);
-        // Merge the two class lists
-        if (attr.nodeName === 'class') {
-          $body.setAttribute('class', `${bodyClass} ${attr.nodeValue}`);
-        } else {
-          $body.setAttribute(attr.nodeName, attr.nodeValue);
-        }
-      }
-
-      removeEmberTestStyles(dom);
-      return dom;
-    }
+    domTransformation: options.domTransformation || hoistAppDom
   }).domSnapshot(document, options);
 
   // Must be awaited on or you run the risk of doing asset discovery

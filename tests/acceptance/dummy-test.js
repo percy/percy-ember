@@ -62,4 +62,24 @@ module('Acceptance | dummy', function(hooks) {
     assert.equal(body.getAttribute('class').includes('AllGreen'), true);
     body.removeAttribute('class');
   });
+
+  test('passing a custom DOM transform', async function(assert) {
+    await visit('/');
+    assert.equal(currentURL(), '/');
+
+    await percySnapshot(assert, {
+      domTransformation: function(clonedDom) {
+        let $scopedRoot = clonedDom.querySelector('#ember-testing');
+        let $body = clonedDom.querySelector('body');
+        let $h1 = document.createElement('h1');
+        $h1.innerText = 'Hello modified DOM!';
+        $h1.classList.add('testing-hey');
+
+        $body.innerHTML = $scopedRoot.innerHTML;
+        $body.appendChild($h1);
+
+        return clonedDom;
+      }
+    });
+  });
 });
