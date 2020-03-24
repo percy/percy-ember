@@ -77,9 +77,14 @@ export default async function percySnapshot(name, options = {}) {
   if (!agentJS) return;
 
   let scopedSelector = options.scope || '#ember-testing';
-  let script = document.createElement('script');
-  script.innerText = agentJS;
-  document.body.appendChild(script);
+  let $script = document.querySelector('.percy-agent-js');
+
+  if (!$script) {
+    $script = document.createElement('script');
+    $script.classList.add('percy-agent-js');
+    $script.innerText = agentJS;
+    document.body.appendChild($script);
+  }
 
   // This takes the embeded Ember apps DOM and hoists it
   // up and out of the test output UI. Without this Percy
@@ -109,12 +114,12 @@ export default async function percySnapshot(name, options = {}) {
   let domSnapshot = new window.PercyAgent({
     handleAgentCommunication: false,
     // We only want to capture the ember application, not the testing UI
-    domTransformation: clonedDom => {
-      if (options.domTransfomation) {
+    domTransformation: function(clonedDom) {
+      if (options.domTransformation) {
         options.domTransformation(clonedDom);
       }
 
-      hoistAppDom(clonedDom);
+      return hoistAppDom(clonedDom);
     }
   }).domSnapshot(document, options);
 

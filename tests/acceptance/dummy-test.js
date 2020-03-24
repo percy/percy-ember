@@ -70,13 +70,9 @@ module('Acceptance | dummy', function(hooks) {
     await percySnapshot(assert, {
       domTransformation: function(clonedDom) {
         let $scopedRoot = clonedDom.querySelector('#ember-testing');
-        let $body = clonedDom.querySelector('body');
         let $h1 = document.createElement('h1');
         $h1.innerText = 'Hello modified DOM!';
-        $h1.classList.add('testing-hey');
-
-        $body.innerHTML = $scopedRoot.innerHTML;
-        $body.appendChild($h1);
+        $scopedRoot.appendChild($h1);
 
         return clonedDom;
       }
