@@ -109,7 +109,13 @@ export default async function percySnapshot(name, options = {}) {
   let domSnapshot = new window.PercyAgent({
     handleAgentCommunication: false,
     // We only want to capture the ember application, not the testing UI
-    domTransformation: options.domTransformation || hoistAppDom
+    domTransformation: clonedDom => {
+      if (options.domTransfomation) {
+        options.domTransformation(clonedDom);
+      }
+
+      hoistAppDom(clonedDom);
+    }
   }).domSnapshot(document, options);
 
   // Must be awaited on or you run the risk of doing asset discovery
