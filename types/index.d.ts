@@ -7,6 +7,7 @@ interface SnapshotOptions {
   scope?: string;
   enableJavaScript?: boolean;
   widths?: string[];
+  domTransformation?: Function;
 }
 
 type SnapshotFunction = (
