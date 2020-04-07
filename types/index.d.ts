@@ -16,6 +16,7 @@ type SnapshotFunction = (
 ) => Promise<void>;
 
 export const percySnapshot: SnapshotFunction;
+export default SnapshotFunction;
 
 declare global {
   // If QUnit types are present, the actual contents of its
