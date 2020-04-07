@@ -3,7 +3,7 @@
 // of the library typechecks and invalid usage produces errors.
 
 import { module, test } from 'qunit';
-import { percySnapshot } from '@percy/ember';
+import percySnapshot from '@percy/ember';
 
 module('Type declarations with QUnit', function() {
   test('snapshot requires at least one param', async function() {
