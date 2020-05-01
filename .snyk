@@ -1,0 +1,56 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - '@percy/agent > @oclif/plugin-not-found > lodash':
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > @babel/core > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - '@percy/agent > @oclif/plugin-not-found > cli-ux > lodash':
+        patched: '2020-05-01T01:52:04.496Z'
+    - '@percy/agent > winston > async > lodash':
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > @babel/preset-env > @babel/plugin-transform-block-scoping > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > broccoli-babel-transpiler > @babel/core > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - '@percy/agent > percy-client > request-promise > request-promise-core > lodash':
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > @babel/preset-env > @babel/plugin-transform-classes > @babel/helper-define-map > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > broccoli-babel-transpiler > @babel/core > @babel/traverse > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > broccoli-babel-transpiler > workerpool > @babel/core > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > broccoli-babel-transpiler > broccoli-persistent-filter > async-promise-queue > async > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > @babel/preset-env > @babel/plugin-transform-unicode-regex > @babel/helper-create-regexp-features-plugin > @babel/helper-regex > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > broccoli-babel-transpiler > @babel/core > @babel/helpers > @babel/traverse > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > broccoli-babel-transpiler > workerpool > @babel/core > @babel/traverse > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > @babel/preset-env > @babel/plugin-transform-exponentiation-operator > @babel/helper-builder-binary-assignment-operator-visitor > @babel/helper-explode-assignable-expression > @babel/traverse > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > broccoli-babel-transpiler > @babel/core > @babel/helpers > @babel/traverse > @babel/generator > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > broccoli-babel-transpiler > workerpool > @babel/core > @babel/helpers > @babel/traverse > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > broccoli-babel-transpiler > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > broccoli-babel-transpiler > workerpool > @babel/core > @babel/helpers > @babel/traverse > @babel/generator > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > @babel/preset-env > @babel/plugin-transform-exponentiation-operator > @babel/helper-builder-binary-assignment-operator-visitor > @babel/helper-explode-assignable-expression > @babel/traverse > @babel/generator > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > broccoli-babel-transpiler > workerpool > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > @babel/preset-env > @babel/plugin-transform-exponentiation-operator > @babel/helper-builder-binary-assignment-operator-visitor > @babel/helper-explode-assignable-expression > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > broccoli-babel-transpiler > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-function-name > @babel/helper-get-function-arity > @babel/types > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > broccoli-babel-transpiler > workerpool > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-function-name > @babel/helper-get-function-arity > @babel/types > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
+    - ember-cli-babel > @babel/preset-env > @babel/plugin-transform-exponentiation-operator > @babel/helper-builder-binary-assignment-operator-visitor > @babel/helper-explode-assignable-expression > @babel/traverse > @babel/helper-function-name > @babel/helper-get-function-arity > @babel/types > lodash:
+        patched: '2020-05-01T01:52:04.496Z'
