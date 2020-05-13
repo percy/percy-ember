@@ -30,23 +30,13 @@ function envInfo() {
 }
 
 function clientInfo() {
-  return `@percy/ember@v2.1.2`;
+  return `@percy/ember@v2.1.3`;
 }
 
 // This will only remove the transform applied by Ember's defaults
 // If there are custom styles applied, use Percy CSS to overwrite
 function removeEmberTestStyles(dom) {
-  dom
-    .querySelector('#ember-testing')
-    .setAttribute(
-      'style',
-      [
-        'width: initial !important',
-        'height: initial !important',
-        'transform: initial !important',
-        'zoom: initial !important'
-      ].join('; ')
-    );
+  dom.querySelector('#ember-testing').removeAttribute('id');
 }
 
 function autoGenerateName(name) {
