@@ -39,16 +39,24 @@ function removeEmberTestStyles(dom) {
   dom.querySelector('#ember-testing').removeAttribute('id');
 }
 
-function autoGenerateName(name) {
+function autoGenerateName(name, options) {
+  let baseName;
   // Automatic name generation for QUnit tests by passing in the `assert` object.
   if (name.test && name.test.module && name.test.module.name && name.test.testName) {
-    return `${name.test.module.name} | ${name.test.testName}`;
+    baseName = `${name.test.module.name} | ${name.test.testName}`;
   } else if (name.fullTitle) {
     // Automatic name generation for Mocha tests by passing in the `this.test` object.
-    return name.fullTitle();
+    baseName = name.fullTitle();
   } else {
-    return name;
+    baseName = name;
   }
+  if (options.uniqueName) {
+    // If a unique name is specified, append it to base name.
+    const { uniqueName } = options;
+    delete options.uniqueName;
+    return `${baseName} - ${uniqueName}`;
+  }
+  return baseName;
 }
 
 export default async function percySnapshot(name, options = {}) {
@@ -125,7 +133,7 @@ export default async function percySnapshot(name, options = {}) {
       environmentInfo: envInfo(),
       url: document.URL,
       domSnapshot,
-      name: autoGenerateName(name),
+      name: autoGenerateName(name, options),
       ...options
     })
   }).catch(err => {
