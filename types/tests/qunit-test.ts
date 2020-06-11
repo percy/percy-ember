@@ -25,4 +25,8 @@ module('Type declarations with QUnit', function() {
   test('can snapshot with a defined scope', async function(assert) {
     await percySnapshot(assert, { scope: '#foo' }); // $ExpectType void
   });
+
+  test('can snapshot with unique name appended', async function(assert) {
+    await percySnapshot(assert, { uniqueName: 'my name' }); // $ExpectType void
+  });
 });
