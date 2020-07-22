@@ -6,7 +6,7 @@ interface SnapshotOptions {
   breakpoints?: string[];
   scope?: string;
   enableJavaScript?: boolean;
-  widths?: string[];
+  widths?: number[];
   domTransformation?: Function;
 }
 
