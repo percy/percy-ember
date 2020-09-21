@@ -105,6 +105,10 @@ export default async function percySnapshot(name, options = {}) {
     handleAgentCommunication: false,
     // We only want to capture the ember application, not the testing UI
     domTransformation: function(clonedDom) {
+      if (!clonedDom.querySelector(scopedSelector)) {
+        return clonedDom;
+      }
+
       if (options.domTransformation) {
         options.domTransformation(clonedDom);
       }
