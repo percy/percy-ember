@@ -30,7 +30,7 @@ function envInfo() {
 }
 
 function clientInfo() {
-  return `@percy/ember@v2.1.3`;
+  return `@percy/ember@v2.1.4`;
 }
 
 // This will only remove the transform applied by Ember's defaults
