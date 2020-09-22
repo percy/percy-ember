@@ -1,141 +1,85 @@
-let isPercyRunning = true;
-let agentJS;
-// Capture fetch before it's mutated by Pretender
-let PercyFetch = window.fetch;
+import utils from '@percy/sdk-utils';
+import { VERSION as emberVersion } from '@ember/version';
+import { VERSION as sdkVersion, PERCY_SERVER_ADDRESS } from '@percy/ember/meta';
 
-async function fetchDOMLib() {
-  if (agentJS) return agentJS;
+// Collect client and environment information
+const CLIENT_INFO = `@percy/ember/${sdkVersion}`;
+const ENV_INFO = [`ember/${emberVersion}`];
 
-  try {
-    return await PercyFetch('http://localhost:5338/percy-agent.js').then(res => res.text());
-  } catch (err) {
-    console.log(`[percy] Error fetching DOM library, disabling: ${err}`);
-    isPercyRunning = false;
+if (window.QUnit) ENV_INFO.push(`qunit/${window.QUnit.version}`);
+if (window.mocha) ENV_INFO.push(`mocha/${window.mocha.version}`);
+
+// Maybe set the CLI API address from the environment
+utils.percy.address = PERCY_SERVER_ADDRESS;
+
+// Helper to generate a snapshot name from the test suite
+function generateName(assertOrTestOrName) {
+  if (assertOrTestOrName.test?.module?.name && assertOrTestOrName.test?.testName) {
+    // generate name from qunit assert object
+    return `${assertOrTestOrName.test.module.name} | ${assertOrTestOrName.test.testName}`;
+  } else if (assertOrTestOrName.fullTitle) {
+    // generate name from mocha test object
+    return assertOrTestOrName.fullTitle();
+  } else {
+    // fallback to string
+    return assertOrTestOrName.toString();
   }
 }
 
-function envInfo() {
-  function frameworkVersion() {
-    if (window.QUnit) {
-      return `qunit/${window.QUnit.version}`;
-    } else if (window.Mocha) {
-      // Doesn't look easy to grab the version while in the browser
-      return `mocha/unknown`;
-    }
+// Helper to scope a DOM snapshot to the ember-testing container
+function scopeDOM(dom, { scope, domTransformation }) {
+  if (domTransformation) domTransformation(dom);
+  // we only want to capture the ember application, not the testing UI
+  let $scoped = dom.querySelector(scope || '#ember-testing');
+  let $body = dom.querySelector('body');
+  if (!$scoped) return;
 
-    return 'unknown';
+  // replace body content with scoped content
+  $body.innerHTML = $scoped.innerHTML;
+
+  // copy scoped attributes to the body element
+  for (let i = 0; i < $scoped.attributes.length; i++) {
+    let { name, value } = $scoped.attributes.item(i);
+    // keep any existing body class
+    if (name === 'class') value = `${$body.className} ${value}`.trim();
+    $body.setAttribute(name, value);
   }
 
-  return `ember/${window.Ember.VERSION}; ${frameworkVersion()};`;
-}
-
-function clientInfo() {
-  return `@percy/ember@v2.1.4`;
-}
-
-// This will only remove the transform applied by Ember's defaults
-// If there are custom styles applied, use Percy CSS to overwrite
-function removeEmberTestStyles(dom) {
+  // remove ember-testing styles by removing the id
   dom.querySelector('#ember-testing').removeAttribute('id');
 }
 
-function autoGenerateName(name) {
-  // Automatic name generation for QUnit tests by passing in the `assert` object.
-  if (name.test && name.test.module && name.test.module.name && name.test.testName) {
-    return `${name.test.module.name} | ${name.test.testName}`;
-  } else if (name.fullTitle) {
-    // Automatic name generation for Mocha tests by passing in the `this.test` object.
-    return name.fullTitle();
-  } else {
-    return name;
-  }
-}
-
 export default async function percySnapshot(name, options = {}) {
-  // Skip if Testem is not available (we're probably running from `ember server` and Percy is not
-  // enabled anyway).
-  if (!window.Testem) {
-    return;
-  }
+  // Check if Percy is enabled
+  if (!(await utils.isPercyEnabled())) return;
+  let log = utils.logger('ember');
+  name = generateName(name);
 
-  if (!isPercyRunning) {
-    return false;
-  }
-
-  // cache the JS lib
-  agentJS = await fetchDOMLib();
-  if (!agentJS) return;
-
-  let scopedSelector = options.scope || '#ember-testing';
-  let $script = document.querySelector('.percy-agent-js');
-
-  if (!$script) {
-    $script = document.createElement('script');
-    $script.classList.add('percy-agent-js');
-    $script.innerText = agentJS;
-    document.body.appendChild($script);
-  }
-
-  // This takes the embeded Ember apps DOM and hoists it
-  // up and out of the test output UI. Without this Percy
-  // would capture the Ember test output too
-  function hoistAppDom(dom) {
-    let $scopedRoot = dom.querySelector(scopedSelector);
-    let $body = dom.querySelector('body');
-    let bodyClass = $body.getAttribute('class') || '';
-
-    $body.innerHTML = $scopedRoot.innerHTML;
-
-    // Copy over the attributes from the ember applications root node
-    for (let i = 0; i < $scopedRoot.attributes.length; i++) {
-      let attr = $scopedRoot.attributes.item(i);
-      // Merge the two class lists
-      if (attr.nodeName === 'class') {
-        $body.setAttribute('class', `${bodyClass} ${attr.nodeValue}`);
-      } else {
-        $body.setAttribute(attr.nodeName, attr.nodeValue);
-      }
+  try {
+    // Inject @percy/dom
+    if (!window.PercyDOM) {
+      // eslint-disable-next-line no-eval
+      eval(await utils.fetchPercyDOM());
     }
 
-    removeEmberTestStyles(dom);
-    return dom;
-  }
+    // Serialize and capture the DOM
+    let domSnapshot = window.PercyDOM.serialize({
+      enableJavaScript: options.enableJavaScript,
+      domTransformation: dom => scopeDOM(dom, options)
+    });
 
-  let domSnapshot = new window.PercyAgent({
-    handleAgentCommunication: false,
-    // We only want to capture the ember application, not the testing UI
-    domTransformation: function(clonedDom) {
-      if (!clonedDom.querySelector(scopedSelector)) {
-        return clonedDom;
-      }
-
-      if (options.domTransformation) {
-        options.domTransformation(clonedDom);
-      }
-
-      return hoistAppDom(clonedDom);
-    }
-  }).domSnapshot(document, options);
-
-  // Must be awaited on or you run the risk of doing asset discovery
-  // when the ember server has already shut down
-  await PercyFetch('http://localhost:5338/percy/snapshot', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      clientInfo: clientInfo(),
-      environmentInfo: envInfo(),
+    // Post the DOM to the snapshot endpoint with snapshot options and other info
+    await utils.postSnapshot({
+      ...options,
+      environmentInfo: ENV_INFO,
+      clientInfo: CLIENT_INFO,
       url: document.URL,
       domSnapshot,
-      name: autoGenerateName(name),
-      ...options
-    })
-  }).catch(err => {
-    if (isPercyRunning) {
-      console.log(`[percy] Error POSTing DOM, disabling: ${err}`);
-      isPercyRunning = false;
-    }
-  });
+      name
+    });
+  } catch (error) {
+    // Handle errors
+    log.error(`Could not take DOM snapshot "${name}"`);
+    log.error(error);
+  }
 }

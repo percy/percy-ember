@@ -1,6 +1,6 @@
 {
   "name": "@percy/ember",
-  "version": "2.1.4",
+  "version": "3.0.0-beta.0",
   "description": "Ember client library for visual testing with Percy",
   "keywords": [
     "ember-addon",
@@ -16,7 +16,7 @@
     "test": "tests"
   },
   "engines": {
-    "node": "10.* || >= 12"
+    "node": ">= 12"
   },
   "scripts": {
     "build": "ember build --environment=production",
@@ -24,7 +24,7 @@
     "lint:hbs": "ember-template-lint .",
     "lint:js": "eslint .",
     "start": "ember serve",
-    "test": "ember test",
+    "test": "node node_modules/@percy/sdk-utils/test/server exec -- ember test",
     "test:all": "ember try:each"
   },
   "ember": {
@@ -34,7 +34,7 @@
     "configPath": "tests/dummy/config"
   },
   "dependencies": {
-    "@percy/agent": "~0.28.6",
+    "@percy/sdk-utils": "^1.0.0-beta.46",
     "ember-cli-babel": "^7.26.3"
   },
   "devDependencies": {
@@ -43,8 +43,7 @@
     "@ember/test-helpers": "^2.2.5",
     "@glimmer/component": "^1.0.4",
     "@glimmer/tracking": "^1.0.4",
-    "@types/mocha": "^8.2.2",
-    "@types/qunit": "^2.11.1",
+    "@percy/core": "^1.0.0-beta.46",
     "babel-eslint": "^10.1.0",
     "broccoli-asset-rev": "^3.0.0",
     "ember-auto-import": "^1.11.2",
