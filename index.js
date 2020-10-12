@@ -1,5 +1,6 @@
 'use strict';
 
+/* eslint-disable node/no-extraneous-require */
 const WriteFile = require('broccoli-file-creator');
 const MergeTrees = require('broccoli-merge-trees');
 const BroccoliDebug = require('broccoli-debug');
