@@ -25,7 +25,8 @@
     "lint:js": "eslint .",
     "start": "ember serve",
     "test": "node node_modules/@percy/sdk-utils/test/server exec -- ember test",
-    "test:all": "ember try:each"
+    "test:all": "ember try:each",
+    "test:types": "tsd"
   },
   "ember": {
     "edition": "octane"
@@ -44,6 +45,8 @@
     "@glimmer/component": "^1.0.4",
     "@glimmer/tracking": "^1.0.4",
     "@percy/core": "^1.0.0-beta.46",
+    "@types/mocha": "^8.2.2",
+    "@types/qunit": "^2.11.1",
     "babel-eslint": "^10.1.0",
     "broccoli-asset-rev": "^3.0.0",
     "ember-auto-import": "^1.11.2",
