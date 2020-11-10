@@ -8,6 +8,7 @@ interface SnapshotOptions {
   enableJavaScript?: boolean;
   widths?: number[];
   domTransformation?: Function;
+  percyCSS?: string;
 }
 
 type SnapshotFunction = (
