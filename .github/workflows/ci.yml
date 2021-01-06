@@ -11,7 +11,7 @@ jobs:
       - name: Validate Type Declarations
         run: echo "@next is broken for reasons" #yarn lint:ts
       - name: Percy Test
-        uses: percy/exec-action@v0.1.1
+        uses: percy/exec-action@v0.3.1
         with:
           command: "yarn test"
         env:
