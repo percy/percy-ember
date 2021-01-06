@@ -22,7 +22,7 @@
     "test:all": "ember try:each"
   },
   "dependencies": {
-    "@percy/agent": "~0",
+    "@percy/agent": "~0.28.6",
     "ember-cli-babel": "^7.22.1"
   },
   "devDependencies": {
