@@ -93,7 +93,7 @@ describe('Acceptance: My app', () => {
 #### Mocha
 
 ``` javascript
-describe('My app', () => {
+describe('Acceptance: My app', () => {
   // ...app setup
 
   describe('about page', () => {
