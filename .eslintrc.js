@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
   root: true,
   parser: 'babel-eslint',
@@ -8,15 +10,17 @@ module.exports = {
       legacyDecorators: true
     }
   },
-  plugins: ['ember'],
-  extends: ['eslint:recommended', 'plugin:ember/recommended'],
+  plugins: [
+    'ember'
+  ],
+  extends: [
+    'eslint:recommended',
+    'plugin:ember/recommended'
+  ],
   env: {
     browser: true
   },
-  rules: {
-    'ember/no-jquery': 'error',
-    'no-console': 'off'
-  },
+  rules: {},
   overrides: [
     // node files
     {
@@ -30,7 +34,12 @@ module.exports = {
         'config/**/*.js',
         'tests/dummy/config/**/*.js'
       ],
-      excludedFiles: ['addon/**', 'addon-test-support/**', 'app/**', 'tests/dummy/app/**'],
+      excludedFiles: [
+        'addon/**',
+        'addon-test-support/**',
+        'app/**',
+        'tests/dummy/app/**'
+      ],
       parserOptions: {
         sourceType: 'script'
       },
@@ -39,9 +48,7 @@ module.exports = {
         node: true
       },
       plugins: ['node'],
-      rules: Object.assign({}, require('eslint-plugin-node').configs.recommended.rules, {
-        // add your custom rules and overrides for node files here
-      })
+      extends: ['plugin:node/recommended']
     }
   ]
 };

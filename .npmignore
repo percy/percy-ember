@@ -5,15 +5,12 @@
 # dependencies
 /bower_components/
 
-# type declaration tests
-/types/tsconfig.json
-/types/tests/
-
 # misc
 /.bowerrc
 /.editorconfig
-/.ember-cli.js
+/.ember-cli
 /.env*
+/.eslintcache
 /.eslintignore
 /.eslintrc.js
 /.git/

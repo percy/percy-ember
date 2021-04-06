@@ -1,30 +1,16 @@
-interface MochaAssert {
-  fullTitle(): string
-}
+import { SnapshotOptions } from '@percy/core'
 
-interface SnapshotOptions {
-  breakpoints?: string[];
-  scope?: string;
-  enableJavaScript?: boolean;
-  widths?: number[];
-  domTransformation?: Function;
-  percyCSS?: string;
-}
-
-type SnapshotFunction = (
-  name: string | Assert | MochaAssert,
-  options?: SnapshotOptions
-) => Promise<void>;
-
-declare const percySnapshot: SnapshotFunction;
-export default percySnapshot;
-
+// present when qunit types are used
 declare global {
-  // If QUnit types are present, the actual contents of its
-  // `Assert` interface will merge with this one to ensure
-  // type safety. If they're not present, declaring this empty
-  // interface gives us a placeholder we can reference.
   interface Assert {}
-
-  const percySnapshot: SnapshotFunction;
 }
+
+// present when mocha types are used
+declare namespace Mocha {
+  class Test {}
+}
+
+export default function percySnapshot(
+  name: string | Assert | Mocha.Test,
+  options?: SnapshotOptions
+): Promise<void>;
