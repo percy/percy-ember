@@ -21,6 +21,6 @@ jobs:
           restore-keys: v1/${{ runner.os }}/node-12/
       - run: yarn
       - run: yarn build
-      - run: npm publish --tag next
+      - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
