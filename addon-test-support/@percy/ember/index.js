@@ -1,16 +1,16 @@
 import utils from '@percy/sdk-utils';
 import { VERSION as emberVersion } from '@ember/version';
-import { VERSION as sdkVersion, PERCY_SERVER_ADDRESS } from '@percy/ember/meta';
+import SDKENV from '@percy/ember/env';
 
 // Collect client and environment information
-const CLIENT_INFO = `@percy/ember/${sdkVersion}`;
+const CLIENT_INFO = `@percy/ember/${SDKENV.VERSION}`;
 const ENV_INFO = [`ember/${emberVersion}`];
 
 if (window.QUnit) ENV_INFO.push(`qunit/${window.QUnit.version}`);
 if (window.mocha) ENV_INFO.push(`mocha/${window.mocha.version}`);
 
 // Maybe set the CLI API address from the environment
-utils.percy.address = PERCY_SERVER_ADDRESS;
+utils.percy.address = SDKENV.PERCY_SERVER_ADDRESS;
 
 // Helper to generate a snapshot name from the test suite
 function generateName(assertOrTestOrName) {

@@ -19,7 +19,7 @@ module.exports = {
   },
 
   treeForAddonTestSupport(tree) {
-    let meta = new WriteFile('@percy/ember/meta.js', (
+    let meta = new WriteFile('@percy/ember/env.js', (
       `export default ${JSON.stringify({
         VERSION: pkg.version,
         PERCY_SERVER_ADDRESS: process.env.PERCY_SERVER_ADDRESS

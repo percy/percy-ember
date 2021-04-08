@@ -62,7 +62,7 @@ module('percySnapshot', hooks => {
     assert.equal(reqs[2][1].name, 'Snapshot 1');
     assert.matches(reqs[2][1].url, /^http:\/\/localhost:7357/);
     assert.matches(reqs[2][1].domSnapshot, /<body class="ember-application"><\/body>/);
-    assert.matches(reqs[2][1].clientInfo, /@percy\/ember\/.+/);
+    assert.matches(reqs[2][1].clientInfo, /@percy\/ember\/\d.+/);
     assert.matches(reqs[2][1].environmentInfo[0], /ember\/.+/);
     assert.matches(reqs[2][1].environmentInfo[1], /qunit\/.+/);
 
