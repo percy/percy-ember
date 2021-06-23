@@ -77,15 +77,18 @@ call `percySnapshot` multiple times inside a single test, _you must provide a un
 #### QUnit
 
 ``` javascript
-describe('Acceptance: My app', () => {
-  // ...app setup
+import { module, test } from 'qunit';
+import { setupApplicationTest } from 'ember-qunit';
+import { visit, currentURL } from '@ember/test-helpers';
 
-  describe('About page', () => {
-    test('should look good', () => {
-      await visit('/about');
-      await percySnapshot(assert);
-      // => Snapshot taken: "Acceptance: My app | About page | should look good"
-    });
+module('Acceptance: My app', function(hooks) {
+  setupApplicationTest(hooks);
+
+  test('About page should look good', async function(assert) {
+    await visit('/about');
+    assert.equal(currentURL(), '/about');
+    await percySnapshot(assert);
+    // => Snapshot taken: "Acceptance: My app | About page should look good"
   });
 });
 ```
