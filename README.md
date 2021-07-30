@@ -59,12 +59,7 @@ $ percy exec -- ember test
 `percySnapshot(name[, options])`
 
 - `name` (**required**) - The snapshot name; must be unique to each snapshot
-- `options` - Additional snapshot options (overrides any project options)
-  - `options.widths` - An array of widths to take screenshots at
-  - `options.minHeight` - The minimum viewport height to take screenshots at
-  - `options.percyCSS` - Percy specific CSS only applied in Percy's rendering environment
-  - `options.requestHeaders` - Headers that should be used during asset discovery
-  - `options.enableJavaScript` - Enable JavaScript in Percy's rendering environment
+- `options` - [See per-snapshot configuration options](https://docs.percy.io/docs/cli-configuration#per-snapshot-configuration)
 
 ### Automatic snapshot names
 
