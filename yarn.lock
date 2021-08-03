@@ -1059,9 +1059,9 @@
     silent-error "^1.1.1"
 
 "@ember/test-helpers@^2.2.5":
-  version "2.2.9"
-  resolved "https://registry.yarnpkg.com/@ember/test-helpers/-/test-helpers-2.2.9.tgz#68cceb50ad5b8adedad5d8bf73b39ff71a07f4a6"
-  integrity sha512-QLwV2ASk7XB9+SLCNKFu+y9iNbTsH2Ah3eaJiHZ01uDgVsYZZfJCINhUB9/sY19VagBQnP5Te3QowI6qw3XeLA==
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@ember/test-helpers/-/test-helpers-2.3.0.tgz#dcd49ecab7b66e7ca02fdc6fcae88cb426c0b60f"
+  integrity sha512-MwG80aJj5NO19CgHHIQyrSXwzo0Xz0Vfx3MrvbzkqZSYowyazOrve8/UEt00ot6h3JxCVnbvL6rY/+G41pLE3A==
   dependencies:
     "@ember/test-waiters" "^2.4.4"
     broccoli-debug "^0.6.5"
@@ -1429,11 +1429,6 @@
   version "1.0.0-beta.62"
   resolved "https://registry.yarnpkg.com/@percy/env/-/env-1.0.0-beta.62.tgz#f40ce472f5d5841803b34d46abbee5261d72245e"
   integrity sha512-8ZtMwbk99xSf8awT5UFz8fIC1u8uikmQY/DCwe8tHhXGlGrrYy5ld9iHPAqVgDVZXUJm1ELbUSE9wuK6Jf6vig==
-
-"@percy/logger@1.0.0-beta.60":
-  version "1.0.0-beta.60"
-  resolved "https://registry.yarnpkg.com/@percy/logger/-/logger-1.0.0-beta.60.tgz#01be87459fe6865ed3754b498e2f4fa192e312aa"
-  integrity sha512-f/gd2WwcsQyXb1ApZD2bL1nZf4vd/e56ZAmqsMQv9V6RHjldCDdh1qGf6/ArcSWgHRno5iut54of4GynTdCY5A==
 
 "@percy/logger@1.0.0-beta.62":
   version "1.0.0-beta.62"
