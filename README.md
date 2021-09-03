@@ -7,7 +7,7 @@
 ## Installation
 
 ```sh-session
-$ npm install --save-dev @percy/cli @percy/ember@next
+$ npm install --save-dev @percy/cli @percy/ember
 ```
 
 ## Usage
