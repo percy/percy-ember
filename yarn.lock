@@ -1422,11 +1422,6 @@
   resolved "https://registry.yarnpkg.com/@percy/env/-/env-1.0.0-beta.67.tgz#c4f76ec8131dc53ed3d1aeb5b25a8b79c789d4da"
   integrity sha512-DrXYFIJM38CriYPMuPEC6FxAtwUGUCea2Utv2PbZjABXzZe/oNEm66rcFoIGxNGiVZVUk6ZtSGe36cCAQbPM1g==
 
-"@percy/logger@1.0.0-beta.65":
-  version "1.0.0-beta.65"
-  resolved "https://registry.yarnpkg.com/@percy/logger/-/logger-1.0.0-beta.65.tgz#30a34797c935003334124e970f62914b0d124968"
-  integrity sha512-BJV0pjNlvcj4Y3nuMUGdb5RhjMduK40fRJJ9Lh/2qNk3pmnkGb9rH+GY+/0WY7quupNKxQjjyXcIP7I46/azNg==
-
 "@percy/logger@1.0.0-beta.67":
   version "1.0.0-beta.67"
   resolved "https://registry.yarnpkg.com/@percy/logger/-/logger-1.0.0-beta.67.tgz#77479c51c81ff74b37d641f9dce39789f8b17fa8"
@@ -12135,9 +12130,9 @@ webpack-sources@^3.2.0:
   integrity sha512-fahN08Et7P9trej8xz/Z7eRu8ltyiygEo/hnRi9KqBUs80KeDcnf96ZJo++ewWd84fEf3xSX9bp4ZS9hbw0OBw==
 
 webpack@5:
-  version "5.51.1"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.51.1.tgz#41bebf38dccab9a89487b16dbe95c22e147aac57"
-  integrity sha512-xsn3lwqEKoFvqn4JQggPSRxE4dhsRcysWTqYABAZlmavcoTmwlOb9b1N36Inbt/eIispSkuHa80/FJkDTPos1A==
+  version "5.52.0"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.52.0.tgz#88d997c2c3ebb62abcaa453d2a26e0fd917c71a3"
+  integrity sha512-yRZOat8jWGwBwHpco3uKQhVU7HYaNunZiJ4AkAVQkPCUGoZk/tiIXiwG+8HIy/F+qsiZvSOa+GLQOj3q5RKRYg==
   dependencies:
     "@types/eslint-scope" "^3.7.0"
     "@types/estree" "^0.0.50"
