@@ -1439,12 +1439,17 @@
   resolved "https://registry.yarnpkg.com/@percy/logger/-/logger-1.0.0-beta.68.tgz#6c42ba7d7b4350db99c3ba5fa622db7daf27e442"
   integrity sha512-PmKMLOexQUlsPASy4vQEQRYa0KHec/6xWsAg/wnWhGgmnQA4l9EKcz7ZvjDWA6H+wrErLM+FdvMsd8POf417CQ==
 
+"@percy/logger@1.0.0-beta.69":
+  version "1.0.0-beta.69"
+  resolved "https://registry.yarnpkg.com/@percy/logger/-/logger-1.0.0-beta.69.tgz#29fcd7431f3d5a2cc55c4d7849d6ac340ad7ad03"
+  integrity sha512-8RRJijvspQGMeHIlh6jppTT0Jz2uH4o7XBQfWEtJ6EyI54MHYWMULeNoVLl51BNNDk8N2GvgIBOX9eCnOhIVzw==
+
 "@percy/sdk-utils@^1.0.0-beta.46":
-  version "1.0.0-beta.68"
-  resolved "https://registry.yarnpkg.com/@percy/sdk-utils/-/sdk-utils-1.0.0-beta.68.tgz#fcf083a149d1c3f1d16d89aad8c41e90539faa35"
-  integrity sha512-0/AoSl1CBdeK221TskRZVyY3cQznuHE9sRDk5mD6xuqxk6zI+cRVpcmZTIhoEJEBpvzTLhZzvVU1qrFQ/+x9kA==
+  version "1.0.0-beta.69"
+  resolved "https://registry.yarnpkg.com/@percy/sdk-utils/-/sdk-utils-1.0.0-beta.69.tgz#0458050e9db5f0b05b54cf942f70432f93366fbb"
+  integrity sha512-+KqlsLYw5dD+dy1DC9gllk2Br55OEzmIG9+nsGlVmJvB6ENz8C2CCpNJqp/1yY9metNw4JNaDY7c826OTBwfLw==
   dependencies:
-    "@percy/logger" "1.0.0-beta.68"
+    "@percy/logger" "1.0.0-beta.69"
 
 "@simple-dom/interface@^1.4.0":
   version "1.4.0"
@@ -4522,9 +4527,9 @@ ember-auto-import@^1.11.3:
     webpack "^4.43.0"
 
 ember-auto-import@^2.0.2:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/ember-auto-import/-/ember-auto-import-2.2.2.tgz#506078c87cb9c92fe772a91472a008948437671c"
-  integrity sha512-6tQzTURZ+AHlU0t/0w8IaZFO1GKaPgy/SaLUhoAo4XUAWcMQMaK0TSKqWE3P7ZYvrnSr7hBcPfaxdLCYe4naMQ==
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/ember-auto-import/-/ember-auto-import-2.2.3.tgz#63aa7e81322018f309518d816756fe0c63053fa2"
+  integrity sha512-ISb8HcfLj7f/S3exLNSpmsTXFtu/8X7AVvikYU8/9/5NEobgEaH831jc8fqgQQLNCk8Aiz14u8Xi8SSaBMI88Q==
   dependencies:
     "@babel/core" "^7.1.6"
     "@babel/plugin-proposal-class-properties" "^7.13.0"
@@ -4763,9 +4768,9 @@ ember-cli-version-checker@^5.1.1, ember-cli-version-checker@^5.1.2:
     silent-error "^1.1.1"
 
 ember-cli@~3.28.0:
-  version "3.28.1"
-  resolved "https://registry.yarnpkg.com/ember-cli/-/ember-cli-3.28.1.tgz#ba32fa6844ac3059bfe9fab355c6f8386dc81fed"
-  integrity sha512-1SgI4RWJor4yyQIZJvz1egPTYeNUwO5cm4YFXfozU1e5iKcIHM8M2UrGCf3GSGyaFptIxMaDBD3o7GJBnrAb1g==
+  version "3.28.2"
+  resolved "https://registry.yarnpkg.com/ember-cli/-/ember-cli-3.28.2.tgz#1d23337cab4222828916deef65d7fbc380b55bfa"
+  integrity sha512-TZ6Q3e1OerrLrmEUvSQgV2ubffvydV3gXE1dYnY2WKC7/BEpiN6ymfY0msQfo/Ml0xPDL3vN/9avTVWMeqkWOQ==
   dependencies:
     "@babel/core" "^7.13.8"
     "@babel/plugin-transform-modules-amd" "^7.12.1"
