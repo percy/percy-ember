@@ -1427,11 +1427,6 @@
   resolved "https://registry.yarnpkg.com/@percy/env/-/env-1.0.0-beta.70.tgz#bc5c1c1322192fa75b095348293e6ebf08c86467"
   integrity sha512-npP/OxbJnCnPbf2oXUd6nxhjKfJmHaPeTwdDWBFgz3O29rD4DstVCC7kKeF4/VzNpQj+FILPKJkczlv0titP5w==
 
-"@percy/logger@1.0.0-beta.69":
-  version "1.0.0-beta.69"
-  resolved "https://registry.yarnpkg.com/@percy/logger/-/logger-1.0.0-beta.69.tgz#29fcd7431f3d5a2cc55c4d7849d6ac340ad7ad03"
-  integrity sha512-8RRJijvspQGMeHIlh6jppTT0Jz2uH4o7XBQfWEtJ6EyI54MHYWMULeNoVLl51BNNDk8N2GvgIBOX9eCnOhIVzw==
-
 "@percy/logger@1.0.0-beta.70":
   version "1.0.0-beta.70"
   resolved "https://registry.yarnpkg.com/@percy/logger/-/logger-1.0.0-beta.70.tgz#1fe0a234ea1d249c3e3667870a31d59de56bf78a"
@@ -5028,9 +5023,9 @@ ember-source@~3.28.0:
     silent-error "^1.1.1"
 
 ember-template-lint@^3.2.0:
-  version "3.10.0"
-  resolved "https://registry.yarnpkg.com/ember-template-lint/-/ember-template-lint-3.10.0.tgz#7d728dacfe787b582ff4c240b63e85e5d6200a26"
-  integrity sha512-QP6gN9FwZbK+ypDr5PLXeKMPuAvKwfOWpIoqVD6DB660evnKE+rXfAdNga3CqSC7mDekpgJoLuxVQUw9oLcnjQ==
+  version "3.11.0"
+  resolved "https://registry.yarnpkg.com/ember-template-lint/-/ember-template-lint-3.11.0.tgz#d766bf483e6bd3f0899a5ab86eeeb1288c44c7a1"
+  integrity sha512-5evTA7ddblB4x52QHwEJbyNttcf+/DWSOfqHWun2/JiQodLhh83TzcuJUktjCgHuEQwCwk5M3J5Xz35JoYKSKg==
   dependencies:
     "@ember-template-lint/todo-utils" "^10.0.0"
     chalk "^4.1.2"
