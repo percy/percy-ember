@@ -4509,9 +4509,9 @@ ember-auto-import@^1.11.3:
     webpack "^4.43.0"
 
 ember-auto-import@^2.0.2:
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/ember-auto-import/-/ember-auto-import-2.2.3.tgz#63aa7e81322018f309518d816756fe0c63053fa2"
-  integrity sha512-ISb8HcfLj7f/S3exLNSpmsTXFtu/8X7AVvikYU8/9/5NEobgEaH831jc8fqgQQLNCk8Aiz14u8Xi8SSaBMI88Q==
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/ember-auto-import/-/ember-auto-import-2.2.4.tgz#68c08cb0b7533293024c97387fc449b00561185a"
+  integrity sha512-iXHH+bSMP/uWvJmIhjt+PZz4ymqOLccIxZUouVcUFLKA5EAWE7gamlA684m0pIbSE/V9zKpOul4OfIgKXFprBg==
   dependencies:
     "@babel/core" "^7.1.6"
     "@babel/plugin-proposal-class-properties" "^7.13.0"
@@ -4771,9 +4771,9 @@ ember-cli-version-checker@^5.1.1, ember-cli-version-checker@^5.1.2:
     silent-error "^1.1.1"
 
 ember-cli@~3.28.0:
-  version "3.28.3"
-  resolved "https://registry.yarnpkg.com/ember-cli/-/ember-cli-3.28.3.tgz#3384c3fb018b58111e30efed15a2f6a9b66b84c3"
-  integrity sha512-DddAQAddbyaOU4NAjTt8g+FoCCK/F00kbj9pcHO1lfAUpIUS9JPBoWxxZ3qO08mUNXi50pdQSPVVRWzN7mNz2g==
+  version "3.28.4"
+  resolved "https://registry.yarnpkg.com/ember-cli/-/ember-cli-3.28.4.tgz#784cfeaf5319e409edc3e03e5d99bcfcf18f9e53"
+  integrity sha512-bRQpZqx1YctDNR7gb5CXfXYkZtieMh4F6v6bZtu+Da8jWTKoGizG1LXsG/Bhs96USPjlZZsErkSBo6qiGjJlcA==
   dependencies:
     "@babel/core" "^7.13.8"
     "@babel/plugin-transform-modules-amd" "^7.12.1"
@@ -11482,9 +11482,9 @@ webpack-sources@^3.2.0:
   integrity sha512-fahN08Et7P9trej8xz/Z7eRu8ltyiygEo/hnRi9KqBUs80KeDcnf96ZJo++ewWd84fEf3xSX9bp4ZS9hbw0OBw==
 
 webpack@5:
-  version "5.62.1"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.62.1.tgz#06f09b56a7b1bb13ed5137ad4b118358a90c9505"
-  integrity sha512-jNLtnWChS2CMZ7vqWtztv0G6fYB5hz11Zsadp5tE7e4/66zVDj7/KUeQZOsOl8Hz5KrLJH1h2eIDl6AnlyE12Q==
+  version "5.64.0"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.64.0.tgz#db3e12546f755930ccc9e0e21ba660871940c615"
+  integrity sha512-UclnN24m054HaPC45nmDEosX6yXWD+UGC12YtUs5i356DleAUGMDC9LBAw37xRRfgPKYIdCYjGA7RZ1AA+ZnGg==
   dependencies:
     "@types/eslint-scope" "^3.7.0"
     "@types/estree" "^0.0.50"
