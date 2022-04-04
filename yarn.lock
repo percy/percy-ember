@@ -1512,9 +1512,9 @@
     simple-html-tokenizer "^0.5.11"
 
 "@glimmer/tracking@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@glimmer/tracking/-/tracking-1.0.4.tgz#f1bc1412fe5e2236d0f8d502994a8f88af1bbb21"
-  integrity sha512-F+oT8I55ba2puSGIzInmVrv/8QA2PcK1VD+GWgFMhF6WC97D+uZX7BFg+a3s/2N4FVBq5KHE+QxZzgazM151Yw==
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@glimmer/tracking/-/tracking-1.1.1.tgz#2c352b94a39c1b7a738426441fd66ac2ec8d923f"
+  integrity sha512-ZdwyzHww8Svdy8kfMgL9pffiWO7DmD+1GMq9hsOMQMsuZ23E2ZAb9nLjt6hKqBpPLu1yQSXreL22YPmTZ0f9tw==
   dependencies:
     "@glimmer/env" "^0.1.7"
     "@glimmer/validator" "^0.44.0"
@@ -1723,10 +1723,10 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
-"@tsd/typescript@~4.5.2":
-  version "4.5.2"
-  resolved "https://registry.yarnpkg.com/@tsd/typescript/-/typescript-4.5.2.tgz#5e1616fceb61c472557f09d855f27a97bf230f49"
-  integrity sha512-K778wcPuAsJ9Ch0/FlhQcaIMFEi+TfxNi5NSUbgZd3RucaktYUpR++1Ox2mW2G25oyxWb8gfgg+JUhulRbI6eQ==
+"@tsd/typescript@~4.6.3":
+  version "4.6.3"
+  resolved "https://registry.yarnpkg.com/@tsd/typescript/-/typescript-4.6.3.tgz#9b4c8198da7614fe1547436fbd5657cfe8327c1d"
+  integrity sha512-WjipklCf6qWQL4Hkw+FSwOXMA5JqKv04ro/c1aviYSzLJFdcFMrR/FHjOGBIEAIq7pb8Bw74wd+G45dWfC/Jnw==
 
 "@types/body-parser@*":
   version "1.19.0"
@@ -9690,9 +9690,9 @@ qunit-dom@^2.0.0:
     ember-cli-version-checker "^5.1.1"
 
 qunit@^2.14.1:
-  version "2.18.0"
-  resolved "https://registry.yarnpkg.com/qunit/-/qunit-2.18.0.tgz#5a3efc8ee609e9d8f207a1ad317a9b02bb14bc6b"
-  integrity sha512-Xw/zUm5t1JY8SNErki/qtw4fCuaaOZL+bPloZU+0kto+fO8j1JV9MQWqXO4kATfhEyJohlsKZpfg1HF7GOkpXw==
+  version "2.18.1"
+  resolved "https://registry.yarnpkg.com/qunit/-/qunit-2.18.1.tgz#9e90e7798216f7275c351c88652816d491391397"
+  integrity sha512-A2Adgr/DeMQOJZFVllyQi2wiGJVVXGSRRwMe39fNfuuftUYHHpGRTWUhBa8wNblunCAOUCt+1uFcg1L7NaxQTA==
   dependencies:
     commander "7.2.0"
     node-watch "0.7.3"
@@ -11415,12 +11415,12 @@ trim-right@^1.0.1:
   resolved "https://registry.yarnpkg.com/trim-right/-/trim-right-1.0.1.tgz#cb2e1203067e0c8de1f614094b9fe45704ea6003"
   integrity sha1-yy4SAwZ+DI3h9hQJS5/kVwTqYAM=
 
-tsd@^0.19.0:
-  version "0.19.1"
-  resolved "https://registry.yarnpkg.com/tsd/-/tsd-0.19.1.tgz#c37891ad907d6ce2122e4a20c99cceca5767d713"
-  integrity sha512-pSwchclr+ADdxlahRUQXUrdAIOjXx1T1PQV+fLfVLuo/S4z+T00YU84fH8iPlZxyA2pWgJjo42BG1p9SDb4NOw==
+tsd@^0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/tsd/-/tsd-0.20.0.tgz#0346321ee3c506545486227e488e753109164248"
+  integrity sha512-iba/JlyT3qtnA9t8VrX2Fipu3L31U48oRIf1PNs+lIwQ7n63GTkt9eQlB5bLtfb7nYfy9t8oZzs+K4QEoEIS8Q==
   dependencies:
-    "@tsd/typescript" "~4.5.2"
+    "@tsd/typescript" "~4.6.3"
     eslint-formatter-pretty "^4.1.0"
     globby "^11.0.1"
     meow "^9.0.0"
@@ -11911,9 +11911,9 @@ webpack-sources@^3.2.3:
   integrity sha512-/DyMEOrDgLKKIG0fmvtz+4dUX/3Ghozwgm6iPp8KRhvn+eQf9+Q7GWxVNMk3+uCPWfdXYC4ExGBckIXdFEfH1w==
 
 webpack@5:
-  version "5.70.0"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.70.0.tgz#3461e6287a72b5e6e2f4872700bc8de0d7500e6d"
-  integrity sha512-ZMWWy8CeuTTjCxbeaQI21xSswseF2oNOwc70QSKNePvmxE7XW36i7vpBMYZFAUHPwQiEbNGCEYIOOlyRbdGmxw==
+  version "5.71.0"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.71.0.tgz#b01fcf379570b8c5ee06ca06c829ca168c951884"
+  integrity sha512-g4dFT7CFG8LY0iU5G8nBL6VlkT21Z7dcYDpJAEJV5Q1WLb9UwnFbrem1k7K52ILqEmomN7pnzWFxxE6SlDY56A==
   dependencies:
     "@types/eslint-scope" "^3.7.3"
     "@types/estree" "^0.0.51"
