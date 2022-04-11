@@ -1694,12 +1694,17 @@
   resolved "https://registry.yarnpkg.com/@percy/logger/-/logger-1.0.0-beta.76.tgz#1a75c583670acc078389a43d8b7410fd655c0b92"
   integrity sha512-v5zIMNv1xqdcWBAOK5A6ZEO99ZBwzWS3phLEfkKbIlGIUxvjkJHSfZv/k1dnt2RRfpDNkM6X5pMg2yI8j1+d+g==
 
+"@percy/logger@1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@percy/logger/-/logger-1.0.5.tgz#31aec74ddcd2f7e2d8e6fa2d0211ad65eee43897"
+  integrity sha512-OT3/Xiuo1V4cHwqdDQfuvfMDRf7GhMrHK9HCiHE2dOakLqmIM0fexiCoD0k5Bd7fgjZ9G5YmFT9k5ymBmT9oOA==
+
 "@percy/sdk-utils@^1.0.0-beta.46":
-  version "1.0.0-beta.76"
-  resolved "https://registry.yarnpkg.com/@percy/sdk-utils/-/sdk-utils-1.0.0-beta.76.tgz#71b4d7a7664b7029761aea5850295defeb134f98"
-  integrity sha512-5B070+VlTiCjxmwHU5Q8+ow1dGdmOkukY8TkSBkkbSs2OE4IPcYBlb+t/hGhpw7D34znPXc2dmUrZrbXwkRd2A==
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@percy/sdk-utils/-/sdk-utils-1.0.5.tgz#115a10b984a6332b39d401320846c6ee04c3c6eb"
+  integrity sha512-+ykSYLHCqRkH5DZ5YLhDslt59EljB9sF6Obhw/g5j4ot34N/PAidA6mmxhRuca+ugutgo2R/IswSDdGvyZEu1A==
   dependencies:
-    "@percy/logger" "1.0.0-beta.76"
+    "@percy/logger" "1.0.5"
 
 "@simple-dom/interface@^1.4.0":
   version "1.4.0"
