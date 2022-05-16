@@ -1295,12 +1295,13 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@lint-todo/utils@^12.0.1":
-  version "12.0.1"
-  resolved "https://registry.yarnpkg.com/@lint-todo/utils/-/utils-12.0.1.tgz#d61ef329f9f6c7332adee7b1f68651f190d53a7f"
-  integrity sha512-Xiy5wN+ns95gEHepJ55TXEBAZrkZlzrF9wTjqoTgv+RYOYL3+qQ+v0RtPH2n/UwPJEFuXJ6QKiT99RnUOt1pzw==
+"@lint-todo/utils@^13.0.2":
+  version "13.0.3"
+  resolved "https://registry.yarnpkg.com/@lint-todo/utils/-/utils-13.0.3.tgz#ca222f38738b43eb43384d56e7292ba9cab3e891"
+  integrity sha512-7Grdii4L/ae8FiykBcsEfum3m9yxVKPNQXpqJDPhWMHsReEunaQDkx/WLsjiNBctRb+roNHZQuXQYlJwoTlqOw==
   dependencies:
     "@types/eslint" "^7.2.13"
+    find-up "^5.0.0"
     fs-extra "^9.1.0"
     proper-lockfile "^4.1.2"
     slash "^3.0.0"
@@ -1381,9 +1382,9 @@
   integrity sha512-6CJg+JSWITbdHCik9pqCHIe3tx+fbwGBKTKf5KtlOC6tcOStypoGUe8U3VOdSMg8xgNRxxUUEgjaXbiAyOl3Bg==
 
 "@percy/sdk-utils@^1.1.1":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@percy/sdk-utils/-/sdk-utils-1.1.2.tgz#08f973985dc545b4551dc9df1589d2be6465930c"
-  integrity sha512-lTKNbPpWg3vdTu+XZ5iOuAaNvcW5CKZOwTe2WkrFYO5LxckTvS93GGq6RcFqvaVRcAjhEBseEKRz36Bwub/sWg==
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@percy/sdk-utils/-/sdk-utils-1.1.4.tgz#67a98b3da424038a49fd33673b1f7f35d04dd170"
+  integrity sha512-fXpRt9Sgq3eerBobRAZ4No/e5LqHn4IHU9bpsxSExVMYridDBB3hy31ZyTRPjImXPDqNZs6BaYB5Yn+zq8mD+A==
 
 "@simple-dom/interface@^1.4.0":
   version "1.4.0"
