@@ -1322,9 +1322,9 @@
   integrity sha512-ZaKW1WHkUq1Oiz9KgbKae5u6Zn33ZuWI8S2bwl6w5aRBdnaoy3vwPDeef0WaN7BHKPmG8n0BgCS9m5IOug/kxA==
 
 "@percy/sdk-utils@^1.1.1":
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/@percy/sdk-utils/-/sdk-utils-1.1.4.tgz#67a98b3da424038a49fd33673b1f7f35d04dd170"
-  integrity sha512-fXpRt9Sgq3eerBobRAZ4No/e5LqHn4IHU9bpsxSExVMYridDBB3hy31ZyTRPjImXPDqNZs6BaYB5Yn+zq8mD+A==
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@percy/sdk-utils/-/sdk-utils-1.2.1.tgz#fdb29b400ad45c1c4998716587a80475e790e1b9"
+  integrity sha512-Ey7T4XNJHb1kolMTFyh322tn9hapeLChCUovMy3P9zQ+Fh/LtyspVNo8uhOG+Vmidxqb0bwXkooTQTgGODFckQ==
 
 "@simple-dom/interface@^1.4.0":
   version "1.4.0"
@@ -4236,9 +4236,9 @@ ember-auto-import@^1.11.3:
     webpack "^4.43.0"
 
 ember-auto-import@^2.0.2, ember-auto-import@^2.4.0:
-  version "2.4.1"
-  resolved "https://registry.npmjs.org/ember-auto-import/-/ember-auto-import-2.4.1.tgz"
-  integrity sha512-lyCl2hzIb6Dlcmfm3gI3lAtaOk/nzR2kM4GDJRRu19YJhhSkpiIMSDVjw8ShxmnYiI005R1eOcP3C/GgRRW5mA==
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/ember-auto-import/-/ember-auto-import-2.4.2.tgz#d4d3bc6885a11cf124f606f5c37169bdf76e37ae"
+  integrity sha512-REh+1aJWpTkvN42a/ga41OuRpUsSW7UQfPr2wPtYx56o/xoSNhVBXejy7yV9ObrkN7gogz6fs2xZwih5cOwpYg==
   dependencies:
     "@babel/core" "^7.16.7"
     "@babel/plugin-proposal-class-properties" "^7.16.7"
@@ -4733,9 +4733,9 @@ ember-source@~4.4.0:
     silent-error "^1.1.1"
 
 ember-template-lint@^4.0.0:
-  version "4.8.0"
-  resolved "https://registry.yarnpkg.com/ember-template-lint/-/ember-template-lint-4.8.0.tgz#023a4e4117f48acf87fea88d4b902f676b50d9cd"
-  integrity sha512-cn28J9bFd1qXuF23Sb7ydyFto1N+n6XjS/TfcrxKJ4eK5Wew0Ix4RDAdHy/Gc29zD2K0sAuwCwMAIokwCLI9Kg==
+  version "4.9.1"
+  resolved "https://registry.yarnpkg.com/ember-template-lint/-/ember-template-lint-4.9.1.tgz#9faa57cfd54171fc5fb50bd41b62278b08d80a7c"
+  integrity sha512-ShIRqIhNbJQTzkqGUN9mLY7mOHWQs4btGV57uHSA1GooUsEK34HRQIXASTOZCWR/W3XCDEc7cv/TWXfQWlsZRQ==
   dependencies:
     "@lint-todo/utils" "^13.0.3"
     aria-query "^5.0.0"
@@ -4752,7 +4752,7 @@ ember-template-lint@^4.0.0:
     micromatch "^4.0.5"
     resolve "^1.22.0"
     v8-compile-cache "^2.3.0"
-    yargs "^17.4.1"
+    yargs "^17.5.1"
 
 ember-template-recast@^6.1.3:
   version "6.1.3"
@@ -11116,10 +11116,10 @@ yargs-parser@^21.0.0:
   resolved "https://registry.npmjs.org/yargs-parser/-/yargs-parser-21.0.1.tgz"
   integrity sha512-9BK1jFpLzJROCI5TzwZL/TU4gqjK5xiHV/RfWLOahrjAko/e4DJkRDZQXfvqAsiZzzYhgAzbgz6lg48jcm4GLg==
 
-yargs@^17.4.1:
-  version "17.4.1"
-  resolved "https://registry.npmjs.org/yargs/-/yargs-17.4.1.tgz"
-  integrity sha512-WSZD9jgobAg3ZKuCQZSa3g9QOJeCCqLoLAykiWgmXnDo9EPnn4RPf5qVTtzgOx66o6/oqhcA5tHtJXpG8pMt3g==
+yargs@^17.5.1:
+  version "17.5.1"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.5.1.tgz#e109900cab6fcb7fd44b1d8249166feb0b36e58e"
+  integrity sha512-t6YAJcxDkNX7NFYiVtKvWUz8l+PaKTLiL63mJYWR2GnHq2gjEWISzsLp9wg3aY36dY1j+gfIEL3pIF+XlJJfbA==
   dependencies:
     cliui "^7.0.2"
     escalade "^3.1.1"
