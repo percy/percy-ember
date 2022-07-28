@@ -13,7 +13,7 @@ module.exports = {
   included() {
     this._super.included.apply(this, arguments);
     this.import('node_modules/@percy/sdk-utils/dist/bundle.js', {
-      using: [{ transformation: 'amd', as: '@percy/sdk-utils' }],
+      using: [{ transformation: 'amd' }],
       type: 'test'
     });
   },
