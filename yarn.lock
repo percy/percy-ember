@@ -1416,9 +1416,9 @@
   integrity sha512-lFPlVcxRtQyFw+TGzfOgFm4Vc/e8xx3nrrdKopnm22JIiTGH/hYFmq4A9u0e4b6Sp2nDZzWT2W5fxVHZiKDDlg==
 
 "@percy/sdk-utils@^1.6.4":
-  version "1.6.4"
-  resolved "https://registry.yarnpkg.com/@percy/sdk-utils/-/sdk-utils-1.6.4.tgz#c5884dc3b4bf53354b02573b89e9cd945555d418"
-  integrity sha512-17bsvTiYzD/dmCJi5z2xh+usZOuIJ6AzxDRTplKGltFeSUr3t2rx33Z3lNoA33O/dCyl11eBK+p26p/Nwm87fQ==
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@percy/sdk-utils/-/sdk-utils-1.7.0.tgz#93313215c4de045e3d68b0ad6ffc21dcc4ef2fb8"
+  integrity sha512-2NalLar7GJX++Df5nxh5FdnWa8g314g4Tgp3q2Muc4vLBiUmlHSua237Hdf051b+z9ES6itSaImyY+FWO8IFKg==
 
 "@simple-dom/interface@^1.4.0":
   version "1.4.0"
