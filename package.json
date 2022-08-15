@@ -24,7 +24,7 @@
     "lint:hbs": "ember-template-lint .",
     "lint:js": "eslint .",
     "start": "ember serve",
-    "test": "node node_modules/@percy/sdk-utils/test/server exec -- ember test",
+    "test": "percy exec --testing -- ember test",
     "test:all": "ember try:each",
     "test:types": "tsd"
   },
@@ -44,7 +44,7 @@
     "@ember/test-helpers": "^2.2.5",
     "@glimmer/component": "^1.0.4",
     "@glimmer/tracking": "^1.0.4",
-    "@percy/core": "^1.6.4",
+    "@percy/cli": "^1.9.1",
     "@types/mocha": "^9.0.0",
     "@types/qunit": "^2.11.1",
     "babel-eslint": "^10.1.0",
