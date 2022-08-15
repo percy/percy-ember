@@ -10,5 +10,11 @@ QUnit.assert.matches = function matches(actual, regex, message) {
   this.pushResult({ result, actual, expected, message });
 };
 
+QUnit.assert.contains = function matches(actual, subset, message) {
+  var result = !!actual && !!subset && subset.every(i => actual.includes(i));
+  var expected = `Array containing [${subset.join(', ')}]`;
+  this.pushResult({ result, actual, expected, message });
+};
+
 setApplication(Application.create(config.APP));
 start({ setupEmberOnerrorValidation: false });
