@@ -26,11 +26,10 @@ function generateName(assertOrTestOrName) {
   }
 }
 
-// Helper to scope a DOM snapshot to the ember-testing container
-function scopeDOM(dom, { scope, domTransformation }) {
-  if (domTransformation) domTransformation(dom);
-  // we only want to capture the ember application, not the testing UI
-  let $scoped = dom.querySelector(scope || '#ember-testing');
+// Helper to scope a DOM snapshot to the ember-testing container to capture the
+// ember application without the testing UI
+function scopeDOM(scope, dom) {
+  let $scoped = dom.querySelector(scope);
   let $body = dom.querySelector('body');
   if (!$scoped) return;
 
@@ -45,11 +44,16 @@ function scopeDOM(dom, { scope, domTransformation }) {
     $body.setAttribute(name, value);
   }
 
-  // remove ember-testing styles by removing the id
-  dom.querySelector('#ember-testing').removeAttribute('id');
+  // remove #ember-testing styles by removing the id
+  dom.querySelector('#ember-testing')?.removeAttribute('id');
 }
 
-export default async function percySnapshot(name, options = {}) {
+export default async function percySnapshot(name, {
+  // separate SDK specific options from snapshot options
+  emberTestingScope = '#ember-testing',
+  domTransformation,
+  ...options
+} = {}) {
   // Check if Percy is enabled
   if (!(await utils.isPercyEnabled())) return;
   let log = utils.logger('ember');
@@ -65,7 +69,9 @@ export default async function percySnapshot(name, options = {}) {
     // Serialize and capture the DOM
     let domSnapshot = window.PercyDOM.serialize({
       enableJavaScript: options.enableJavaScript,
-      domTransformation: dom => scopeDOM(dom, options)
+      domTransformation: dom => scopeDOM(emberTestingScope, (
+        domTransformation ? domTransformation(dom) : dom
+      ))
     });
 
     // Post the DOM to the snapshot endpoint with snapshot options and other info

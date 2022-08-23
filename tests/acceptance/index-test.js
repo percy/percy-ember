@@ -87,4 +87,26 @@ module('percySnapshot', hooks => {
       'Could not take DOM snapshot "Snapshot 1"'
     ]);
   });
+
+  module('with an alternate ember-testing scope', hooks => {
+    let $scope;
+
+    hooks.beforeEach(() => {
+      $scope = document.querySelector('#ember-testing');
+      $scope.id = 'testing-container';
+    });
+
+    hooks.afterEach(() => {
+      $scope.id = 'ember-testing';
+    });
+
+    test('uses the alternate scope', async assert => {
+      await percySnapshot('Snapshot 1', {
+        emberTestingScope: '#testing-container'
+      });
+
+      assert.matches((await helpers.get('requests'))[1].body.domSnapshot, (
+        /<body id="testing-container" class="ember-application">/));
+    });
+  });
 });
