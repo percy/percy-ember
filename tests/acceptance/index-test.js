@@ -18,8 +18,8 @@ module('percySnapshot', hooks => {
     await percySnapshot('Snapshot 1');
     await percySnapshot('Snapshot 2');
 
-    assert.contains(await helpers.get('logs'), [
-      'Percy is not running, disabling snapshots'
+    assert.contains(helpers.logger.stdout, [
+      '[percy] Percy is not running, disabling snapshots'
     ]);
   });
 
@@ -29,8 +29,8 @@ module('percySnapshot', hooks => {
     await percySnapshot('Snapshot 1');
     await percySnapshot('Snapshot 2');
 
-    assert.contains(await helpers.get('logs'), [
-      'Percy is not running, disabling snapshots'
+    assert.contains(helpers.logger.stdout, [
+      '[percy] Percy is not running, disabling snapshots'
     ]);
   });
 
@@ -83,8 +83,8 @@ module('percySnapshot', hooks => {
 
     await percySnapshot('Snapshot 1');
 
-    assert.contains(await helpers.get('logs'), [
-      'Could not take DOM snapshot "Snapshot 1"'
+    assert.contains(helpers.logger.stderr, [
+      '[percy] Could not take DOM snapshot "Snapshot 1"'
     ]);
   });
 
