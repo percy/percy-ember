@@ -68,10 +68,10 @@ export default async function percySnapshot(name, {
 
     // Serialize and capture the DOM
     let domSnapshot = window.PercyDOM.serialize({
-      enableJavaScript: options.enableJavaScript,
       domTransformation: dom => scopeDOM(emberTestingScope, (
         domTransformation ? domTransformation(dom) : dom
-      ))
+      )),
+      ...options
     });
 
     // Post the DOM to the snapshot endpoint with snapshot options and other info
