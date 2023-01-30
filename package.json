@@ -1,6 +1,6 @@
 {
   "name": "@percy/ember",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Ember client library for visual testing with Percy",
   "keywords": [
     "ember-addon",
