@@ -47,7 +47,7 @@ module('percySnapshot', hooks => {
 
     assert.equal(reqs[2].body.name, 'Snapshot 1');
     assert.matches(reqs[2].body.url, /^http:\/\/localhost:7357/);
-    assert.matches(reqs[2].body.domSnapshot, /<body class="ember-application"><\/body>/);
+    assert.matches(reqs[2].body.domSnapshot.html, /<body class="ember-application"><\/body>/);
     assert.matches(reqs[2].body.clientInfo, /@percy\/ember\/\d.+/);
     assert.matches(reqs[2].body.environmentInfo[0], /ember\/.+/);
     assert.matches(reqs[2].body.environmentInfo[1], /qunit\/.+/);
@@ -74,7 +74,7 @@ module('percySnapshot', hooks => {
 
     await percySnapshot('Snapshot 1');
 
-    assert.matches((await helpers.get('requests'))[1].body.domSnapshot, (
+    assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
       /<body class="ember-application custom-classname" data-test="true"><\/body>/));
   });
 
@@ -86,6 +86,36 @@ module('percySnapshot', hooks => {
     assert.contains(helpers.logger.stderr, [
       '[percy] Could not take DOM snapshot "Snapshot 1"'
     ]);
+  });
+
+  module('with options passed to dom serialize', hooks => {
+    let $scope;
+
+    hooks.beforeEach(() => {
+      $scope = document.querySelector('#ember-testing');
+      $scope.appendChild(document.createElement('canvas'));
+    });
+
+    test("serialize canvas when enableJavascript is not present", async assert => {
+      await percySnapshot('Snapshot 1');
+      assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
+        /<body class="ember-application"><img src=".*" data-percy-element-id=".*" data-percy-canvas-serialized="" style="max-width: 100%;"><\/body>/));
+    });
+
+    test("doesn't serialize canvas when enableJavascript is true", async assert => {
+      await percySnapshot('Snapshot 1', { enableJavaScript: true });
+      assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
+        /<body class="ember-application"><canvas data-percy-element-id=".*"><\/canvas><\/body>/));     
+    });
+
+    test("removes canvas element when dom transformation is passed", async assert => {
+      await percySnapshot('Snapshot 1', {
+        domTransformation: (html) => { html.querySelector('canvas')?.remove(); return html; },
+        enable_javascript: true
+      });
+      assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
+        /<body class="ember-application"><\/body>/));
+    });
   });
 
   module('with an alternate ember-testing scope', hooks => {
@@ -105,7 +135,7 @@ module('percySnapshot', hooks => {
         emberTestingScope: '#testing-container'
       });
 
-      assert.matches((await helpers.get('requests'))[1].body.domSnapshot, (
+      assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
         /<body id="testing-container" class="ember-application">/));
     });
   });
