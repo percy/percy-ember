@@ -47,7 +47,7 @@ module('percySnapshot', hooks => {
 
     assert.equal(reqs[2].body.name, 'Snapshot 1');
     assert.matches(reqs[2].body.url, /^http:\/\/localhost:7357/);
-    assert.matches(reqs[2].body.domSnapshot.html, /<body class="ember-application"><\/body>/);
+    assert.matches(reqs[2].body.domSnapshot, /<body class="ember-application"><\/body>/);
     assert.matches(reqs[2].body.clientInfo, /@percy\/ember\/\d.+/);
     assert.matches(reqs[2].body.environmentInfo[0], /ember\/.+/);
     assert.matches(reqs[2].body.environmentInfo[1], /qunit\/.+/);
@@ -74,7 +74,7 @@ module('percySnapshot', hooks => {
 
     await percySnapshot('Snapshot 1');
 
-    assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
+    assert.matches((await helpers.get('requests'))[1].body.domSnapshot, (
       /<body class="ember-application custom-classname" data-test="true"><\/body>/));
   });
 
@@ -105,7 +105,7 @@ module('percySnapshot', hooks => {
         emberTestingScope: '#testing-container'
       });
 
-      assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
+      assert.matches((await helpers.get('requests'))[1].body.domSnapshot, (
         /<body id="testing-container" class="ember-application">/));
     });
   });
