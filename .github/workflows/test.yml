@@ -24,8 +24,7 @@ jobs:
           regex: '^[a-zA-Z0-9_/\-]+$'
       - name: Break on invalid branch name
         run: exit 1
-        needs: regex-match
-        if: ${{ steps.regex-match.outputs.match == '' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && steps.regex-match.outputs && steps.regex-match.outputs.match == '' }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
