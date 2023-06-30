@@ -2,7 +2,7 @@
 [![Version](https://img.shields.io/npm/v/@percy/ember.svg)](https://npmjs.org/package/@percy/ember)
 ![Test](https://github.com/percy/percy-ember/workflows/Test/badge.svg)
 
-[Percy](https://percy.io) visual testing for Google Puppeteer.
+[Percy](https://percy.io) visual testing for Ember applications.
 
 ## Installation
 
