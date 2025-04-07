@@ -34,9 +34,11 @@
   "ember-addon": {
     "configPath": "tests/dummy/config"
   },
+  "packageManager": "yarn@1.22.22",
   "dependencies": {
     "@percy/sdk-utils": "^1.18.0",
-    "ember-cli-babel": "^7.26.11"
+    "ember-auto-import": "^2.10.0",
+    "ember-cli-babel": "^8.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.13.14",
