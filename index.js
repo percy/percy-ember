@@ -10,14 +10,6 @@ const pkg = require('./package');
 module.exports = {
   name: pkg.name,
 
-  included() {
-    this._super.included.apply(this, arguments);
-    this.import('node_modules/@percy/sdk-utils/dist/bundle.js', {
-      using: [{ transformation: 'amd' }],
-      type: 'test'
-    });
-  },
-
   treeForAddonTestSupport(tree) {
     let meta = new WriteFile('@percy/ember/env.js', (
       `export default ${JSON.stringify({
