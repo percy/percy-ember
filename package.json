@@ -16,7 +16,7 @@
     "test": "tests"
   },
   "engines": {
-    "node": ">= 14"
+    "node": ">= 16"
   },
   "scripts": {
     "build": "ember build --environment=production",
@@ -46,12 +46,11 @@
     "@ember/test-helpers": "^2.2.5",
     "@glimmer/component": "^1.0.4",
     "@glimmer/tracking": "^1.0.4",
-    "@percy/cli": "^1.18.0",
+    "@percy/cli": "^1.31.1",
     "@types/mocha": "^10.0.0",
     "@types/qunit": "^2.11.1",
     "babel-eslint": "^10.1.0",
     "broccoli-asset-rev": "^3.0.0",
-    "ember-auto-import": "^2.0.2",
     "ember-cli": "~4.8.0",
     "ember-cli-dependency-checker": "^3.2.0",
     "ember-cli-htmlbars": "^6.0.0",
