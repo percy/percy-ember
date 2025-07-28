@@ -3,6 +3,12 @@ import Application from 'dummy/app';
 import config from 'dummy/config/environment';
 import { setApplication } from '@ember/test-helpers';
 import { start } from 'ember-qunit';
+import * as utils from "@percy/sdk-utils";
+
+// Make PercySDKUtils available globally for the test helpers
+if (typeof window !== "undefined") {
+  window.PercySDKUtils = utils;
+}
 
 QUnit.assert.matches = function matches(actual, regex, message) {
   var result = !!regex && !!actual && (new RegExp(regex)).test(actual);
