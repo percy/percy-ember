@@ -66,6 +66,13 @@ export default async function percySnapshot(name, {
       eval(await utils.fetchPercyDOM());
     }
 
+    const pseudoClassEnabledElements = options.pseudoClassEnabledElements ??
+      utils.percy?.config?.snapshot?.pseudoClassEnabledElements;
+
+    if (pseudoClassEnabledElements) {
+      options = { ...options, pseudoClassEnabledElements };
+    }
+
     // Serialize and capture the DOM
     let domSnapshot = window.PercyDOM.serialize({
       domTransformation: dom => scopeDOM(emberTestingScope, (
