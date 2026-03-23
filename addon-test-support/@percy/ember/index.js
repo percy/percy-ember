@@ -66,12 +66,8 @@ export default async function percySnapshot(name, {
       eval(await utils.fetchPercyDOM());
     }
 
-    let pseudoClassEnabledElements;
-    if (Object.hasOwn(options, 'pseudoClassEnabledElements')) {
-      pseudoClassEnabledElements = options.pseudoClassEnabledElements;
-    } else if (utils.percy?.config?.snapshot?.pseudoClassEnabledElements) {
-      pseudoClassEnabledElements = utils.percy.config.snapshot.pseudoClassEnabledElements;
-    }
+    const pseudoClassEnabledElements = options.pseudoClassEnabledElements ||
+    utils.percy?.config?.snapshot?.pseudoClassEnabledElements;
 
     if (pseudoClassEnabledElements) {
       options = { ...options, pseudoClassEnabledElements };
