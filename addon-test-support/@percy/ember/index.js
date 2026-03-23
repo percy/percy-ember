@@ -66,7 +66,7 @@ export default async function percySnapshot(name, {
       eval(await utils.fetchPercyDOM());
     }
 
-    if(!options.pseudoClassEnabledElements && utils.percy?.config?.snapshot?.pseudoClassEnabledElements){
+    if (!options.pseudoClassEnabledElements && utils.percy?.config?.snapshot?.pseudoClassEnabledElements) {
       options = { ...options, pseudoClassEnabledElements: utils.percy.config.snapshot.pseudoClassEnabledElements };
     }
 
