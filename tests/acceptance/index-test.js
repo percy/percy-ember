@@ -91,10 +91,18 @@ module('percySnapshot', hooks => {
 
   module('with options passed to dom serialize', hooks => {
     let $scope;
+    let savedPseudoClassEnabledElements;
 
     hooks.beforeEach(() => {
       $scope = document.querySelector('#ember-testing');
       $scope.appendChild(document.createElement('canvas'));
+      savedPseudoClassEnabledElements = utils.percy?.config?.snapshot?.pseudoClassEnabledElements;
+    });
+
+    hooks.afterEach(() => {
+      if (utils.percy?.config?.snapshot) {
+        utils.percy.config.snapshot.pseudoClassEnabledElements = savedPseudoClassEnabledElements;
+      }
     });
 
     test("serialize canvas when enableJavascript is not present", async assert => {
