@@ -1,6 +1,6 @@
 {
   "name": "@percy/ember",
-  "version": "5.0.0",
+  "version": "5.0.1-beta.0",
   "description": "Ember client library for visual testing with Percy",
   "keywords": [
     "ember-addon",
@@ -17,6 +17,9 @@
   },
   "engines": {
     "node": ">= 16"
+  },
+  "publishConfig": {
+    "tag": "beta"
   },
   "scripts": {
     "build": "ember build --environment=production",
