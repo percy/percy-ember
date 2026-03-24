@@ -1,5 +1,6 @@
 import { module, test } from 'qunit';
 import { setupApplicationTest } from 'ember-qunit';
+import utils from '@percy/sdk-utils';
 import helpers from '@percy/sdk-utils/test/helpers';
 import percySnapshot from '@percy/ember';
 
@@ -90,10 +91,18 @@ module('percySnapshot', hooks => {
 
   module('with options passed to dom serialize', hooks => {
     let $scope;
+    let savedPseudoClassEnabledElements;
 
     hooks.beforeEach(() => {
       $scope = document.querySelector('#ember-testing');
       $scope.appendChild(document.createElement('canvas'));
+      savedPseudoClassEnabledElements = utils.percy?.config?.snapshot?.pseudoClassEnabledElements;
+    });
+
+    hooks.afterEach(() => {
+      if (utils.percy?.config?.snapshot) {
+        utils.percy.config.snapshot.pseudoClassEnabledElements = savedPseudoClassEnabledElements;
+      }
     });
 
     test("serialize canvas when enableJavascript is not present", async assert => {
@@ -115,6 +124,39 @@ module('percySnapshot', hooks => {
       });
       assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
         /<body class="ember-application"><\/body>/));
+    });
+
+    test('uses pseudoClassEnabledElements from percy config when option is not passed', async assert => {
+      await utils.isPercyEnabled();
+      utils.percy.config.snapshot.pseudoClassEnabledElements = {
+        selector: ['#ember-testing']
+      };
+
+      await percySnapshot('Snapshot 1');
+
+      let reqs = await helpers.get('requests');
+      let snapshotReq = reqs.filter(req => req.url === '/percy/snapshot').pop();
+      assert.ok(snapshotReq, 'posts snapshot request');
+      assert.deepEqual(snapshotReq.body.pseudoClassEnabledElements?.selector, ['#ember-testing']);
+    });
+
+    test('prioritizes pseudoClassEnabledElements from percySnapshot options over config', async assert => {
+      await utils.isPercyEnabled();
+      utils.percy.config.snapshot.pseudoClassEnabledElements = {
+        selector: ['.from-config']
+      };
+
+      await percySnapshot('Snapshot 1', {
+        pseudoClassEnabledElements: {
+          selector: ['#ember-testing']
+        }
+      });
+
+      let reqs = await helpers.get('requests');
+      let snapshotReq = reqs.filter(req => req.url === '/percy/snapshot').pop();
+      assert.deepEqual(snapshotReq.body.pseudoClassEnabledElements, {
+        selector: ['#ember-testing']
+      });
     });
   });
 
