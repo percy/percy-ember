@@ -160,6 +160,87 @@ module('percySnapshot', hooks => {
     });
   });
 
+  module('readiness gate (PER-7348)', hooks => {
+    let originalPercyDOM;
+
+    hooks.beforeEach(() => {
+      originalPercyDOM = window.PercyDOM;
+    });
+
+    hooks.afterEach(() => {
+      window.PercyDOM = originalPercyDOM;
+    });
+
+    test('calls waitForReady before serialize when the CLI exposes it', async assert => {
+      const calls = [];
+      window.PercyDOM = {
+        waitForReady: cfg => { calls.push(['waitForReady', cfg]); return Promise.resolve(); },
+        serialize: opts => { calls.push(['serialize', opts]); return { html: '<html></html>' }; }
+      };
+
+      await percySnapshot('readiness-happy-path');
+
+      const order = calls.map(([n]) => n);
+      assert.ok(order.indexOf('waitForReady') < order.indexOf('serialize'),
+        'waitForReady is called before serialize');
+    });
+
+    test('skips waitForReady when the CLI is old (function is absent)', async assert => {
+      const calls = [];
+      window.PercyDOM = {
+        // No waitForReady — simulating an older CLI.
+        serialize: opts => { calls.push(['serialize', opts]); return { html: '<html></html>' }; }
+      };
+
+      await percySnapshot('readiness-backward-compat');
+
+      assert.deepEqual(calls.map(([n]) => n), ['serialize'],
+        'only serialize runs when waitForReady is missing');
+    });
+
+    test('skips waitForReady when preset is disabled', async assert => {
+      const calls = [];
+      window.PercyDOM = {
+        waitForReady: cfg => { calls.push(['waitForReady', cfg]); return Promise.resolve(); },
+        serialize: opts => { calls.push(['serialize', opts]); return { html: '<html></html>' }; }
+      };
+
+      await percySnapshot('readiness-disabled', { readiness: { preset: 'disabled' } });
+
+      assert.deepEqual(calls.map(([n]) => n), ['serialize'],
+        'waitForReady is skipped when preset is disabled');
+    });
+
+    test('proceeds to serialize when waitForReady rejects', async assert => {
+      const calls = [];
+      window.PercyDOM = {
+        waitForReady: () => { calls.push(['waitForReady']); return Promise.reject(new Error('readiness failed')); },
+        serialize: opts => { calls.push(['serialize', opts]); return { html: '<html></html>' }; }
+      };
+
+      await percySnapshot('readiness-rejection');
+
+      assert.deepEqual(calls.map(([n]) => n), ['waitForReady', 'serialize'],
+        'serialize still runs after waitForReady rejection');
+    });
+
+    test('attaches readiness diagnostics to the snapshot when waitForReady resolves with data', async assert => {
+      const diagnostics = { duration_ms: 42, timed_out: false, checks: { dom: 'ready' } };
+      window.PercyDOM = {
+        waitForReady: () => Promise.resolve(diagnostics),
+        serialize: () => ({ html: '<html></html>' })
+      };
+
+      await percySnapshot('readiness-diagnostics');
+
+      const reqs = await helpers.get('requests');
+      const snapshotReq = reqs.filter(r => r.url === '/percy/snapshot').pop();
+      assert.ok(snapshotReq, 'posts snapshot request');
+      assert.deepEqual(snapshotReq.body.domSnapshot.readiness_diagnostics, diagnostics,
+        'diagnostics are attached to domSnapshot');
+    });
+  });
+
   module('with an alternate ember-testing scope', hooks => {
     let $scope;
 

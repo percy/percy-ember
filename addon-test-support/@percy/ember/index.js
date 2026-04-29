@@ -76,6 +76,18 @@ export default async function percySnapshot(name, {
 
     addPseudoClassEnabledELements(options);
 
+    // Readiness gate — runs before serialize when CLI supports it (PER-7348).
+    // Uses typeof guard for backward compat with older CLI that lacks waitForReady.
+    let readinessDiagnostics;
+    const readinessConfig = options.readiness || utils.percy?.config?.snapshot?.readiness || {};
+    if (readinessConfig.preset !== 'disabled' && typeof window.PercyDOM?.waitForReady === 'function') {
+      try {
+        readinessDiagnostics = await window.PercyDOM.waitForReady(readinessConfig);
+      } catch (e) {
+        log.debug(`waitForReady failed, proceeding to serialize: ${e?.message || e}`);
+      }
+    }
+
     // Serialize and capture the DOM
     let domSnapshot = window.PercyDOM.serialize({
       domTransformation: dom => scopeDOM(emberTestingScope, (
@@ -83,6 +95,11 @@ export default async function percySnapshot(name, {
       )),
       ...options
     });
+
+    // Attach readiness diagnostics so the CLI can log timing and pass/fail
+    if (readinessDiagnostics) {
+      domSnapshot.readiness_diagnostics = readinessDiagnostics;
+    }
 
     // Post the DOM to the snapshot endpoint with snapshot options and other info
     await utils.postSnapshot({
