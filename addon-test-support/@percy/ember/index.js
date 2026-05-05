@@ -75,8 +75,7 @@ export default async function percySnapshot(name, {
     }
 
     // Merge .percy.yml config options with snapshot options (snapshot options take priority)
-    const configOptions = utils.percy?.config?.snapshot || {};
-    const mergedOptions = { ...configOptions, ...options };
+    const mergedOptions = utils.mergeSnapshotOptions(options);
 
     // Serialize and capture the DOM
     let domSnapshot = window.PercyDOM.serialize({
