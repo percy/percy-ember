@@ -74,14 +74,16 @@ export default async function percySnapshot(name, {
       eval(await utils.fetchPercyDOM());
     }
 
-    addPseudoClassEnabledELements(options);
+    // Merge .percy.yml config options with snapshot options (snapshot options take priority)
+    const configOptions = utils.percy?.config?.snapshot || {};
+    const mergedOptions = { ...configOptions, ...options };
 
     // Serialize and capture the DOM
     let domSnapshot = window.PercyDOM.serialize({
       domTransformation: dom => scopeDOM(emberTestingScope, (
         domTransformation ? domTransformation(dom) : dom
       )),
-      ...options
+      ...mergedOptions
     });
 
     // Post the DOM to the snapshot endpoint with snapshot options and other info
