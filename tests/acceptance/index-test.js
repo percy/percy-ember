@@ -224,6 +224,21 @@ module('percySnapshot', hooks => {
         'serialize still runs after waitForReady rejection');
     });
 
+    test('proceeds to serialize when waitForReady rejects with a non-Error', async assert => {
+      // Covers the `e?.message || e` second branch: rejection value has
+      // no `.message`, so logging falls through to stringifying e itself.
+      const calls = [];
+      window.PercyDOM = {
+        waitForReady: () => { calls.push(['waitForReady']); return Promise.reject('plain-string-rejection'); },
+        serialize: opts => { calls.push(['serialize', opts]); return { html: '<html></html>' }; }
+      };
+
+      await percySnapshot('readiness-rejection-string');
+
+      assert.deepEqual(calls.map(([n]) => n), ['waitForReady', 'serialize'],
+        'serialize still runs after a non-Error waitForReady rejection');
+    });
+
     test('attaches readiness diagnostics to the snapshot when waitForReady resolves with data', async assert => {
       const diagnostics = { duration_ms: 42, timed_out: false, checks: { dom: 'ready' } };
       window.PercyDOM = {
