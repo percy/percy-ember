@@ -171,7 +171,7 @@ module('percySnapshot', hooks => {
       window.PercyDOM = originalPercyDOM;
     });
 
-    test('calls waitForReady before serialize when the CLI exposes it', async assert => {
+    test('calls waitForReady exactly once before serialize when the CLI exposes it', async assert => {
       const calls = [];
       window.PercyDOM = {
         waitForReady: cfg => { calls.push(['waitForReady', cfg]); return Promise.resolve(); },
@@ -180,9 +180,49 @@ module('percySnapshot', hooks => {
 
       await percySnapshot('readiness-happy-path');
 
-      const order = calls.map(([n]) => n);
-      assert.ok(order.indexOf('waitForReady') < order.indexOf('serialize'),
-        'waitForReady is called before serialize');
+      assert.deepEqual(calls.map(([n]) => n), ['waitForReady', 'serialize'],
+        'waitForReady is called exactly once before serialize');
+    });
+
+    test('merges global .percy.yml readiness with per-snapshot overrides', async assert => {
+      await utils.isPercyEnabled();
+      utils.percy.config.snapshot.readiness = {
+        preset: 'balanced',
+        timeoutMs: 8000,
+        stabilityWindowMs: 200
+      };
+      const cfgs = [];
+      window.PercyDOM = {
+        waitForReady: cfg => { cfgs.push(cfg); return Promise.resolve(); },
+        serialize: () => ({ html: '<html></html>' })
+      };
+
+      await percySnapshot('readiness-merge', { readiness: { stabilityWindowMs: 500 } });
+
+      delete utils.percy.config.snapshot.readiness;
+
+      assert.deepEqual(cfgs, [{
+        preset: 'balanced',
+        timeoutMs: 8000,
+        stabilityWindowMs: 500
+      }], 'per-snapshot keys override globals; unspecified globals are inherited');
+    });
+
+    test('inherits global preset: disabled when per-snapshot override omits preset', async assert => {
+      await utils.isPercyEnabled();
+      utils.percy.config.snapshot.readiness = { preset: 'disabled' };
+      const calls = [];
+      window.PercyDOM = {
+        waitForReady: cfg => { calls.push(['waitForReady', cfg]); return Promise.resolve(); },
+        serialize: () => { calls.push(['serialize']); return { html: '<html></html>' }; }
+      };
+
+      await percySnapshot('readiness-global-disabled', { readiness: { stabilityWindowMs: 500 } });
+
+      delete utils.percy.config.snapshot.readiness;
+
+      assert.deepEqual(calls.map(([n]) => n), ['serialize'],
+        'global preset: disabled is inherited and skips waitForReady');
     });
 
     test('skips waitForReady when the CLI is old (function is absent)', async assert => {
@@ -211,32 +251,71 @@ module('percySnapshot', hooks => {
         'waitForReady is skipped when preset is disabled');
     });
 
-    test('proceeds to serialize when waitForReady rejects', async assert => {
-      const calls = [];
+    test('stamps rejection into diagnostics and still serializes', async assert => {
       window.PercyDOM = {
-        waitForReady: () => { calls.push(['waitForReady']); return Promise.reject(new Error('readiness failed')); },
-        serialize: opts => { calls.push(['serialize', opts]); return { html: '<html></html>' }; }
+        waitForReady: () => Promise.reject(new Error('readiness failed')),
+        serialize: () => ({ html: '<html></html>' })
       };
 
       await percySnapshot('readiness-rejection');
 
-      assert.deepEqual(calls.map(([n]) => n), ['waitForReady', 'serialize'],
-        'serialize still runs after waitForReady rejection');
+      const reqs = await helpers.get('requests');
+      const snapshotReq = reqs.filter(r => r.url === '/percy/snapshot').pop();
+      assert.ok(snapshotReq, 'snapshot is still posted after rejection');
+      assert.deepEqual(snapshotReq.body.domSnapshot.readiness_diagnostics, {
+        error: 'readiness failed',
+        proceeded: true
+      }, 'rejection is stamped into diagnostics so the CLI can render it');
     });
 
-    test('proceeds to serialize when waitForReady rejects with a non-Error', async assert => {
-      // Covers the `e?.message || e` second branch: rejection value has
-      // no `.message`, so logging falls through to stringifying e itself.
-      const calls = [];
+    test('stringifies a non-Error rejection and still serializes', async assert => {
       window.PercyDOM = {
-        waitForReady: () => { calls.push(['waitForReady']); return Promise.reject('plain-string-rejection'); },
-        serialize: opts => { calls.push(['serialize', opts]); return { html: '<html></html>' }; }
+        waitForReady: () => Promise.reject('plain-string-rejection'),
+        serialize: () => ({ html: '<html></html>' })
       };
 
       await percySnapshot('readiness-rejection-string');
 
-      assert.deepEqual(calls.map(([n]) => n), ['waitForReady', 'serialize'],
-        'serialize still runs after a non-Error waitForReady rejection');
+      const reqs = await helpers.get('requests');
+      const snapshotReq = reqs.filter(r => r.url === '/percy/snapshot').pop();
+      assert.deepEqual(snapshotReq.body.domSnapshot.readiness_diagnostics, {
+        error: 'plain-string-rejection',
+        proceeded: true
+      }, 'non-Error rejections are stringified, not dropped');
+    });
+
+    test('drops unserializable diagnostics rather than crashing the snapshot', async assert => {
+      // A circular ref would throw inside postSnapshot's JSON.stringify and
+      // take down the entire snapshot — the diagnostics field is supposed to
+      // *instrument* the snapshot, not break it.
+      const circular = { passed: true };
+      circular.self = circular;
+      window.PercyDOM = {
+        waitForReady: () => Promise.resolve(circular),
+        serialize: () => ({ html: '<html></html>' })
+      };
+
+      await percySnapshot('readiness-unserializable');
+
+      const reqs = await helpers.get('requests');
+      const snapshotReq = reqs.filter(r => r.url === '/percy/snapshot').pop();
+      assert.ok(snapshotReq, 'snapshot is still posted');
+      assert.notOk('readiness_diagnostics' in snapshotReq.body.domSnapshot,
+        'unserializable diagnostics are dropped');
+    });
+
+    test('does not forward `readiness` into the postSnapshot payload', async assert => {
+      window.PercyDOM = {
+        waitForReady: () => Promise.resolve({ passed: true }),
+        serialize: () => ({ html: '<html></html>' })
+      };
+
+      await percySnapshot('readiness-no-leak', { readiness: { stabilityWindowMs: 250 } });
+
+      const reqs = await helpers.get('requests');
+      const snapshotReq = reqs.filter(r => r.url === '/percy/snapshot').pop();
+      assert.notOk('readiness' in snapshotReq.body,
+        'readiness is SDK-local and must not round-trip to the CLI');
     });
 
     test('attaches readiness diagnostics to the snapshot when waitForReady resolves with data', async assert => {

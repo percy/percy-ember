@@ -1,5 +1,6 @@
 import utils from '@percy/sdk-utils';
 import { VERSION as emberVersion } from '@ember/version';
+import { settled } from '@ember/test-helpers';
 import SDKENV from '@percy/ember/env';
 
 // Collect client and environment information
@@ -73,37 +74,64 @@ export default async function percySnapshot(name, {
       // eslint-disable-next-line no-eval
       eval(await utils.fetchPercyDOM());
     }
+    // Stable reference: another percySnapshot() call (or QUnit teardown) can rebind
+    // window.PercyDOM mid-flight if the caller forgot to await — capture once.
+    const PercyDOM = window.PercyDOM;
 
     addPseudoClassEnabledELements(options);
 
-    // Readiness gate — runs before serialize when CLI supports it (PER-7348).
-    // Uses typeof guard for backward compat with older CLI that lacks waitForReady.
+    // Backward-compat: older CLI bundles lack waitForReady (PER-7348).
+    // Shallow-merge so partial per-snapshot overrides inherit unspecified
+    // global keys (notably `preset: disabled` from .percy.yml).
     let readinessDiagnostics;
-    const readinessConfig = options.readiness || utils.percy?.config?.snapshot?.readiness || {};
-    if (readinessConfig.preset !== 'disabled' && typeof window.PercyDOM?.waitForReady === 'function') {
+    const readinessConfig = {
+      ...(utils.percy?.config?.snapshot?.readiness || {}),
+      ...(options.readiness || {})
+    };
+    if (readinessConfig.preset !== 'disabled' && typeof PercyDOM?.waitForReady === 'function') {
       try {
-        readinessDiagnostics = await window.PercyDOM.waitForReady(readinessConfig);
+        readinessDiagnostics = await PercyDOM.waitForReady(readinessConfig);
       } catch (e) {
-        log.debug(`waitForReady failed, proceeding to serialize: ${e?.message || e}`);
+        const errMsg = e instanceof Error ? e.message : String(e);
+        readinessDiagnostics = { error: errMsg, proceeded: true };
+        log.warn(`waitForReady failed, proceeding to serialize: ${errMsg}`);
       }
+      // The CLI's waitForReady installs MutationObserver, PerformanceObservers,
+      // and rAF/timeout callbacks — those microtasks can re-tick Backburner and
+      // schedule a glimmer rerender right before we serialize. settled() drains
+      // the runloop so we capture a frame the user would actually see painted.
+      if (typeof settled === 'function') await settled();
     }
 
     // Serialize and capture the DOM
-    let domSnapshot = window.PercyDOM.serialize({
+    let domSnapshot = PercyDOM.serialize({
       domTransformation: dom => scopeDOM(emberTestingScope, (
         domTransformation ? domTransformation(dom) : dom
       )),
       ...options
     });
 
-    // Attach readiness diagnostics so the CLI can log timing and pass/fail
-    if (readinessDiagnostics) {
-      domSnapshot.readiness_diagnostics = readinessDiagnostics;
+    // Attach readiness diagnostics so the CLI can log timing and pass/fail.
+    // `!== undefined` preserves legitimate falsy returns (e.g. `null` to mean
+    // "gate ran, no diagnostics"). JSON.stringify probe catches future regressions
+    // returning unserializable shapes (circular refs, BigInt, DOM nodes) that
+    // would otherwise throw inside postSnapshot and take down the snapshot.
+    if (readinessDiagnostics !== undefined) {
+      try {
+        JSON.stringify(readinessDiagnostics);
+        domSnapshot.readiness_diagnostics = readinessDiagnostics;
+      } catch (e) {
+        log.warn(`dropping unserializable readiness diagnostics: ${e?.message || e}`);
+      }
     }
+
+    // Strip `readiness` before posting — it's SDK-local and the CLI already
+    // has it from .percy.yml healthcheck. Avoids round-tripping config.
+    const { readiness: _readiness, ...forwardOpts } = options;
 
     // Post the DOM to the snapshot endpoint with snapshot options and other info
     await utils.postSnapshot({
-      ...options,
+      ...forwardOpts,
       environmentInfo: ENV_INFO,
       clientInfo: CLIENT_INFO,
       url: document.URL,
