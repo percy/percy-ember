@@ -192,7 +192,9 @@ module('percySnapshot', hooks => {
         serialize: opts => { calls.push(['serialize', opts]); return { html: '<html></html>' }; }
       };
 
-      await percySnapshot('readiness-happy-path');
+      // Explicit `readiness` opts the snapshot into the gate (default-off in
+      // qunit/mocha test runners; see the in-test-runner branch in index.js).
+      await percySnapshot('readiness-happy-path', { readiness: {} });
 
       assert.deepEqual(calls.map(([n]) => n), ['waitForReady', 'serialize'],
         'waitForReady is called exactly once before serialize');
@@ -246,7 +248,7 @@ module('percySnapshot', hooks => {
         serialize: opts => { calls.push(['serialize', opts]); return { html: '<html></html>' }; }
       };
 
-      await percySnapshot('readiness-backward-compat');
+      await percySnapshot('readiness-backward-compat', { readiness: {} });
 
       assert.deepEqual(calls.map(([n]) => n), ['serialize'],
         'only serialize runs when waitForReady is missing');
@@ -271,7 +273,7 @@ module('percySnapshot', hooks => {
         serialize: () => ({ html: '<html></html>' })
       };
 
-      await percySnapshot('readiness-rejection');
+      await percySnapshot('readiness-rejection', { readiness: {} });
 
       const reqs = await helpers.get('requests');
       const snapshotReq = reqs.filter(r => r.url === '/percy/snapshot').pop();
@@ -288,7 +290,7 @@ module('percySnapshot', hooks => {
         serialize: () => ({ html: '<html></html>' })
       };
 
-      await percySnapshot('readiness-rejection-string');
+      await percySnapshot('readiness-rejection-string', { readiness: {} });
 
       const reqs = await helpers.get('requests');
       const snapshotReq = reqs.filter(r => r.url === '/percy/snapshot').pop();
@@ -309,7 +311,7 @@ module('percySnapshot', hooks => {
         serialize: () => ({ html: '<html></html>' })
       };
 
-      await percySnapshot('readiness-unserializable');
+      await percySnapshot('readiness-unserializable', { readiness: {} });
 
       const reqs = await helpers.get('requests');
       const snapshotReq = reqs.filter(r => r.url === '/percy/snapshot').pop();
@@ -339,7 +341,7 @@ module('percySnapshot', hooks => {
         serialize: () => ({ html: '<html></html>' })
       };
 
-      await percySnapshot('readiness-diagnostics');
+      await percySnapshot('readiness-diagnostics', { readiness: {} });
 
       const reqs = await helpers.get('requests');
       const snapshotReq = reqs.filter(r => r.url === '/percy/snapshot').pop();

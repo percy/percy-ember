@@ -85,11 +85,21 @@ export default async function percySnapshot(name, {
     //   - Older @percy/sdk-utils lacks getReadinessConfig/isReadinessDisabled —
     //     typeof checks fall back to local resolution so a stale sdk-utils version
     //     never crashes snapshot capture.
+    //
+    // In the qunit/mocha test runner, the test-runner UI (progress bar, test
+    // counter, etc.) mutates the document constantly. The CLI's default
+    // `balanced` preset waits up to 10s for DOM stability — which never
+    // arrives in the test runner, so every snapshot pays the full 10s
+    // timeout and a suite with N snapshots takes N*10s. Default-skip in test
+    // contexts; users can opt back in via explicit `{ readiness: { ... } }`.
     let readinessDiagnostics;
+    const inTestRunner = !!(window.QUnit || window.mocha);
+    const hasExplicitReadinessOpt = options?.readiness !== undefined;
     const readinessDisabled = typeof utils.isReadinessDisabled === 'function'
       ? utils.isReadinessDisabled(options)
       : ((options?.readiness || utils.percy?.config?.snapshot?.readiness)?.preset === 'disabled');
-    if (!readinessDisabled && typeof PercyDOM?.waitForReady === 'function') {
+    const skipReadinessInTests = inTestRunner && !hasExplicitReadinessOpt;
+    if (!readinessDisabled && !skipReadinessInTests && typeof PercyDOM?.waitForReady === 'function') {
       const readinessConfig = typeof utils.getReadinessConfig === 'function'
         ? utils.getReadinessConfig(options)
         : { ...(utils.percy?.config?.snapshot?.readiness || {}), ...(options?.readiness || {}) };
