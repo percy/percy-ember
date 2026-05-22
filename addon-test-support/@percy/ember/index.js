@@ -131,6 +131,7 @@ export default async function percySnapshot(name, {
 
     // Strip `readiness` before posting — it's SDK-local and the CLI already
     // has it from .percy.yml healthcheck. Avoids round-tripping config.
+    // eslint-disable-next-line no-unused-vars
     const { readiness: _readiness, ...forwardOpts } = options;
 
     // Post the DOM to the snapshot endpoint with snapshot options and other info
