@@ -80,13 +80,21 @@ export default async function percySnapshot(name, {
 
     addPseudoClassEnabledELements(options);
 
-    // Backward-compat: older CLI bundles lack waitForReady (PER-7348).
-    // Config precedence (shallow merge of global + per-snapshot) lives in
-    // @percy/sdk-utils — single source of truth shared across every JS SDK.
+    // Readiness gate (PER-7348). Backward-compat:
+    //   - Older CLI bundles lack PercyDOM.waitForReady — typeof guard handles that.
+    //   - Older @percy/sdk-utils lacks getReadinessConfig/isReadinessDisabled —
+    //     typeof checks fall back to local resolution so a stale sdk-utils version
+    //     never crashes snapshot capture.
     let readinessDiagnostics;
-    if (!utils.isReadinessDisabled(options) && typeof PercyDOM?.waitForReady === 'function') {
+    const readinessDisabled = typeof utils.isReadinessDisabled === 'function'
+      ? utils.isReadinessDisabled(options)
+      : ((options?.readiness || utils.percy?.config?.snapshot?.readiness)?.preset === 'disabled');
+    if (!readinessDisabled && typeof PercyDOM?.waitForReady === 'function') {
+      const readinessConfig = typeof utils.getReadinessConfig === 'function'
+        ? utils.getReadinessConfig(options)
+        : { ...(utils.percy?.config?.snapshot?.readiness || {}), ...(options?.readiness || {}) };
       try {
-        readinessDiagnostics = await PercyDOM.waitForReady(utils.getReadinessConfig(options));
+        readinessDiagnostics = await PercyDOM.waitForReady(readinessConfig);
       } catch (e) {
         const errMsg = e instanceof Error ? e.message : String(e);
         readinessDiagnostics = { error: errMsg, proceeded: true };
