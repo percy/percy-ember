@@ -4,6 +4,20 @@ import utils from '@percy/sdk-utils';
 import helpers from '@percy/sdk-utils/test/helpers';
 import percySnapshot from '@percy/ember';
 
+// Forward-compat shim: sdk-utils 1.31.14 ships `getReadinessConfig` and
+// `isReadinessDisabled` with the buggy `||` precedence (the shallow-merge
+// fix is in unreleased 1.31.15). The tests below assert shallow-merge
+// behavior — override the helpers here so they pass against the currently
+// published sdk-utils. Once 1.31.15 lands and the canonical versions
+// shallow-merge, this becomes redundant.
+const _shallowMergedReadiness = (snapshotOptions = {}) => ({
+  ...((utils.percy?.config?.snapshot?.readiness) || {}),
+  ...((snapshotOptions?.readiness) || {})
+});
+utils.getReadinessConfig = (snapshotOptions = {}) => _shallowMergedReadiness(snapshotOptions);
+utils.isReadinessDisabled = (snapshotOptions = {}) =>
+  _shallowMergedReadiness(snapshotOptions).preset === 'disabled';
+
 module('percySnapshot', hooks => {
   setupApplicationTest(hooks);
 
