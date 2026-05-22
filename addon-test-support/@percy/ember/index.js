@@ -104,7 +104,18 @@ export default async function percySnapshot(name, {
       // and rAF/timeout callbacks — those microtasks can re-tick Backburner and
       // schedule a glimmer rerender right before we serialize. settled() drains
       // the runloop so we capture a frame the user would actually see painted.
-      if (typeof settled === 'function') await settled();
+      //
+      // Hard timeout: settled() can hang indefinitely if the observers keep
+      // firing (they're the very things we're waiting for to quiesce, but
+      // settled() can't tell the difference between "still ticking" and "test
+      // waiting for input"). 200ms is long enough for one paint boundary
+      // without freezing the test suite.
+      if (typeof settled === 'function') {
+        await Promise.race([
+          settled(),
+          new Promise(resolve => setTimeout(resolve, 200))
+        ]);
+      }
     }
 
     // Serialize and capture the DOM
