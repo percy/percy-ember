@@ -81,16 +81,12 @@ export default async function percySnapshot(name, {
     addPseudoClassEnabledELements(options);
 
     // Backward-compat: older CLI bundles lack waitForReady (PER-7348).
-    // Shallow-merge so partial per-snapshot overrides inherit unspecified
-    // global keys (notably `preset: disabled` from .percy.yml).
+    // Config precedence (shallow merge of global + per-snapshot) lives in
+    // @percy/sdk-utils — single source of truth shared across every JS SDK.
     let readinessDiagnostics;
-    const readinessConfig = {
-      ...(utils.percy?.config?.snapshot?.readiness || {}),
-      ...(options.readiness || {})
-    };
-    if (readinessConfig.preset !== 'disabled' && typeof PercyDOM?.waitForReady === 'function') {
+    if (!utils.isReadinessDisabled(options) && typeof PercyDOM?.waitForReady === 'function') {
       try {
-        readinessDiagnostics = await PercyDOM.waitForReady(readinessConfig);
+        readinessDiagnostics = await PercyDOM.waitForReady(utils.getReadinessConfig(options));
       } catch (e) {
         const errMsg = e instanceof Error ? e.message : String(e);
         readinessDiagnostics = { error: errMsg, proceeded: true };
