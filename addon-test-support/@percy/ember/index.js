@@ -80,7 +80,7 @@ export default async function percySnapshot(name, {
 
     addPseudoClassEnabledELements(options);
 
-    // Readiness gate (PER-7348). Backward-compat:
+    // Readiness gate. Backward-compat:
     //   - Older CLI bundles lack PercyDOM.waitForReady — typeof guard handles that.
     //   - Older @percy/sdk-utils lacks getReadinessConfig/isReadinessDisabled —
     //     typeof checks fall back to local resolution so a stale sdk-utils version
