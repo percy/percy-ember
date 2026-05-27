@@ -78,7 +78,8 @@ export default async function percySnapshot(name, {
     // window.PercyDOM mid-flight if the caller forgot to await — capture once.
     const PercyDOM = window.PercyDOM;
 
-    addPseudoClassEnabledELements(options);
+    // Merge .percy.yml config options with snapshot options (snapshot options take priority)
+    const mergedOptions = utils.mergeSnapshotOptions(options);
 
     // Readiness gate. Backward-compat:
     //   - Older CLI bundles lack PercyDOM.waitForReady — typeof guard handles that.
@@ -133,7 +134,7 @@ export default async function percySnapshot(name, {
       domTransformation: dom => scopeDOM(emberTestingScope, (
         domTransformation ? domTransformation(dom) : dom
       )),
-      ...options
+      ...mergedOptions
     });
 
     // Attach readiness diagnostics so the CLI can log timing and pass/fail.
