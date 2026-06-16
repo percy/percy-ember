@@ -27,14 +27,6 @@ function generateName(assertOrTestOrName) {
   }
 }
 
-// Helper to add pseudoClassEnabledElements that are in .percy.yml file to snapshot options.
-// when options.pseudoClassEnabledElements is not set in percySnapshot options
-function addPseudoClassEnabledELements(options) {
-  if (!options.pseudoClassEnabledElements && utils.percy?.config?.snapshot?.pseudoClassEnabledElements) {
-    options.pseudoClassEnabledElements = utils.percy.config.snapshot.pseudoClassEnabledElements;
-  }
-}
-
 // Helper to scope a DOM snapshot to the ember-testing container to capture the
 // ember application without the testing UI
 function scopeDOM(scope, dom) {
