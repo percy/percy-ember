@@ -145,8 +145,11 @@ export default async function percySnapshot(name, {
 
     // Strip `readiness` before posting — it's SDK-local and the CLI already
     // has it from .percy.yml healthcheck. Avoids round-tripping config.
+    // Forward the SAME merged options used for serialize so config-level keys
+    // (from .percy.yml) reach the POST body too, not just per-call options.
+    // Per-call precedence is preserved by mergeSnapshotOptions.
     // eslint-disable-next-line no-unused-vars
-    const { readiness: _readiness, ...forwardOpts } = options;
+    const { readiness: _readiness, ...forwardOpts } = mergedOptions;
 
     // Post the DOM to the snapshot endpoint with snapshot options and other info
     await utils.postSnapshot({
