@@ -108,7 +108,7 @@ module('percySnapshot', hooks => {
     test("serialize canvas when enableJavascript is not present", async assert => {
       await percySnapshot('Snapshot 1');
       assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
-        /<body class="ember-application"><img src=".*" data-percy-element-id=".*" data-percy-canvas-serialized="" style="max-width: 100%;"><\/body>/));
+        /<body class="ember-application"><img data-percy-element-id=".*" data-percy-canvas-serialized="" src=".*" style="max-width: 100%;"><\/body>/));
     });
 
     test("doesn't serialize canvas when enableJavascript is true", async assert => {
@@ -120,7 +120,7 @@ module('percySnapshot', hooks => {
     test("removes canvas element when dom transformation is passed", async assert => {
       await percySnapshot('Snapshot 1', {
         domTransformation: (html) => { html.querySelector('canvas')?.remove(); return html; },
-        enable_javascript: true
+        enableJavaScript: true
       });
       assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
         /<body class="ember-application"><\/body>/));
