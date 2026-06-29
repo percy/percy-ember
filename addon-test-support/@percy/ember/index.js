@@ -27,14 +27,6 @@ function generateName(assertOrTestOrName) {
   }
 }
 
-// Helper to add pseudoClassEnabledElements that are in .percy.yml file to snapshot options.
-// when options.pseudoClassEnabledElements is not set in percySnapshot options
-function addPseudoClassEnabledELements(options) {
-  if (!options.pseudoClassEnabledElements && utils.percy?.config?.snapshot?.pseudoClassEnabledElements) {
-    options.pseudoClassEnabledElements = utils.percy.config.snapshot.pseudoClassEnabledElements;
-  }
-}
-
 // Helper to scope a DOM snapshot to the ember-testing container to capture the
 // ember application without the testing UI
 function scopeDOM(scope, dom) {
@@ -78,7 +70,8 @@ export default async function percySnapshot(name, {
     // window.PercyDOM mid-flight if the caller forgot to await — capture once.
     const PercyDOM = window.PercyDOM;
 
-    addPseudoClassEnabledELements(options);
+    // Merge .percy.yml config options with snapshot options (snapshot options take priority)
+    const mergedOptions = utils.mergeSnapshotOptions(options);
 
     // Readiness gate. Backward-compat:
     //   - Older CLI bundles lack PercyDOM.waitForReady — typeof guard handles that.
@@ -133,7 +126,7 @@ export default async function percySnapshot(name, {
       domTransformation: dom => scopeDOM(emberTestingScope, (
         domTransformation ? domTransformation(dom) : dom
       )),
-      ...options
+      ...mergedOptions
     });
 
     // Attach readiness diagnostics so the CLI can log timing and pass/fail.
@@ -152,8 +145,11 @@ export default async function percySnapshot(name, {
 
     // Strip `readiness` before posting — it's SDK-local and the CLI already
     // has it from .percy.yml healthcheck. Avoids round-tripping config.
+    // Forward the SAME merged options used for serialize so config-level keys
+    // (from .percy.yml) reach the POST body too, not just per-call options.
+    // Per-call precedence is preserved by mergeSnapshotOptions.
     // eslint-disable-next-line no-unused-vars
-    const { readiness: _readiness, ...forwardOpts } = options;
+    const { readiness: _readiness, ...forwardOpts } = mergedOptions;
 
     // Post the DOM to the snapshot endpoint with snapshot options and other info
     await utils.postSnapshot({
