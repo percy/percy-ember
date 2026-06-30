@@ -10,8 +10,33 @@ const ENV_INFO = [`ember/${emberVersion}`];
 if (window.QUnit) ENV_INFO.push(`qunit/${window.QUnit.version}`);
 if (window.mocha) ENV_INFO.push(`mocha/${window.mocha.version}`);
 
-// Maybe set the CLI API address from the environment
-utils.percy.address = SDKENV.PERCY_SERVER_ADDRESS;
+// The Percy CLI always runs locally, so its address must resolve to a loopback
+// host. Accepting an arbitrary PERCY_SERVER_ADDRESS would let an attacker who
+// can set it redirect snapshot/healthcheck traffic — and, critically, the
+// @percy/dom bundle that is eval'd below is fetched from this address — to a
+// hostile host, turning the eval into remote code execution in the test browser
+// (CWE-918 / CWE-94 — PER-8681 / PER-8682).
+const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '[::1]']);
+
+function isLoopbackAddress(address) {
+  try {
+    return LOOPBACK_HOSTS.has(new URL(address).hostname.toLowerCase());
+  } catch (e) {
+    return false;
+  }
+}
+
+// Maybe set the CLI API address from the environment (loopback only)
+if (SDKENV.PERCY_SERVER_ADDRESS) {
+  if (isLoopbackAddress(SDKENV.PERCY_SERVER_ADDRESS)) {
+    utils.percy.address = SDKENV.PERCY_SERVER_ADDRESS;
+  } else {
+    utils.logger('ember').warn(
+      `Ignoring non-loopback PERCY_SERVER_ADDRESS "${SDKENV.PERCY_SERVER_ADDRESS}"; ` +
+      'the Percy CLI must run on localhost.'
+    );
+  }
+}
 
 // Helper to generate a snapshot name from the test suite
 function generateName(assertOrTestOrName) {
@@ -69,7 +94,10 @@ export default async function percySnapshot(name, {
   name = generateName(name);
 
   try {
-    // Inject @percy/dom
+    // Inject @percy/dom. fetchPercyDOM() retrieves the bundle from
+    // utils.percy.address, which is now validated to a loopback host at module
+    // load (see above), so this eval only ever executes code served by the
+    // local Percy CLI rather than an attacker-controlled origin (PER-8682).
     if (!window.PercyDOM) {
       // eslint-disable-next-line no-eval
       eval(await utils.fetchPercyDOM());
