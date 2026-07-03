@@ -107,8 +107,11 @@ module('percySnapshot', hooks => {
 
     test("serialize canvas when enableJavascript is not present", async assert => {
       await percySnapshot('Snapshot 1');
+      // the canvas should be replaced by an image with a serialized src;
+      // attribute order varies between @percy/dom versions, so assert each
+      // attribute independently via lookaheads instead of a fixed order
       assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
-        /<body class="ember-application"><img src=".*" data-percy-element-id=".*" data-percy-canvas-serialized="" style="max-width: 100%;"><\/body>/));
+        /<body class="ember-application"><img(?=[^>]* src="[^"]*")(?=[^>]* data-percy-element-id="[^"]*")(?=[^>]* data-percy-canvas-serialized="")(?=[^>]* style="max-width: 100%;")[^>]*><\/body>/));
     });
 
     test("doesn't serialize canvas when enableJavascript is true", async assert => {
