@@ -1,5 +1,5 @@
 name: Test
-on: 
+on:
   push:
   workflow_dispatch:
     inputs:
@@ -7,6 +7,9 @@ on:
         required: false
         type: string
         default: master
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Test
@@ -16,7 +19,7 @@ jobs:
         node: [20]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions-ecosystem/action-regex-match@v2
+      - uses: actions-ecosystem/action-regex-match@9e6c4fb3d5e898f505be7a1fb6e7b0a278f6665b # v2.0.2
         id: regex-match
         if: ${{ github.event_name == 'workflow_dispatch' }}
         with:
@@ -25,14 +28,14 @@ jobs:
       - name: Break on invalid branch name
         run: exit 1
         if: ${{ github.event_name == 'workflow_dispatch' && steps.regex-match.outputs && steps.regex-match.outputs.match == '' }}
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
           node-version: ${{ matrix.node }}
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v3
+      - uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: v1/${{ runner.os }}/node-${{ matrix.node }}/${{ hashFiles('**/yarn.lock') }}
@@ -40,16 +43,26 @@ jobs:
       - run: yarn
       - name: Set up @percy/cli from git
         if: ${{ github.event_name == 'workflow_dispatch' }}
+        env:
+          CLI_BRANCH: ${{ github.event.inputs.branch }}
+          WORKSPACE: ${{ github.workspace }}
         run: |
           cd /tmp
-          git clone --branch ${{ github.event.inputs.branch }} --depth 1 https://github.com/percy/cli
+          git clone --branch "$CLI_BRANCH" --depth 1 https://github.com/percy/cli
           cd cli
           PERCY_PACKAGES=`find packages -mindepth 1 -maxdepth 1 -type d | sed -e 's/packages/@percy/g' | tr '\n' ' '`
           git log -1
           yarn
           yarn build
           yarn global:link
-          cd ${{ github.workspace }} 
-          yarn remove @percy/cli && yarn link `echo $PERCY_PACKAGES`
-          npx percy --version
+          # Expose the freshly built `percy` on PATH. yarn link symlinks the
+          # package but not its bin, so `npx percy` would miss it and download
+          # the unrelated public `percy`. Link is best-effort (non-JS repos have
+          # no node project to link into); PATH is what makes percy resolvable.
+          echo "$(yarn global bin)" >> "$GITHUB_PATH"
+          export PATH="$(yarn global bin):$PATH"
+          cd "$WORKSPACE"
+          yarn remove @percy/cli >/dev/null 2>&1 || true
+          yarn link `echo $PERCY_PACKAGES` >/dev/null 2>&1 || true
+          percy --version
       - run: yarn test
