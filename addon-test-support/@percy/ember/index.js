@@ -128,12 +128,18 @@ export default async function percySnapshot(name, {
       }
     }
 
+    // PER-8053: deep-merge the global .percy.yml `snapshot` config into the
+    // per-call options (per-call wins at the leaves) so config-only keys like
+    // enableJavaScript reach PercyDOM.serialize — previously only per-call
+    // options were serialized, dropping all config-driven serialize behavior.
+    const mergedOptions = utils.mergeSnapshotOptions(options);
+
     // Serialize and capture the DOM
     let domSnapshot = PercyDOM.serialize({
       domTransformation: dom => scopeDOM(emberTestingScope, (
         domTransformation ? domTransformation(dom) : dom
       )),
-      ...options
+      ...mergedOptions
     });
 
     // Attach readiness diagnostics so the CLI can log timing and pass/fail.

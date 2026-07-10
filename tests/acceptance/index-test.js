@@ -92,16 +92,19 @@ module('percySnapshot', hooks => {
   module('with options passed to dom serialize', hooks => {
     let $scope;
     let savedPseudoClassEnabledElements;
+    let savedEnableJavaScript;
 
     hooks.beforeEach(() => {
       $scope = document.querySelector('#ember-testing');
       $scope.appendChild(document.createElement('canvas'));
       savedPseudoClassEnabledElements = utils.percy?.config?.snapshot?.pseudoClassEnabledElements;
+      savedEnableJavaScript = utils.percy?.config?.snapshot?.enableJavaScript;
     });
 
     hooks.afterEach(() => {
       if (utils.percy?.config?.snapshot) {
         utils.percy.config.snapshot.pseudoClassEnabledElements = savedPseudoClassEnabledElements;
+        utils.percy.config.snapshot.enableJavaScript = savedEnableJavaScript;
       }
     });
 
@@ -120,10 +123,22 @@ module('percySnapshot', hooks => {
         /<body class="ember-application"><canvas data-percy-element-id=".*"><\/canvas><\/body>/));     
     });
 
+    test("applies enableJavaScript from percy config to serialize (PER-8053)", async assert => {
+      // Config-only key (no per-call option) must reach PercyDOM.serialize.
+      // With enableJavaScript on, the canvas is NOT serialized to an <img>.
+      await utils.isPercyEnabled();
+      utils.percy.config.snapshot.enableJavaScript = true;
+
+      await percySnapshot('Snapshot 1');
+
+      assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
+        /<body class="ember-application"><canvas data-percy-element-id=".*"><\/canvas><\/body>/));
+    });
+
     test("removes canvas element when dom transformation is passed", async assert => {
       await percySnapshot('Snapshot 1', {
         domTransformation: (html) => { html.querySelector('canvas')?.remove(); return html; },
-        enable_javascript: true
+        enableJavaScript: true
       });
       assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
         /<body class="ember-application"><\/body>/));
