@@ -138,7 +138,7 @@ module('percySnapshot', hooks => {
     test("removes canvas element when dom transformation is passed", async assert => {
       await percySnapshot('Snapshot 1', {
         domTransformation: (html) => { html.querySelector('canvas')?.remove(); return html; },
-        enable_javascript: true
+        enableJavaScript: true
       });
       assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
         /<body class="ember-application"><\/body>/));
