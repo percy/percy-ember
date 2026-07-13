@@ -19,7 +19,7 @@
     "node": ">= 16"
   },
   "publishConfig": {
-    "tag": "beta"
+    "tag": "latest"
   },
   "scripts": {
     "build": "ember build --environment=production",
