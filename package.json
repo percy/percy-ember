@@ -39,7 +39,7 @@
   },
   "packageManager": "yarn@1.22.22",
   "dependencies": {
-    "@percy/sdk-utils": "^1.31.15-beta.0",
+    "@percy/sdk-utils": "^1.32.0",
     "ember-auto-import": "^2.10.0",
     "ember-cli-babel": "^8.2.0"
   },
@@ -49,7 +49,7 @@
     "@ember/test-helpers": "^2.2.5",
     "@glimmer/component": "^1.0.4",
     "@glimmer/tracking": "^1.0.4",
-    "@percy/cli": "^1.31.1",
+    "@percy/cli": "^1.32.0",
     "@types/mocha": "^10.0.0",
     "@types/qunit": "^2.11.1",
     "babel-eslint": "^10.1.0",
