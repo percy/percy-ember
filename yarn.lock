@@ -2440,10 +2440,12 @@
   resolved "https://registry.yarnpkg.com/@percy/sdk-utils/-/sdk-utils-1.31.1.tgz#78725b17cfef258ae3baa1753e62e730f46bea41"
   integrity sha512-OU+n/TGEPt7ZikJOwau9S0X0bCfKNTxHIry9dX57amL82PysCrzEfcKUJIAf1BTaVqDH4In8GPssjLVhut95Ag==
 
-"@percy/sdk-utils@^1.18.0":
-  version "1.26.2"
-  resolved "https://registry.yarnpkg.com/@percy/sdk-utils/-/sdk-utils-1.26.2.tgz#1a02b00f63c6244b10c0c5151901d5b41ea7ca47"
-  integrity sha512-sqxex+UnUoKN046jZS8UHB1YnQuJ0/lzMQaCdNKrF1F/U/1j/LrGywjXI9+NsGa29FdcZfU17530qt961sPgow==
+"@percy/sdk-utils@^1.31.15-beta.0":
+  version "1.32.4"
+  resolved "https://registry.yarnpkg.com/@percy/sdk-utils/-/sdk-utils-1.32.4.tgz#647192bd1916571f6fdb19c35f039cdffda087d2"
+  integrity sha512-l0mFEsIff0nbA2XSctjAToFHL7DXJ6EPZdIWDCRLrsyATd/SdiPceVpyeV5gqR2AjVbcwdouKBJlJDdFZtUFDA==
+  dependencies:
+    pac-proxy-agent "^7.0.2"
 
 "@percy/webdriver-utils@1.31.1":
   version "1.31.1"
@@ -10093,9 +10095,9 @@ shebang-regex@^3.0.0:
   integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
 
 shell-quote@^1.6.1:
-  version "1.7.3"
-  resolved "https://registry.npmjs.org/shell-quote/-/shell-quote-1.7.3.tgz"
-  integrity sha512-Vpfqwm4EnqGdlsBFNmHhxhElJYrdfcxPThu+ryKS5J8L/fhAwLazFZtq+S+TWZ9ANj2piSQLGj6NQg+lKPmxrw==
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/shell-quote/-/shell-quote-1.10.0.tgz#482033e192e4f5c07151521ffa03400ec71b1b0f"
+  integrity sha512-w1aiOKwKuRgtwAReIIj89puqg+I7GvX4IbLrvmhXbzQsj1+Zwi4VO3+fa6ZF91TWSjIxoEkKnMeHcLEODK5ZXA==
 
 shellwords@^0.1.1:
   version "0.1.1"
