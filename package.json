@@ -10,74 +10,91 @@
   "repository": "https://github.com/percy/ember-percy",
   "license": "MIT",
   "author": "Perceptual Inc.",
-  "types": "types/index.d.ts",
-  "directories": {
-    "doc": "doc",
-    "test": "tests"
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./*": {
+      "default": "./dist/*.js"
+    },
+    "./addon-main.js": "./addon-main.cjs"
   },
+  "files": [
+    "addon-main.cjs",
+    "dist",
+    "types"
+  ],
+  "scripts": {
+    "build": "rollup --config",
+    "build:test": "NODE_ENV=development vite build --config vite.test.config.mjs --mode development --out-dir dist-for-testing",
+    "format": "prettier . --cache --write",
+    "lint": "concurrently \"yarn:lint:*(!fix)\" --names \"lint:\"",
+    "lint:fix": "concurrently \"yarn:lint:*:fix\" --names \"fix:\" && yarn format",
+    "lint:format": "prettier . --cache --check",
+    "lint:js": "eslint . --cache",
+    "lint:js:fix": "eslint . --fix",
+    "prepack": "rollup --config",
+    "start": "rollup --config --watch",
+    "test": "yarn build && yarn build:test && percy exec --testing -- ember-test --path dist-for-testing",
+    "test:types": "exit 0"
+  },
+  "dependencies": {
+    "@embroider/addon-shim": "^1.10.3",
+    "@percy/sdk-utils": "^1.32.11"
+  },
+  "devDependencies": {
+    "@babel/core": "^8.0.6",
+    "@babel/eslint-parser": "^8.0.6",
+    "@babel/plugin-proposal-decorators": "^8.0.2",
+    "@babel/runtime": "^8.0.5",
+    "@ember/test-helpers": "^5.7.0",
+    "@embroider/addon-dev": "^8.4.2",
+    "@embroider/macros": "^1.21.3",
+    "@embroider/vite": "^1.7.15",
+    "@eslint/js": "^10.0.1",
+    "@glimmer/component": "^2.1.1",
+    "@glimmer/tracking": "^1.1.2",
+    "@percy/cli": "^1.32.11",
+    "@rollup/plugin-babel": "^7.1.0",
+    "@rollup/plugin-replace": "^6.0.3",
+    "@types/mocha": "^10.0.10",
+    "@types/qunit": "^2.19.14",
+    "babel-plugin-ember-template-compilation": "^4.0.0",
+    "concurrently": "^10.0.5",
+    "ember-qunit": "^9.1.0",
+    "ember-source": "~7.3.0",
+    "ember-strict-application-resolver": "^0.1.1",
+    "ember-testem": "^0.3.1",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-ember": "^13.5.0",
+    "eslint-plugin-n": "^18.4.1",
+    "eslint-plugin-qunit": "^8.2.6",
+    "globals": "^17.12.0",
+    "prettier": "^3.9.9",
+    "prettier-plugin-ember-template-tag": "^2.1.8",
+    "qunit": "^3.0.0",
+    "qunit-dom": "^3.6.0",
+    "rollup": "^4.64.1",
+    "vite": "^8.3.3"
+  },
+  "peerDependencies": {
+    "@ember/test-helpers": "^5.0.0"
+  },
+  "packageManager": "yarn@1.22.22",
   "engines": {
     "node": ">= 16"
   },
   "publishConfig": {
     "tag": "latest"
   },
-  "scripts": {
-    "build": "ember build --environment=production",
-    "lint": "npm-run-all --aggregate-output --continue-on-error --parallel lint:*",
-    "lint:hbs": "ember-template-lint .",
-    "lint:js": "eslint .",
-    "start": "ember serve",
-    "test": "percy exec --testing -- ember test",
-    "test:all": "ember try:each",
-    "test:types": "tsd"
-  },
   "ember": {
     "edition": "octane"
   },
   "ember-addon": {
-    "configPath": "tests/dummy/config"
-  },
-  "packageManager": "yarn@1.22.22",
-  "dependencies": {
-    "@percy/sdk-utils": "^1.31.15-beta.0",
-    "ember-auto-import": "^2.10.0",
-    "ember-cli-babel": "^8.2.0"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.13.14",
-    "@ember/optional-features": "^2.0.0",
-    "@ember/test-helpers": "^2.2.5",
-    "@glimmer/component": "^1.0.4",
-    "@glimmer/tracking": "^1.0.4",
-    "@percy/cli": "^1.31.1",
-    "@types/mocha": "^10.0.0",
-    "@types/qunit": "^2.11.1",
-    "babel-eslint": "^10.1.0",
-    "broccoli-asset-rev": "^3.0.0",
-    "ember-cli": "~4.8.0",
-    "ember-cli-dependency-checker": "^3.2.0",
-    "ember-cli-htmlbars": "^6.0.0",
-    "ember-cli-inject-live-reload": "^2.0.2",
-    "ember-cli-sri": "^2.1.1",
-    "ember-cli-terser": "^4.0.1",
-    "ember-disable-prototype-extensions": "^1.1.3",
-    "ember-export-application-global": "^2.0.1",
-    "ember-load-initializers": "^2.1.2",
-    "ember-maybe-import-regenerator": "^1.0.0",
-    "ember-qunit": "^6.0.0",
-    "ember-resolver": "^8.0.2",
-    "ember-source": "~4.8.0",
-    "ember-source-channel-url": "^3.0.0",
-    "ember-template-lint": "^5.3.2",
-    "ember-try": "^2.0.0",
-    "eslint": "^7.23.0",
-    "eslint-plugin-ember": "^11.0.2",
-    "eslint-plugin-node": "^11.1.0",
-    "loader.js": "^4.7.0",
-    "npm-run-all": "^4.1.5",
-    "qunit": "^2.14.1",
-    "qunit-dom": "^2.0.0",
-    "tsd": "^0.24.1",
-    "webpack": "5"
+    "main": "addon-main.cjs",
+    "type": "addon",
+    "version": 2
   }
 }
