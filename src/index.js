@@ -27,9 +27,6 @@ function getEnvironmentInfo() {
   return ENV_INFO;
 }
 
-// Maybe set the CLI API address from the environment
-utils.percy.address = undefined; // TODO
-
 // Helper to generate a snapshot name from the test suite
 function generateName(assertOrTestOrName) {
   if (
@@ -87,6 +84,7 @@ export default async function percySnapshot(
     // separate SDK specific options from snapshot options
     emberTestingScope = '#ember-testing',
     domTransformation,
+    snapshotAddress,
     ...options
   } = {},
 ) {
@@ -94,6 +92,10 @@ export default async function percySnapshot(
   if (!(await utils.isPercyEnabled())) return;
   let log = utils.logger('ember');
   name = generateName(name);
+
+  if (snapshotAddress) {
+    utils.percy.address = snapshotAddress;
+  }
 
   try {
     // Inject @percy/dom
