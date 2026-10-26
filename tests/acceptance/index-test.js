@@ -6,87 +6,97 @@ import { module, test } from 'qunit';
 
 import { setupPercyEmberTest } from '../helpers';
 
-module('percySnapshot', hooks => {
+module('percySnapshot', (hooks) => {
   setupApplicationTest(hooks);
   setupPercyEmberTest(hooks);
 
-  test('disables snapshots when the healthcheck fails', async assert => {
+  test('disables snapshots when the healthcheck fails', async (assert) => {
     await helpers.test('error', '/percy/healthcheck');
 
     await percySnapshot('Snapshot 1');
     await percySnapshot('Snapshot 2');
 
     assert.contains(helpers.logger.stdout, [
-      '[percy] Percy is not running, disabling snapshots'
+      '[percy] Percy is not running, disabling snapshots',
     ]);
   });
 
-  test('disables snapshots when the healthcheck encounters an error', async assert => {
+  test('disables snapshots when the healthcheck encounters an error', async (assert) => {
     await helpers.test('disconnect', '/percy/healthcheck');
 
     await percySnapshot('Snapshot 1');
     await percySnapshot('Snapshot 2');
 
     assert.contains(helpers.logger.stdout, [
-      '[percy] Percy is not running, disabling snapshots'
+      '[percy] Percy is not running, disabling snapshots',
     ]);
   });
 
-  test('posts snapshots to the local percy server', async assert => {
+  test('posts snapshots to the local percy server', async (assert) => {
     await percySnapshot('Snapshot 1');
     await percySnapshot('Snapshot 2');
 
     let reqs = await helpers.get('requests');
 
-    assert.equal(reqs[0].url, '/percy/healthcheck');
-    assert.equal(reqs[1].url, '/percy/dom.js');
-    assert.equal(reqs[2].url, '/percy/snapshot');
-    assert.equal(reqs[3].url, '/percy/snapshot');
+    assert.strictEqual(reqs[0].url, '/percy/healthcheck');
+    assert.strictEqual(reqs[1].url, '/percy/dom.js');
+    assert.strictEqual(reqs[2].url, '/percy/snapshot');
+    assert.strictEqual(reqs[3].url, '/percy/snapshot');
 
-    assert.equal(reqs[2].body.name, 'Snapshot 1');
+    assert.strictEqual(reqs[2].body.name, 'Snapshot 1');
     assert.matches(reqs[2].body.url, /^http:\/\/localhost:7357/);
-    assert.matches(reqs[2].body.domSnapshot.html, /<body class="ember-application"><\/body>/);
+    assert.matches(
+      reqs[2].body.domSnapshot.html,
+      /<body class="ember-application"><\/body>/,
+    );
     assert.matches(reqs[2].body.clientInfo, /@percy\/ember\/\d.+/);
     assert.matches(reqs[2].body.environmentInfo[0], /ember\/.+/);
     assert.matches(reqs[2].body.environmentInfo[1], /qunit\/.+/);
 
-    assert.equal(reqs[3].body.name, 'Snapshot 2');
+    assert.strictEqual(reqs[3].body.name, 'Snapshot 2');
   });
 
-  test('generates a snapshot name from qunit assert', async assert => {
+  test('generates a snapshot name from qunit assert', async (assert) => {
     await percySnapshot(assert);
-    assert.equal((await helpers.get('requests'))[1].body.name, (
-      'percySnapshot | generates a snapshot name from qunit assert'));
+    assert.strictEqual(
+      (await helpers.get('requests'))[1].body.name,
+      'percySnapshot | generates a snapshot name from qunit assert',
+    );
   });
 
-  test('generates a snapshot name from mocha\'s test', async assert => {
+  test("generates a snapshot name from mocha's test", async (assert) => {
     // mocked since this is not a mocha test
     await percySnapshot({ fullTitle: () => 'Mocha | generated name' });
-    assert.equal((await helpers.get('requests'))[1].body.name, 'Mocha | generated name');
+    assert.strictEqual(
+      (await helpers.get('requests'))[1].body.name,
+      'Mocha | generated name',
+    );
   });
 
-  test('copies scoped attributes to the body element', async assert => {
+  test('copies scoped attributes to the body element', async (assert) => {
     let $scope = document.querySelector('#ember-testing');
     $scope.classList.add('custom-classname');
     $scope.setAttribute('data-test', 'true');
 
     await percySnapshot('Snapshot 1');
 
-    assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
-      /<body class="ember-application custom-classname" data-test="true"><\/body>/));
+    assert.matches(
+      (await helpers.get('requests'))[1].body.domSnapshot.html,
+      /<body class="ember-application custom-classname" data-test="true"><\/body>/,
+    );
   });
 
-  test('handles snapshot errors', async assert => {
+  test('handles snapshot errors', async (assert) => {
     await helpers.test('error', '/percy/snapshot');
 
     await percySnapshot('Snapshot 1');
 
     assert.contains(helpers.logger.stderr, [
-      '[percy] Could not take DOM snapshot "Snapshot 1"'
+      '[percy] Could not take DOM snapshot "Snapshot 1"',
     ]);
   });
 
-  module('with options passed to dom serialize', hooks => {
+  module('with options passed to dom serialize', (hooks) => {
     let $scope;
     let savedPseudoClassEnabledElements;
     let savedEnableJavaScript;
@@ -94,33 +104,39 @@ module('percySnapshot', hooks => {
     hooks.beforeEach(() => {
       $scope = document.querySelector('#ember-testing');
       $scope.appendChild(document.createElement('canvas'));
-      savedPseudoClassEnabledElements = utils.percy?.config?.snapshot?.pseudoClassEnabledElements;
+      savedPseudoClassEnabledElements =
+        utils.percy?.config?.snapshot?.pseudoClassEnabledElements;
       savedEnableJavaScript = utils.percy?.config?.snapshot?.enableJavaScript;
     });
 
     hooks.afterEach(() => {
       if (utils.percy?.config?.snapshot) {
-        utils.percy.config.snapshot.pseudoClassEnabledElements = savedPseudoClassEnabledElements;
+        utils.percy.config.snapshot.pseudoClassEnabledElements =
+          savedPseudoClassEnabledElements;
         utils.percy.config.snapshot.enableJavaScript = savedEnableJavaScript;
       }
     });
 
-    test("serialize canvas when enableJavascript is not present", async assert => {
+    test('serialize canvas when enableJavascript is not present', async (assert) => {
       await percySnapshot('Snapshot 1');
       // the canvas should be replaced by an image with a serialized src;
       // attribute order varies between @percy/dom versions, so assert each
       // attribute independently via lookaheads instead of a fixed order
-      assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
-        /<body class="ember-application"><img(?=[^>]* src="[^"]*")(?=[^>]* data-percy-element-id="[^"]*")(?=[^>]* data-percy-canvas-serialized="")(?=[^>]* style="max-width: 100%;")[^>]*><\/body>/));
+      assert.matches(
+        (await helpers.get('requests'))[1].body.domSnapshot.html,
+        /<body class="ember-application"><img(?=[^>]* src="[^"]*")(?=[^>]* data-percy-element-id="[^"]*")(?=[^>]* data-percy-canvas-serialized="")(?=[^>]* style="max-width: 100%;")[^>]*><\/body>/,
+      );
     });
 
-    test("doesn't serialize canvas when enableJavascript is true", async assert => {
+    test("doesn't serialize canvas when enableJavascript is true", async (assert) => {
       await percySnapshot('Snapshot 1', { enableJavaScript: true });
-      assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
-        /<body class="ember-application"><canvas data-percy-element-id=".*"><\/canvas><\/body>/));     
+      assert.matches(
+        (await helpers.get('requests'))[1].body.domSnapshot.html,
+        /<body class="ember-application"><canvas data-percy-element-id=".*"><\/canvas><\/body>/,
+      );
     });
 
-    test("applies enableJavaScript from percy config to serialize (PER-8053)", async assert => {
+    test('applies enableJavaScript from percy config to serialize (PER-8053)', async (assert) => {
       // Config-only key (no per-call option) must reach PercyDOM.serialize.
       // With enableJavaScript on, the canvas is NOT serialized to an <img>.
       await utils.isPercyEnabled();
@@ -128,54 +144,67 @@ module('percySnapshot', hooks => {
 
       await percySnapshot('Snapshot 1');
 
-      assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
-        /<body class="ember-application"><canvas data-percy-element-id=".*"><\/canvas><\/body>/));
+      assert.matches(
+        (await helpers.get('requests'))[1].body.domSnapshot.html,
+        /<body class="ember-application"><canvas data-percy-element-id=".*"><\/canvas><\/body>/,
+      );
     });
 
-    test("removes canvas element when dom transformation is passed", async assert => {
+    test('removes canvas element when dom transformation is passed', async (assert) => {
       await percySnapshot('Snapshot 1', {
-        domTransformation: (html) => { html.querySelector('canvas')?.remove(); return html; },
-        enableJavaScript: true
+        domTransformation: (html) => {
+          html.querySelector('canvas')?.remove();
+          return html;
+        },
+        enableJavaScript: true,
       });
-      assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
-        /<body class="ember-application"><\/body>/));
+      assert.matches(
+        (await helpers.get('requests'))[1].body.domSnapshot.html,
+        /<body class="ember-application"><\/body>/,
+      );
     });
 
-    test('uses pseudoClassEnabledElements from percy config when option is not passed', async assert => {
+    test('uses pseudoClassEnabledElements from percy config when option is not passed', async (assert) => {
       await utils.isPercyEnabled();
       utils.percy.config.snapshot.pseudoClassEnabledElements = {
-        selector: ['#ember-testing']
+        selector: ['#ember-testing'],
       };
 
       await percySnapshot('Snapshot 1');
 
       let reqs = await helpers.get('requests');
-      let snapshotReq = reqs.filter(req => req.url === '/percy/snapshot').pop();
+      let snapshotReq = reqs
+        .filter((req) => req.url === '/percy/snapshot')
+        .pop();
       assert.ok(snapshotReq, 'posts snapshot request');
-      assert.deepEqual(snapshotReq.body.pseudoClassEnabledElements?.selector, ['#ember-testing']);
+      assert.deepEqual(snapshotReq.body.pseudoClassEnabledElements?.selector, [
+        '#ember-testing',
+      ]);
     });
 
-    test('prioritizes pseudoClassEnabledElements from percySnapshot options over config', async assert => {
+    test('prioritizes pseudoClassEnabledElements from percySnapshot options over config', async (assert) => {
       await utils.isPercyEnabled();
       utils.percy.config.snapshot.pseudoClassEnabledElements = {
-        selector: ['.from-config']
+        selector: ['.from-config'],
       };
 
       await percySnapshot('Snapshot 1', {
         pseudoClassEnabledElements: {
-          selector: ['#ember-testing']
-        }
+          selector: ['#ember-testing'],
+        },
       });
 
       let reqs = await helpers.get('requests');
-      let snapshotReq = reqs.filter(req => req.url === '/percy/snapshot').pop();
+      let snapshotReq = reqs
+        .filter((req) => req.url === '/percy/snapshot')
+        .pop();
       assert.deepEqual(snapshotReq.body.pseudoClassEnabledElements, {
-        selector: ['#ember-testing']
+        selector: ['#ember-testing'],
       });
     });
   });
 
-  module('with an alternate ember-testing scope', hooks => {
+  module('with an alternate ember-testing scope', (hooks) => {
     let $scope;
 
     hooks.beforeEach(() => {
@@ -187,13 +216,15 @@ module('percySnapshot', hooks => {
       $scope.id = 'ember-testing';
     });
 
-    test('uses the alternate scope', async assert => {
+    test('uses the alternate scope', async (assert) => {
       await percySnapshot('Snapshot 1', {
-        emberTestingScope: '#testing-container'
+        emberTestingScope: '#testing-container',
       });
 
-      assert.matches((await helpers.get('requests'))[1].body.domSnapshot.html, (
-        /<body id="testing-container" class="ember-application">/));
+      assert.matches(
+        (await helpers.get('requests'))[1].body.domSnapshot.html,
+        /<body id="testing-container" class="ember-application">/,
+      );
     });
   });
 });
