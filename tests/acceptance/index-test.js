@@ -1,17 +1,14 @@
-import { module, test } from 'qunit';
-import { setupApplicationTest } from 'ember-qunit';
+import percySnapshot from '@percy/ember';
 import utils from '@percy/sdk-utils';
 import helpers from '@percy/sdk-utils/test/helpers';
-import percySnapshot from '@percy/ember';
+import { setupApplicationTest } from 'ember-qunit';
+import { module, test } from 'qunit';
+
+import { setupPercyEmberTest } from '../helpers';
 
 module('percySnapshot', hooks => {
   setupApplicationTest(hooks);
-
-  hooks.beforeEach(async () => {
-    await helpers.setupTest();
-    // mock mocha env info
-    window.mocha = { version: '1.2.3' };
-  });
+  setupPercyEmberTest(hooks);
 
   test('disables snapshots when the healthcheck fails', async assert => {
     await helpers.test('error', '/percy/healthcheck');

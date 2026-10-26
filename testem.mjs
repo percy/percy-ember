@@ -1,6 +1,4 @@
-'use strict';
-
-module.exports = {
+export default {
   test_page: 'tests/index.html?hidepassed',
   disable_watching: true,
   launch_in_ci: [

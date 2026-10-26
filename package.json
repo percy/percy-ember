@@ -27,6 +27,7 @@
   ],
   "scripts": {
     "build": "rollup --config",
+    "build:test": "NODE_ENV=development vite build --config vite.test.config.mjs --mode development --out-dir dist-for-testing",
     "format": "prettier . --cache --write",
     "lint": "concurrently \"yarn:lint:*(!fix)\" --names \"lint:\"",
     "lint:fix": "concurrently \"yarn:lint:*:fix\" --names \"fix:\" && yarn format",
@@ -35,7 +36,7 @@
     "lint:js:fix": "eslint . --fix",
     "prepack": "rollup --config",
     "start": "rollup --config --watch",
-    "test": "echo \"TODO\"",
+    "test": "yarn build && yarn build:test && percy exec --testing -- ember-test --path dist-for-testing",
     "test:types": "exit 0"
   },
   "dependencies": {
@@ -49,6 +50,8 @@
     "@babel/runtime": "^8.0.8",
     "@ember/test-helpers": "^5.7.0",
     "@embroider/addon-dev": "^8.4.2",
+    "@embroider/macros": "^1.21.4",
+    "@embroider/vite": "^1.8.0",
     "@eslint/js": "^10.0.1",
     "@glimmer/component": "^2.2.1",
     "@glimmer/tracking": "^1.1.2",
@@ -58,7 +61,10 @@
     "@types/qunit": "^2.19.14",
     "babel-plugin-ember-template-compilation": "^4.0.1",
     "concurrently": "^10.0.6",
+    "ember-qunit": "^9.2.0",
     "ember-source": "~7.3.1",
+    "ember-strict-application-resolver": "^0.1.1",
+    "ember-testem": "^0.6.0",
     "eslint": "^10.13.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-ember": "^13.9.0",
@@ -67,7 +73,10 @@
     "globals": "^17.13.0",
     "prettier": "^3.9.10",
     "prettier-plugin-ember-template-tag": "^2.1.8",
-    "rollup": "^4.65.1"
+    "qunit": "^3.0.0",
+    "qunit-dom": "^3.6.0",
+    "rollup": "^4.65.1",
+    "vite": "^8.3.5"
   },
   "peerDependencies": {
     "@ember/test-helpers": "^5.0.0"
