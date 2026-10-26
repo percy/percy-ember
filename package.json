@@ -15,12 +15,6 @@
     "doc": "doc",
     "test": "tests"
   },
-  "engines": {
-    "node": ">= 16"
-  },
-  "publishConfig": {
-    "tag": "latest"
-  },
   "scripts": {
     "build": "ember build --environment=production",
     "lint": "npm-run-all --aggregate-output --continue-on-error --parallel lint:*",
@@ -31,13 +25,6 @@
     "test:all": "ember try:each",
     "test:types": "tsd"
   },
-  "ember": {
-    "edition": "octane"
-  },
-  "ember-addon": {
-    "configPath": "tests/dummy/config"
-  },
-  "packageManager": "yarn@1.22.22",
   "dependencies": {
     "@percy/sdk-utils": "^1.31.15-beta.0",
     "ember-auto-import": "^2.10.0",
@@ -79,5 +66,18 @@
     "qunit-dom": "^2.0.0",
     "tsd": "^0.24.1",
     "webpack": "5"
+  },
+  "packageManager": "yarn@1.22.22",
+  "engines": {
+    "node": ">= 16"
+  },
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "ember": {
+    "edition": "octane"
+  },
+  "ember-addon": {
+    "configPath": "tests/dummy/config"
   }
 }
