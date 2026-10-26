@@ -8,10 +8,24 @@ const SDKENV = {
 
 // Collect client and environment information
 const CLIENT_INFO = `@percy/ember/${SDKENV.VERSION}`;
-const ENV_INFO = [`ember/${emberVersion}`];
 
-if (window.QUnit) ENV_INFO.push(`qunit/${window.QUnit.version}`);
-if (window.mocha) ENV_INFO.push(`mocha/${window.mocha.version}`);
+let ENV_INFO;
+let isGetEnvironmentInfoCalled = false;
+
+function getEnvironmentInfo() {
+  ENV_INFO = [`ember/${emberVersion}`];
+  isGetEnvironmentInfoCalled = true;
+
+  if (window.QUnit) {
+    ENV_INFO.push(`qunit/${window.QUnit.version}`);
+  }
+
+  if (window.mocha) {
+    ENV_INFO.push(`mocha/${window.mocha.version}`);
+  }
+
+  return ENV_INFO;
+}
 
 // Maybe set the CLI API address from the environment
 utils.percy.address = undefined; // TODO
@@ -187,10 +201,14 @@ export default async function percySnapshot(
     // eslint-disable-next-line no-unused-vars
     const { readiness: _readiness, ...forwardOpts } = options;
 
+    const environmentInfo = isGetEnvironmentInfoCalled
+      ? ENV_INFO
+      : getEnvironmentInfo();
+
     // Post the DOM to the snapshot endpoint with snapshot options and other info
     await utils.postSnapshot({
       ...forwardOpts,
-      environmentInfo: ENV_INFO,
+      environmentInfo,
       clientInfo: CLIENT_INFO,
       url: document.URL,
       domSnapshot,
