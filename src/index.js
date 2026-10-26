@@ -3,7 +3,7 @@ import { VERSION as emberVersion } from '@ember/version';
 import { settled } from '@ember/test-helpers';
 
 const SDKENV = {
-  VERSION: '5.0.2', // TODO
+  VERSION: '__packageVersion__',
 };
 
 // Collect client and environment information
