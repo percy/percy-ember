@@ -1,21 +1,38 @@
 import utils from '@percy/sdk-utils';
 import { VERSION as emberVersion } from '@ember/version';
 import { settled } from '@ember/test-helpers';
-import SDKENV from '@percy/ember/env';
+
+const SDKENV = {
+  VERSION: '__packageVersion__',
+};
 
 // Collect client and environment information
 const CLIENT_INFO = `@percy/ember/${SDKENV.VERSION}`;
-const ENV_INFO = [`ember/${emberVersion}`];
 
-if (window.QUnit) ENV_INFO.push(`qunit/${window.QUnit.version}`);
-if (window.mocha) ENV_INFO.push(`mocha/${window.mocha.version}`);
+let ENV_INFO;
+let isGetEnvironmentInfoCalled = false;
 
-// Maybe set the CLI API address from the environment
-utils.percy.address = SDKENV.PERCY_SERVER_ADDRESS;
+function getEnvironmentInfo() {
+  ENV_INFO = [`ember/${emberVersion}`];
+  isGetEnvironmentInfoCalled = true;
+
+  if (window.QUnit) {
+    ENV_INFO.push(`qunit/${window.QUnit.version}`);
+  }
+
+  if (window.mocha) {
+    ENV_INFO.push(`mocha/${window.mocha.version}`);
+  }
+
+  return ENV_INFO;
+}
 
 // Helper to generate a snapshot name from the test suite
 function generateName(assertOrTestOrName) {
-  if (assertOrTestOrName.test?.module?.name && assertOrTestOrName.test?.testName) {
+  if (
+    assertOrTestOrName.test?.module?.name &&
+    assertOrTestOrName.test?.testName
+  ) {
     // generate name from qunit assert object
     return `${assertOrTestOrName.test.module.name} | ${assertOrTestOrName.test.testName}`;
   } else if (assertOrTestOrName.fullTitle) {
@@ -30,8 +47,12 @@ function generateName(assertOrTestOrName) {
 // Helper to add pseudoClassEnabledElements that are in .percy.yml file to snapshot options.
 // when options.pseudoClassEnabledElements is not set in percySnapshot options
 function addPseudoClassEnabledELements(options) {
-  if (!options.pseudoClassEnabledElements && utils.percy?.config?.snapshot?.pseudoClassEnabledElements) {
-    options.pseudoClassEnabledElements = utils.percy.config.snapshot.pseudoClassEnabledElements;
+  if (
+    !options.pseudoClassEnabledElements &&
+    utils.percy?.config?.snapshot?.pseudoClassEnabledElements
+  ) {
+    options.pseudoClassEnabledElements =
+      utils.percy.config.snapshot.pseudoClassEnabledElements;
   }
 }
 
@@ -57,21 +78,28 @@ function scopeDOM(scope, dom) {
   dom.querySelector('#ember-testing')?.removeAttribute('id');
 }
 
-export default async function percySnapshot(name, {
-  // separate SDK specific options from snapshot options
-  emberTestingScope = '#ember-testing',
-  domTransformation,
-  ...options
-} = {}) {
+export default async function percySnapshot(
+  name,
+  {
+    // separate SDK specific options from snapshot options
+    emberTestingScope = '#ember-testing',
+    domTransformation,
+    snapshotAddress,
+    ...options
+  } = {},
+) {
   // Check if Percy is enabled
   if (!(await utils.isPercyEnabled())) return;
   let log = utils.logger('ember');
   name = generateName(name);
 
+  if (snapshotAddress) {
+    utils.percy.address = snapshotAddress;
+  }
+
   try {
     // Inject @percy/dom
     if (!window.PercyDOM) {
-      // eslint-disable-next-line no-eval
       eval(await utils.fetchPercyDOM());
     }
     // Stable reference: another percySnapshot() call (or QUnit teardown) can rebind
@@ -95,14 +123,24 @@ export default async function percySnapshot(name, {
     let readinessDiagnostics;
     const inTestRunner = !!(window.QUnit || window.mocha);
     const hasExplicitReadinessOpt = options?.readiness !== undefined;
-    const readinessDisabled = typeof utils.isReadinessDisabled === 'function'
-      ? utils.isReadinessDisabled(options)
-      : ((options?.readiness || utils.percy?.config?.snapshot?.readiness)?.preset === 'disabled');
+    const readinessDisabled =
+      typeof utils.isReadinessDisabled === 'function'
+        ? utils.isReadinessDisabled(options)
+        : (options?.readiness || utils.percy?.config?.snapshot?.readiness)
+            ?.preset === 'disabled';
     const skipReadinessInTests = inTestRunner && !hasExplicitReadinessOpt;
-    if (!readinessDisabled && !skipReadinessInTests && typeof PercyDOM?.waitForReady === 'function') {
-      const readinessConfig = typeof utils.getReadinessConfig === 'function'
-        ? utils.getReadinessConfig(options)
-        : { ...(utils.percy?.config?.snapshot?.readiness || {}), ...(options?.readiness || {}) };
+    if (
+      !readinessDisabled &&
+      !skipReadinessInTests &&
+      typeof PercyDOM?.waitForReady === 'function'
+    ) {
+      const readinessConfig =
+        typeof utils.getReadinessConfig === 'function'
+          ? utils.getReadinessConfig(options)
+          : {
+              ...(utils.percy?.config?.snapshot?.readiness || {}),
+              ...(options?.readiness || {}),
+            };
       try {
         readinessDiagnostics = await PercyDOM.waitForReady(readinessConfig);
       } catch (e) {
@@ -123,7 +161,7 @@ export default async function percySnapshot(name, {
       if (typeof settled === 'function') {
         await Promise.race([
           settled(),
-          new Promise(resolve => setTimeout(resolve, 200))
+          new Promise((resolve) => setTimeout(resolve, 200)),
         ]);
       }
     }
@@ -136,10 +174,12 @@ export default async function percySnapshot(name, {
 
     // Serialize and capture the DOM
     let domSnapshot = PercyDOM.serialize({
-      domTransformation: dom => scopeDOM(emberTestingScope, (
-        domTransformation ? domTransformation(dom) : dom
-      )),
-      ...mergedOptions
+      domTransformation: (dom) =>
+        scopeDOM(
+          emberTestingScope,
+          domTransformation ? domTransformation(dom) : dom,
+        ),
+      ...mergedOptions,
     });
 
     // Attach readiness diagnostics so the CLI can log timing and pass/fail.
@@ -152,7 +192,9 @@ export default async function percySnapshot(name, {
         JSON.stringify(readinessDiagnostics);
         domSnapshot.readiness_diagnostics = readinessDiagnostics;
       } catch (e) {
-        log.warn(`dropping unserializable readiness diagnostics: ${e?.message || e}`);
+        log.warn(
+          `dropping unserializable readiness diagnostics: ${e?.message || e}`,
+        );
       }
     }
 
@@ -161,14 +203,18 @@ export default async function percySnapshot(name, {
     // eslint-disable-next-line no-unused-vars
     const { readiness: _readiness, ...forwardOpts } = options;
 
+    const environmentInfo = isGetEnvironmentInfoCalled
+      ? ENV_INFO
+      : getEnvironmentInfo();
+
     // Post the DOM to the snapshot endpoint with snapshot options and other info
     await utils.postSnapshot({
       ...forwardOpts,
-      environmentInfo: ENV_INFO,
+      environmentInfo,
       clientInfo: CLIENT_INFO,
       url: document.URL,
       domSnapshot,
-      name
+      name,
     });
   } catch (error) {
     // Handle errors

@@ -1,26 +1,21 @@
-import QUnit from 'qunit';
-import Application from 'dummy/app';
-import config from 'dummy/config/environment';
 import { setApplication } from '@ember/test-helpers';
-import { start } from 'ember-qunit';
-import * as utils from "@percy/sdk-utils";
+import { setTesting } from '@embroider/macros';
+import { setupEmberOnerrorValidation, start as qunitStart } from 'ember-qunit';
+import QUnit from 'qunit';
+import { setup } from 'qunit-dom';
 
-// Make PercySDKUtils available globally for the test helpers
-if (typeof window !== "undefined") {
-  window.PercySDKUtils = utils;
+import Application from './app.js';
+
+export function start() {
+  setTesting(true);
+  setApplication(
+    Application.create({
+      autoboot: false,
+      rootElement: '#ember-testing',
+    }),
+  );
+
+  setup(QUnit.assert);
+  setupEmberOnerrorValidation();
+  qunitStart();
 }
-
-QUnit.assert.matches = function matches(actual, regex, message) {
-  var result = !!regex && !!actual && (new RegExp(regex)).test(actual);
-  var expected = `String matching ${regex.toString()}`;
-  this.pushResult({ result, actual, expected, message });
-};
-
-QUnit.assert.contains = function matches(actual, subset, message) {
-  var result = !!actual && !!subset && subset.every(i => actual.includes(i));
-  var expected = `Array containing [${subset.join(', ')}]`;
-  this.pushResult({ result, actual, expected, message });
-};
-
-setApplication(Application.create(config.APP));
-start({ setupEmberOnerrorValidation: false });

@@ -1,4 +1,4 @@
-import { SnapshotOptions } from '@percy/core'
+import { SnapshotOptions } from '@percy/core';
 
 // present when qunit types are used
 declare global {
@@ -12,5 +12,5 @@ declare namespace Mocha {
 
 export default function percySnapshot(
   name: string | Assert | Mocha.Test,
-  options?: SnapshotOptions
+  options?: SnapshotOptions,
 ): Promise<void>;
