@@ -48,6 +48,8 @@ function scopeDOM(scope, dom) {
   // copy scoped attributes to the body element
   for (let i = 0; i < $scoped.attributes.length; i++) {
     let { name, value } = $scoped.attributes.item(i);
+    // never hoist inline event handlers into the serialized snapshot
+    if (/^on/i.test(name)) continue;
     // keep any existing body class
     if (name === 'class') value = `${$body.className} ${value}`.trim();
     $body.setAttribute(name, value);
@@ -55,6 +57,28 @@ function scopeDOM(scope, dom) {
 
   // remove #ember-testing styles by removing the id
   dom.querySelector('#ember-testing')?.removeAttribute('id');
+}
+
+// In-flight @percy/dom fetch shared by concurrent percySnapshot() calls, so an
+// unawaited call can't fetch and eval a second serializer over the first
+let percyDOMLoading;
+
+async function loadPercyDOM() {
+  if (!window.PercyDOM) {
+    if (!percyDOMLoading) {
+      // the script is served by the local Percy CLI and defines window.PercyDOM
+      percyDOMLoading = utils.fetchPercyDOM().then(script => {
+        // eslint-disable-next-line no-eval
+        eval(script);
+      }).finally(() => {
+        percyDOMLoading = null;
+      });
+    }
+
+    await percyDOMLoading;
+  }
+
+  return window.PercyDOM;
 }
 
 export default async function percySnapshot(name, {
@@ -69,14 +93,9 @@ export default async function percySnapshot(name, {
   name = generateName(name);
 
   try {
-    // Inject @percy/dom
-    if (!window.PercyDOM) {
-      // eslint-disable-next-line no-eval
-      eval(await utils.fetchPercyDOM());
-    }
-    // Stable reference: another percySnapshot() call (or QUnit teardown) can rebind
+    // Inject @percy/dom. Stable reference: QUnit teardown can rebind
     // window.PercyDOM mid-flight if the caller forgot to await — capture once.
-    const PercyDOM = window.PercyDOM;
+    const PercyDOM = await loadPercyDOM();
 
     addPseudoClassEnabledELements(options);
 
@@ -121,10 +140,19 @@ export default async function percySnapshot(name, {
       // waiting for input"). 200ms is long enough for one paint boundary
       // without freezing the test suite.
       if (typeof settled === 'function') {
-        await Promise.race([
-          settled(),
-          new Promise(resolve => setTimeout(resolve, 200))
+        const settledInTime = await Promise.race([
+          settled().then(() => true),
+          new Promise(resolve => setTimeout(resolve, 200, false))
         ]);
+
+        // flag snapshots captured while the runloop was still draining so the
+        // CLI diagnostics show the frame may not be fully settled
+        if (!settledInTime) {
+          log.debug('Ember runloop did not settle within 200ms, serializing anyway');
+          if (readinessDiagnostics && typeof readinessDiagnostics === 'object') {
+            readinessDiagnostics.settled_timeout = true;
+          }
+        }
       }
     }
 
