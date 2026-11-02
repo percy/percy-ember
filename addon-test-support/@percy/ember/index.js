@@ -67,10 +67,10 @@ async function loadPercyDOM() {
   if (!window.PercyDOM) {
     if (!percyDOMLoading) {
       // the script is served by the local Percy CLI and defines window.PercyDOM
-      percyDOMLoading = utils.fetchPercyDOM().then(script => {
+      percyDOMLoading = (async () => {
         // eslint-disable-next-line no-eval
-        eval(script);
-      }).finally(() => {
+        eval(await utils.fetchPercyDOM());
+      })().finally(() => {
         percyDOMLoading = null;
       });
     }
