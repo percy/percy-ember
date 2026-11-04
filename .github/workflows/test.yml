@@ -19,16 +19,20 @@ jobs:
         node: [16]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions-ecosystem/action-regex-match@9e6c4fb3d5e898f505be7a1fb6e7b0a278f6665b # v2.0.2
-        id: regex-match
+      - name: Validate CLI branch name
         if: ${{ github.event_name == 'workflow_dispatch' }}
-        with:
-          text: ${{ github.event.inputs.branch }}
-          regex: '^[a-zA-Z0-9_/\-]+$'
-      - name: Break on invalid branch name
-        run: exit 1
-        if: ${{ github.event_name == 'workflow_dispatch' && steps.regex-match.outputs && steps.regex-match.outputs.match == '' }}
+        env:
+          CLI_BRANCH: ${{ github.event.inputs.branch }}
+        # Only plain branch names: no leading dash (option injection), no
+        # ".." path segments and no shell metacharacters.
+        run: |
+          if [[ ! "$CLI_BRANCH" =~ ^[A-Za-z0-9._/-]+$ || "$CLI_BRANCH" == -* || "$CLI_BRANCH" == *..* ]]; then
+            echo "::error::Invalid CLI branch name"
+            exit 1
+          fi
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
           node-version: ${{ matrix.node }}
