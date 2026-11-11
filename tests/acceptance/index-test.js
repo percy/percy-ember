@@ -79,6 +79,37 @@ module('percySnapshot', hooks => {
       /<body class="ember-application custom-classname" data-test="true"><\/body>/));
   });
 
+  test('does not copy inline event handler attributes to the body element', async assert => {
+    let $scope = document.querySelector('#ember-testing');
+    $scope.setAttribute('data-test', 'true');
+    $scope.setAttribute('onclick', 'window.__percyHandler = true');
+    $scope.setAttribute('ONLOAD', 'window.__percyHandler = true');
+
+    try {
+      await percySnapshot('Snapshot 1');
+    } finally {
+      $scope.removeAttribute('onclick');
+      $scope.removeAttribute('onload');
+    }
+
+    let { html } = (await helpers.get('requests'))[1].body.domSnapshot;
+    assert.matches(html, /<body class="ember-application" data-test="true"><\/body>/);
+    assert.notOk(/onclick|onload/i.test(html), 'event handler attributes are dropped');
+  });
+
+  test('fetches @percy/dom once for concurrent snapshots', async assert => {
+    delete window.PercyDOM;
+
+    await Promise.all([
+      percySnapshot('Snapshot 1'),
+      percySnapshot('Snapshot 2')
+    ]);
+
+    let reqs = await helpers.get('requests');
+    assert.equal(reqs.filter(r => r.url === '/percy/dom.js').length, 1);
+    assert.equal(reqs.filter(r => r.url === '/percy/snapshot').length, 2);
+  });
+
   test('handles snapshot errors', async assert => {
     await helpers.test('error', '/percy/snapshot');
 
