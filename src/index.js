@@ -18,7 +18,10 @@ utils.percy.address = undefined; // TODO
 
 // Helper to generate a snapshot name from the test suite
 function generateName(assertOrTestOrName) {
-  if (assertOrTestOrName.test?.module?.name && assertOrTestOrName.test?.testName) {
+  if (
+    assertOrTestOrName.test?.module?.name &&
+    assertOrTestOrName.test?.testName
+  ) {
     // generate name from qunit assert object
     return `${assertOrTestOrName.test.module.name} | ${assertOrTestOrName.test.testName}`;
   } else if (assertOrTestOrName.fullTitle) {
@@ -33,8 +36,12 @@ function generateName(assertOrTestOrName) {
 // Helper to add pseudoClassEnabledElements that are in .percy.yml file to snapshot options.
 // when options.pseudoClassEnabledElements is not set in percySnapshot options
 function addPseudoClassEnabledELements(options) {
-  if (!options.pseudoClassEnabledElements && utils.percy?.config?.snapshot?.pseudoClassEnabledElements) {
-    options.pseudoClassEnabledElements = utils.percy.config.snapshot.pseudoClassEnabledElements;
+  if (
+    !options.pseudoClassEnabledElements &&
+    utils.percy?.config?.snapshot?.pseudoClassEnabledElements
+  ) {
+    options.pseudoClassEnabledElements =
+      utils.percy.config.snapshot.pseudoClassEnabledElements;
   }
 }
 
@@ -84,12 +91,15 @@ async function loadPercyDOM() {
   return window.PercyDOM;
 }
 
-export default async function percySnapshot(name, {
-  // separate SDK specific options from snapshot options
-  emberTestingScope = '#ember-testing',
-  domTransformation,
-  ...options
-} = {}) {
+export default async function percySnapshot(
+  name,
+  {
+    // separate SDK specific options from snapshot options
+    emberTestingScope = '#ember-testing',
+    domTransformation,
+    ...options
+  } = {},
+) {
   // Check if Percy is enabled
   if (!(await utils.isPercyEnabled())) return;
   let log = utils.logger('ember');
@@ -117,14 +127,24 @@ export default async function percySnapshot(name, {
     let readinessDiagnostics;
     const inTestRunner = !!(window.QUnit || window.mocha);
     const hasExplicitReadinessOpt = options?.readiness !== undefined;
-    const readinessDisabled = typeof utils.isReadinessDisabled === 'function'
-      ? utils.isReadinessDisabled(options)
-      : ((options?.readiness || utils.percy?.config?.snapshot?.readiness)?.preset === 'disabled');
+    const readinessDisabled =
+      typeof utils.isReadinessDisabled === 'function'
+        ? utils.isReadinessDisabled(options)
+        : (options?.readiness || utils.percy?.config?.snapshot?.readiness)
+            ?.preset === 'disabled';
     const skipReadinessInTests = inTestRunner && !hasExplicitReadinessOpt;
-    if (!readinessDisabled && !skipReadinessInTests && typeof PercyDOM?.waitForReady === 'function') {
-      const readinessConfig = typeof utils.getReadinessConfig === 'function'
-        ? utils.getReadinessConfig(options)
-        : { ...(utils.percy?.config?.snapshot?.readiness || {}), ...(options?.readiness || {}) };
+    if (
+      !readinessDisabled &&
+      !skipReadinessInTests &&
+      typeof PercyDOM?.waitForReady === 'function'
+    ) {
+      const readinessConfig =
+        typeof utils.getReadinessConfig === 'function'
+          ? utils.getReadinessConfig(options)
+          : {
+              ...(utils.percy?.config?.snapshot?.readiness || {}),
+              ...(options?.readiness || {}),
+            };
       try {
         readinessDiagnostics = await PercyDOM.waitForReady(readinessConfig);
       } catch (e) {
@@ -145,14 +165,19 @@ export default async function percySnapshot(name, {
       if (typeof settled === 'function') {
         const settledInTime = await Promise.race([
           settled().then(() => true),
-          new Promise(resolve => setTimeout(resolve, 200, false))
+          new Promise((resolve) => setTimeout(resolve, 200, false)),
         ]);
 
         // flag snapshots captured while the runloop was still draining so the
         // CLI diagnostics show the frame may not be fully settled
         if (!settledInTime) {
-          log.debug('Ember runloop did not settle within 200ms, serializing anyway');
-          if (readinessDiagnostics && typeof readinessDiagnostics === 'object') {
+          log.debug(
+            'Ember runloop did not settle within 200ms, serializing anyway',
+          );
+          if (
+            readinessDiagnostics &&
+            typeof readinessDiagnostics === 'object'
+          ) {
             readinessDiagnostics.settled_timeout = true;
           }
         }
@@ -167,10 +192,12 @@ export default async function percySnapshot(name, {
 
     // Serialize and capture the DOM
     let domSnapshot = PercyDOM.serialize({
-      domTransformation: dom => scopeDOM(emberTestingScope, (
-        domTransformation ? domTransformation(dom) : dom
-      )),
-      ...mergedOptions
+      domTransformation: (dom) =>
+        scopeDOM(
+          emberTestingScope,
+          domTransformation ? domTransformation(dom) : dom,
+        ),
+      ...mergedOptions,
     });
 
     // Attach readiness diagnostics so the CLI can log timing and pass/fail.
@@ -183,7 +210,9 @@ export default async function percySnapshot(name, {
         JSON.stringify(readinessDiagnostics);
         domSnapshot.readiness_diagnostics = readinessDiagnostics;
       } catch (e) {
-        log.warn(`dropping unserializable readiness diagnostics: ${e?.message || e}`);
+        log.warn(
+          `dropping unserializable readiness diagnostics: ${e?.message || e}`,
+        );
       }
     }
 
@@ -199,7 +228,7 @@ export default async function percySnapshot(name, {
       clientInfo: CLIENT_INFO,
       url: document.URL,
       domSnapshot,
-      name
+      name,
     });
   } catch (error) {
     // Handle errors

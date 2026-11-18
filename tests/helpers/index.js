@@ -6,13 +6,14 @@ export function setupPercyEmberTest(hooks) {
   utils.percy.address = 'http://localhost:5338';
 
   QUnit.assert.matches = function matches(actual, regex, message) {
-    var result = !!regex && !!actual && (new RegExp(regex)).test(actual);
+    var result = !!regex && !!actual && new RegExp(regex).test(actual);
     var expected = `String matching ${regex.toString()}`;
     this.pushResult({ result, actual, expected, message });
   };
 
   QUnit.assert.contains = function matches(actual, subset, message) {
-    var result = !!actual && !!subset && subset.every(i => actual.includes(i));
+    var result =
+      !!actual && !!subset && subset.every((i) => actual.includes(i));
     var expected = `Array containing [${subset.join(', ')}]`;
     this.pushResult({ result, actual, expected, message });
   };
