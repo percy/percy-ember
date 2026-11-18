@@ -1,5 +1,8 @@
 import { Addon } from '@embroider/addon-dev/rollup';
 import { babel } from '@rollup/plugin-babel';
+import replace from '@rollup/plugin-replace';
+
+import pkg from './package.json' with { type: 'json' };
 
 const addon = new Addon({
   srcDir: 'src',
@@ -35,6 +38,13 @@ export default {
     // `dependencies` and `peerDependencies` as well as standard Ember-provided
     // package names.
     addon.dependencies(),
+
+    replace({
+      preventAssignment: true,
+      values: {
+        __packageVersion__: pkg.version,
+      },
+    }),
 
     // This babel config should *not* apply presets or compile away ES modules.
     // It exists only to provide development niceties for you, like automatic

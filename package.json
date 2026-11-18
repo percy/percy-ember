@@ -71,6 +71,7 @@
     "@eslint/js": "^10.0.1",
     "@percy/cli": "^1.32.12",
     "@rollup/plugin-babel": "^7.1.0",
+    "@rollup/plugin-replace": "^6.0.3",
     "@types/mocha": "^10.0.10",
     "@types/qunit": "^2.19.14",
     "babel-plugin-ember-template-compilation": "^4.0.1",
