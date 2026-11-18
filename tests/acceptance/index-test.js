@@ -38,12 +38,12 @@ module('percySnapshot', (hooks) => {
 
     let reqs = await helpers.get('requests');
 
-    assert.equal(reqs[0].url, '/percy/healthcheck');
-    assert.equal(reqs[1].url, '/percy/dom.js');
-    assert.equal(reqs[2].url, '/percy/snapshot');
-    assert.equal(reqs[3].url, '/percy/snapshot');
+    assert.strictEqual(reqs[0].url, '/percy/healthcheck');
+    assert.strictEqual(reqs[1].url, '/percy/dom.js');
+    assert.strictEqual(reqs[2].url, '/percy/snapshot');
+    assert.strictEqual(reqs[3].url, '/percy/snapshot');
 
-    assert.equal(reqs[2].body.name, 'Snapshot 1');
+    assert.strictEqual(reqs[2].body.name, 'Snapshot 1');
     assert.matches(reqs[2].body.url, /^http:\/\/localhost:7357/);
     assert.matches(
       reqs[2].body.domSnapshot.html,
@@ -53,12 +53,12 @@ module('percySnapshot', (hooks) => {
     assert.matches(reqs[2].body.environmentInfo[0], /ember\/.+/);
     assert.matches(reqs[2].body.environmentInfo[1], /qunit\/.+/);
 
-    assert.equal(reqs[3].body.name, 'Snapshot 2');
+    assert.strictEqual(reqs[3].body.name, 'Snapshot 2');
   });
 
   test('generates a snapshot name from qunit assert', async (assert) => {
     await percySnapshot(assert);
-    assert.equal(
+    assert.strictEqual(
       (await helpers.get('requests'))[1].body.name,
       'percySnapshot | generates a snapshot name from qunit assert',
     );
@@ -67,7 +67,7 @@ module('percySnapshot', (hooks) => {
   test("generates a snapshot name from mocha's test", async (assert) => {
     // mocked since this is not a mocha test
     await percySnapshot({ fullTitle: () => 'Mocha | generated name' });
-    assert.equal(
+    assert.strictEqual(
       (await helpers.get('requests'))[1].body.name,
       'Mocha | generated name',
     );
@@ -119,8 +119,11 @@ module('percySnapshot', (hooks) => {
     ]);
 
     let reqs = await helpers.get('requests');
-    assert.equal(reqs.filter((r) => r.url === '/percy/dom.js').length, 1);
-    assert.equal(reqs.filter((r) => r.url === '/percy/snapshot').length, 2);
+    assert.strictEqual(reqs.filter((r) => r.url === '/percy/dom.js').length, 1);
+    assert.strictEqual(
+      reqs.filter((r) => r.url === '/percy/snapshot').length,
+      2,
+    );
   });
 
   test('handles snapshot errors', async (assert) => {
