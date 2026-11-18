@@ -1,0 +1,15 @@
+export default {
+  generatorOpts: {
+    compact: false,
+  },
+  plugins: [
+    '@embroider/addon-dev/template-colocation-plugin',
+    [
+      'babel-plugin-ember-template-compilation',
+      {
+        targetFormat: 'hbs',
+        transforms: [],
+      },
+    ],
+  ],
+};
